@@ -1,0 +1,28 @@
+import { Resend } from "resend";
+
+const resend = new Resend(process.env.RESEND_API_KEY);
+
+export async function handler() {
+  try {
+    const response = await resend.emails.send({
+      from: "AfterMatters Care <care@aftermatters.co.nz>",
+      to: ["lolawalker.mail@proton.me"],
+      subject: "AfterMatters email system test",
+      html: `
+        <h2>You're connected 🎉</h2>
+        <p>Your AfterMatters email system is working beautifully.</p>
+      `,
+    });
+
+    return {
+      statusCode: 200,
+      body: JSON.stringify(response),
+    };
+
+  } catch (error) {
+    return {
+      statusCode: 500,
+      body: JSON.stringify(error),
+    };
+  }
+}

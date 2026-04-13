@@ -1,0 +1,798 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Choose your plan - After Matters</title>
+<link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400;1,6..96,400&family=EB+Garamond:ital,wght@0,400;1,400&family=Jost:wght@200;300;400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+:root{
+  --night:#0d1520;--deep:#112035;--ocean:#1a3a5c;
+  --mist:#6b9ab8;--foam:#c8dde9;--beam:#f5c842;
+  --white:#fefefe;--green:#4a9e7a;
+  --border:rgba(255,255,255,.09);--card:rgba(255,255,255,.04);
+}
+html,body{background:#0d1520 !important;color:#fefefe !important;min-height:100%;background:#0d1520;color:#fefefe;font-family:'Jost',sans-serif;cursor:none;overflow-x:hidden;}
+body::before{content:'';position:fixed;inset:0;background-image:radial-gradient(1px 1px at 20% 15%,rgba(255,255,255,.15) 0%,transparent 100%),radial-gradient(1px 1px at 75% 8%,rgba(255,255,255,.10) 0%,transparent 100%),radial-gradient(1px 1px at 45% 55%,rgba(255,255,255,.08) 0%,transparent 100%);pointer-events:none;z-index:0;}
+.cursor{position:fixed;width:8px;height:8px;background:#f5c842;border-radius:50%;pointer-events:none;z-index:9999;transform:translate(-50%,-50%);mix-blend-mode:screen;}
+.cursor-ring{position:fixed;width:32px;height:32px;border:1px solid rgba(245,200,66,.25);border-radius:50%;pointer-events:none;z-index:9998;transform:translate(-50%,-50%);transition:all .12s ease;}
+
+/* Nav */
+nav{position:fixed;top:0;left:0;right:0;z-index:100;height:56px;background:rgba(8,12,20,.95);backdrop-filter:blur(20px);border-bottom:1px solid rgba(255,255,255,.09);display:flex;align-items:center;justify-content:space-between;padding:0 32px;}
+.nav-logo{display:flex;align-items:center;gap:10px;text-decoration:none;}
+.nav-logo img{height:30px;width:auto;}
+.nav-back{font-size:.6rem;letter-spacing:.18em;text-transform:uppercase;color:rgba(255,255,255,.45);text-decoration:none;display:flex;align-items:center;gap:6px;transition:color .2s;}
+.nav-back:hover{color:#fefefe;}
+.nav-secure{font-size:.58rem;letter-spacing:.16em;text-transform:uppercase;color:rgba(74,158,122,.8);display:flex;align-items:center;gap:6px;}
+
+/* Page */
+.page{position:relative;z-index:1;padding-top:56px;min-height:100vh;}
+
+/* Hero */
+.hero{padding:72px 24px 48px;text-align:center;max-width:700px;margin:0 auto;}
+.hero-eyebrow{font-size:.55rem;letter-spacing:.38em;text-transform:uppercase;color:rgba(107,154,184,.9);margin-bottom:16px;display:flex;align-items:center;justify-content:center;gap:12px;}
+.hero-eyebrow::before,.hero-eyebrow::after{content:'';display:block;width:20px;height:1px;background:rgba(107,154,184,.3);}
+.hero-title{font-family:'Bodoni Moda',serif;font-size:clamp(1.8rem,4vw,2.8rem);color:#fefefe;line-height:1.15;margin-bottom:16px;}
+.hero-title em{font-style:italic;color:rgba(255,255,255,.4);}
+.hero-sub{font-family:'EB Garamond',serif;font-style:italic;font-size:1.05rem;color:rgba(255,255,255,.6);line-height:1.8;}
+
+/* Plans grid */
+.plans{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:2px;max-width:1080px;margin:0 auto;padding:0 24px 80px;}
+.plan{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.09);padding:36px 28px 28px;display:flex;flex-direction:column;gap:0;transition:border-color .25s,background .25s;position:relative;overflow:hidden;}
+.plan:hover{border-color:rgba(255,255,255,.2);background:rgba(255,255,255,.06);}
+.plan.featured{border-color:rgba(245,200,66,.35);background:rgba(245,200,66,.04);}
+.plan.featured:hover{border-color:rgba(245,200,66,.6);background:rgba(245,200,66,.08);}
+.plan.selected{border-color:#f5c842 !important;background:rgba(245,200,66,.1) !important;}
+.plan-badge{position:absolute;top:0;right:0;background:#f5c842;color:#0d1520;font-size:.5rem;font-weight:600;letter-spacing:.2em;text-transform:uppercase;padding:5px 12px;}
+.plan-tier{font-size:.55rem;letter-spacing:.32em;text-transform:uppercase;color:#6b9ab8;margin-bottom:8px;}
+.plan-name{font-family:'Bodoni Moda',serif;font-size:1.4rem;color:#fefefe;margin-bottom:4px;line-height:1.2;}
+.plan-desc{font-size:.78rem;color:rgba(255,255,255,.5);line-height:1.7;font-weight:300;margin-bottom:20px;}
+.plan-price{font-family:'Bodoni Moda',serif;font-size:2.2rem;color:#fefefe;margin-bottom:4px;line-height:1;}
+.plan-price span{font-family:'Jost',sans-serif;font-size:.7rem;color:rgba(255,255,255,.4);letter-spacing:.1em;font-weight:300;}
+.plan-keep{font-size:.65rem;color:rgba(255,255,255,.35);margin-bottom:24px;letter-spacing:.06em;}
+.plan-feats{flex:1;margin-bottom:24px;display:flex;flex-direction:column;gap:8px;}
+.plan-feat{font-size:.75rem;color:rgba(255,255,255,.65);padding-left:16px;position:relative;line-height:1.5;}
+.plan-feat::before{content:'✓';position:absolute;left:0;color:#4a9e7a;font-size:.65rem;}
+.plan-btn{width:100%;padding:14px;border:1px solid rgba(255,255,255,.2);background:none;color:rgba(255,255,255,.7);font-family:'Jost',sans-serif;font-size:.62rem;letter-spacing:.2em;text-transform:uppercase;cursor:none;transition:all .25s;}
+.plan-btn:hover{background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.45);color:#fefefe;}
+.plan-btn.primary{background:rgba(245,200,66,.12);border-color:rgba(245,200,66,.5);color:#f5c842;}
+.plan-btn.primary:hover{background:rgba(245,200,66,.25);border-color:#f5c842;}
+.plan-btn.selected-btn{background:rgba(245,200,66,.2);border-color:#f5c842;color:#f5c842;}
+
+/* Stripe setup box */
+.stripe-setup{max-width:680px;margin:0 auto 40px;padding:0 24px;}
+.stripe-box{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.1);padding:32px 36px;}
+.stripe-box h3{font-family:'Bodoni Moda',serif;font-size:1.2rem;color:#fefefe;margin-bottom:8px;}
+.stripe-box p{font-size:.8rem;color:rgba(255,255,255,.55);line-height:1.75;margin-bottom:20px;}
+.stripe-steps{display:flex;flex-direction:column;gap:14px;margin-bottom:24px;}
+.stripe-step{display:flex;gap:14px;align-items:flex-start;}
+.step-num{width:26px;height:26px;border-radius:50%;background:rgba(245,200,66,.1);border:1px solid rgba(245,200,66,.3);display:flex;align-items:center;justify-content:center;font-size:.6rem;color:#f5c842;flex-shrink:0;margin-top:1px;}
+.step-text{font-size:.78rem;color:rgba(255,255,255,.65);line-height:1.65;}
+.step-text strong{color:rgba(255,255,255,.9);font-weight:500;}
+.step-text a{color:#6b9ab8;text-decoration:none;}
+.step-text a:hover{color:#c8dde9;}
+.step-text code{background:rgba(255,255,255,.08);padding:2px 6px;font-family:monospace;font-size:.75rem;color:#f5c842;}
+
+/* Link inputs */
+.link-inputs{display:flex;flex-direction:column;gap:10px;margin-bottom:20px;}
+.link-row{display:grid;grid-template-columns:180px 1fr;gap:10px;align-items:center;}
+.link-label{font-size:.65rem;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.5);}
+.link-field{padding:10px 14px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.14);font-family:'Jost',sans-serif;font-size:.78rem;color:#fefefe;outline:none;transition:border-color .2s;}
+.link-field::placeholder{color:rgba(255,255,255,.2);}
+.link-field:focus{border-color:rgba(245,200,66,.5);}
+.save-btn{width:100%;padding:13px;background:rgba(245,200,66,.1);border:1px solid rgba(245,200,66,.35);color:#f5c842;font-family:'Jost',sans-serif;font-size:.62rem;letter-spacing:.2em;text-transform:uppercase;cursor:none;transition:all .25s;display:flex;align-items:center;justify-content:center;gap:8px;}
+.save-btn:hover{background:rgba(245,200,66,.22);border-color:rgba(245,200,66,.7);}
+
+/* Order summary panel */
+.order-wrap{max-width:680px;margin:0 auto 40px;padding:0 24px;}
+.order-box{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.1);padding:32px 36px;display:none;}
+.order-box.visible{display:block;}
+.order-title{font-size:.55rem;letter-spacing:.3em;text-transform:uppercase;color:rgba(255,255,255,.4);margin-bottom:20px;display:flex;align-items:center;gap:12px;}
+.order-title::after{content:'';flex:1;height:1px;background:rgba(255,255,255,.07);}
+.order-line{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:10px;}
+.order-item{font-size:.82rem;color:rgba(255,255,255,.7);}
+.order-price{font-family:'Bodoni Moda',serif;font-size:1rem;color:#fefefe;}
+.order-divider{height:1px;background:rgba(255,255,255,.08);margin:14px 0;}
+.order-total-label{font-size:.75rem;color:rgba(255,255,255,.5);font-weight:500;}
+.order-total-price{font-family:'Bodoni Moda',serif;font-size:1.6rem;color:#f5c842;}
+.order-note{font-size:.68rem;color:rgba(255,255,255,.35);line-height:1.65;margin:14px 0;}
+.checkout-btn{width:100%;padding:16px;background:linear-gradient(135deg,rgba(245,200,66,.18),rgba(245,200,66,.08));border:1px solid rgba(245,200,66,.5);color:#f5c842;font-family:'Jost',sans-serif;font-size:.68rem;letter-spacing:.22em;text-transform:uppercase;cursor:none;transition:all .25s;display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:12px;}
+.checkout-btn:hover{background:rgba(245,200,66,.28);border-color:#f5c842;}
+.checkout-btn:disabled{opacity:.4;pointer-events:none;}
+.secure-note{text-align:center;font-size:.62rem;color:rgba(255,255,255,.3);display:flex;align-items:center;justify-content:center;gap:6px;}
+
+/* Trust bar */
+.trust-bar{max-width:680px;margin:0 auto 80px;padding:0 24px;}
+.trust-inner{display:flex;justify-content:center;gap:32px;flex-wrap:wrap;padding:20px;border-top:1px solid rgba(255,255,255,.06);}
+.trust-item{font-size:.62rem;color:rgba(255,255,255,.35);letter-spacing:.1em;display:flex;align-items:center;gap:6px;}
+
+/* Mobile */
+@media(max-width:768px){
+  body{cursor:auto;}
+  .cursor,.cursor-ring{display:none;}
+  nav{padding:0 16px;}
+  .hero{padding:48px 20px 32px;}
+  .plans{padding:0 16px 60px;grid-template-columns:1fr;}
+  .stripe-setup,.order-wrap,.trust-bar{padding:0 16px;}
+  .stripe-box,.order-box{padding:24px 20px;}
+  .link-row{grid-template-columns:1fr;gap:4px;}
+}
+</style>
+</head>
+<body>
+
+<div class="cursor" id="cur"></div>
+<div class="cursor-ring" id="cur2"></div>
+
+<nav>
+  <a href="index.html" class="nav-back">
+    <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><path d="M10 4L6 8l4 4"/></svg>
+    Back
+  </a>
+  <a href="index.html" class="nav-logo">
+    <img src="data:image/png;base64,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" alt="After Matters">
+  </a>
+  <div class="nav-secure">
+    <svg width="10" height="12" viewBox="0 0 10 12" fill="none" stroke="currentColor" stroke-width="1.2"><rect x="1" y="5" width="8" height="7" rx="1"/><path d="M3 5V3.5a2 2 0 014 0V5"/></svg>
+    Secure checkout via Stripe
+  </div>
+</nav>
+
+<div class="page">
+
+  <!-- Hero -->
+  <div class="hero">
+    <div class="hero-eyebrow">After Matters · Plans</div>
+    <h1 class="hero-title">Set up once.<br><em>Yours forever.</em></h1>
+    <p class="hero-sub">No subscription. No monthly commitment. Choose your plan, pay once, and know your family is covered.</p>
+  </div>
+
+  <!-- Plan selector -->
+  <div class="plans" id="planGrid">
+
+    <!-- Shoreline - Free -->
+    <div class="plan" id="plan-free" onclick="selectPlan('free')">
+      <div style="width:48px;height:48px;margin-bottom:16px;"><svg viewBox="0 0 90 90" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Navy circle -->
+  <circle cx="45" cy="45" r="44" fill="#112035"/>
+  <!-- Gold anchor - bold, solid, stamp style -->
+  <!-- Ring -->
+  <circle cx="45" cy="22" r="7" fill="none" stroke="#f5c842" stroke-width="5"/>
+  <!-- Shaft -->
+  <rect x="42" y="28" width="6" height="34" fill="#f5c842" rx="2"/>
+  <!-- Stock crossbar -->
+  <rect x="22" y="32" width="46" height="6" fill="#f5c842" rx="3"/>
+  <!-- Stock end knobs -->
+  <circle cx="22" cy="35" r="5" fill="#f5c842"/>
+  <circle cx="68" cy="35" r="5" fill="#f5c842"/>
+  <!-- Left arm -->
+  <path d="M45 62 Q30 62 24 72 L30 68 L28 75 L36 72 Q36 66 45 65Z" fill="#f5c842"/>
+  <!-- Right arm -->
+  <path d="M45 62 Q60 62 66 72 L60 68 L62 75 L54 72 Q54 66 45 65Z" fill="#f5c842"/>
+  <!-- Bottom crown -->
+  <circle cx="45" cy="63" r="4" fill="#f5c842"/>
+</svg></div>
+      <div class="plan-tier">Shoreline</div>
+      <div class="plan-name">Free forever</div>
+      <div class="plan-price">$0</div>
+      <div class="plan-keep">&nbsp;</div>
+      <div class="plan-desc">The essentials, always free.</div>
+      <div class="plan-feats">
+        <div class="plan-feat">Life Closure Checklist (NZ)</div>
+        <div class="plan-feat">Community - The Harbour</div>
+        <div class="plan-feat">1 Memorial page</div>
+        <div class="plan-feat">Basic document storage</div>
+      </div>
+      <button class="plan-btn" onclick="event.stopPropagation();selectPlan('free')">Get started free</button>
+    </div>
+
+    <!-- Vault Setup - $249 -->
+    <div class="plan featured" id="plan-vault" onclick="selectPlan('vault')">
+      <div class="plan-badge">Most popular</div>
+      <div style="width:48px;height:48px;margin-bottom:16px;"><svg viewBox="0 0 90 90" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <circle cx="45" cy="45" r="44" fill="#C8943A"/>
+  <!-- Bold vault/lock -->
+  <!-- Shackle -->
+  <path d="M30 42 L30 30 Q30 16 45 16 Q60 16 60 30 L60 42" stroke="#0D1520" stroke-width="8" fill="none" stroke-linecap="round"/>
+  <!-- Lock body -->
+  <rect x="18" y="40" width="54" height="38" fill="#0D1520" rx="4"/>
+  <!-- Keyhole -->
+  <circle cx="45" cy="56" r="8" fill="#C8943A"/>
+  <rect x="42" y="60" width="6" height="10" fill="#C8943A" rx="2"/>
+</svg></div>
+      <div class="plan-tier">Vault Setup</div>
+      <div class="plan-name">One-time</div>
+      <div class="plan-price">$249 <span>NZD</span></div>
+      <div class="plan-keep">+ $49/year to keep the lights on</div>
+      <div class="plan-desc">Set up your vault completely. Pay once, it's yours.</div>
+      <div class="plan-feats">
+        <div class="plan-feat">Full Document Vault (5GB)</div>
+        <div class="plan-feat">The Waypoint - all 6 tools</div>
+        <div class="plan-feat">Inner Circle (up to 6 people)</div>
+        <div class="plan-feat">Keyholder nomination & unlock</div>
+        <div class="plan-feat">3 Memorial pages</div>
+        <div class="plan-feat">Letter of wishes builder</div>
+      </div>
+      <button class="plan-btn primary" onclick="event.stopPropagation();selectPlan('vault')">Select this plan</button>
+    </div>
+
+    <!-- Family Vault - $399 -->
+    <div class="plan" id="plan-family" onclick="selectPlan('family')">
+      <div style="width:48px;height:48px;margin-bottom:16px;"><svg viewBox="0 0 90 90" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Gold circle -->
+  <circle cx="45" cy="45" r="44" fill="#C8943A"/>
+  <!-- Navy north star - bold 4-point -->
+  <!-- Vertical diamond - tall -->
+  <path d="M45 10 L50 42 L45 45 L40 42 Z" fill="#0D1520"/>
+  <path d="M45 80 L50 48 L45 45 L40 48 Z" fill="#0D1520"/>
+  <!-- Horizontal diamond - wide -->
+  <path d="M10 45 L42 40 L45 45 L42 50 Z" fill="#0D1520"/>
+  <path d="M80 45 L48 40 L45 45 L48 50 Z" fill="#0D1520"/>
+  <!-- Secondary 4 points - shorter, 45deg -->
+  <path d="M45 45 L38 25 L42 42 Z" fill="#0D1520" opacity=".7" transform="rotate(45 45 45)"/>
+  <path d="M45 45 L52 25 L48 42 Z" fill="#0D1520" opacity=".7" transform="rotate(45 45 45)"/>
+  <path d="M45 45 L38 65 L42 48 Z" fill="#0D1520" opacity=".7" transform="rotate(45 45 45)"/>
+  <path d="M45 45 L52 65 L48 48 Z" fill="#0D1520" opacity=".7" transform="rotate(45 45 45)"/>
+  <!-- Centre -->
+  <circle cx="45" cy="45" r="6" fill="#0D1520"/>
+  <circle cx="45" cy="45" r="3" fill="#C8943A"/>
+</svg></div>
+      <div class="plan-tier">Family Vault</div>
+      <div class="plan-name">For couples</div>
+      <div class="plan-price">$399 <span>NZD</span></div>
+      <div class="plan-keep">+ $49/year per vault</div>
+      <div class="plan-desc">Two complete vaults. One decision, everyone covered.</div>
+      <div class="plan-feats">
+        <div class="plan-feat">Everything in Vault Setup × 2</div>
+        <div class="plan-feat">Shared Inner Circle</div>
+        <div class="plan-feat">10GB combined storage</div>
+        <div class="plan-feat">6 Memorial pages</div>
+        <div class="plan-feat">Priority care team</div>
+      </div>
+      <button class="plan-btn" onclick="event.stopPropagation();selectPlan('family')">Select this plan</button>
+    </div>
+
+    <!-- Bereavement Pass - $199 -->
+    <div class="plan" id="plan-bereavement" onclick="selectPlan('bereavement')">
+      <div style="width:48px;height:48px;margin-bottom:16px;"><svg viewBox="0 0 90 90" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <circle cx="45" cy="45" r="44" fill="#112035"/>
+  <!-- Map with path/waypoints -->
+  <rect x="18" y="22" width="54" height="46" fill="#f5c842" rx="3"/>
+  <!-- Path line -->
+  <path d="M28 58 Q35 44 45 48 Q55 52 62 36" stroke="#112035" stroke-width="4" fill="none" stroke-linecap="round" stroke-dasharray="0"/>
+  <!-- Waypoint dots -->
+  <circle cx="28" cy="58" r="6" fill="#112035"/>
+  <circle cx="45" cy="48" r="5" fill="#112035"/>
+  <circle cx="62" cy="36" r="7" fill="#112035"/>
+  <circle cx="62" cy="36" r="3" fill="#f5c842"/>
+</svg></div>
+      <div class="plan-tier">Bereavement Pass</div>
+      <div class="plan-name">For right now</div>
+      <div class="plan-price">$199 <span>NZD</span></div>
+      <div class="plan-keep">12 months · memorial lives on free</div>
+      <div class="plan-desc">Full access for families managing a loss right now.</div>
+      <div class="plan-feats">
+        <div class="plan-feat">Everything in Vault Setup</div>
+        <div class="plan-feat">12 months full access</div>
+        <div class="plan-feat">Priority 24-hour care team</div>
+        <div class="plan-feat">NZ estate admin checklist</div>
+        <div class="plan-feat">Memorial page lives on free</div>
+      </div>
+      <button class="plan-btn" onclick="event.stopPropagation();selectPlan('bereavement')">Select this plan</button>
+    </div>
+
+  </div>
+
+  <!-- Order summary -->
+  <div class="order-wrap">
+    <div class="order-box" id="orderBox">
+      <div class="order-title">Your order</div>
+      <div class="order-line">
+        <div class="order-item" id="orderItem">Vault Setup</div>
+        <div class="order-price" id="orderPrice">$249</div>
+      </div>
+      <div class="order-divider"></div>
+      <div class="order-line">
+        <div class="order-total-label">Total today</div>
+        <div class="order-total-price" id="orderTotal">$249 NZD</div>
+      </div>
+      <div class="order-note" id="orderNote">One-time payment. Your vault is set up permanently. Annual Keep of $49/year begins from your first anniversary.</div>
+      <button class="checkout-btn" id="checkoutBtn" onclick="goToStripe()">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"><rect x="1" y="5" width="14" height="10" rx="1"/><path d="M4 5V4a4 4 0 018 0v1"/></svg>
+        Pay securely with Stripe
+      </button>
+      <div class="secure-note">
+        <svg width="10" height="12" viewBox="0 0 10 12" fill="none" stroke="currentColor" stroke-width="1.1"><rect x="1" y="5" width="8" height="7" rx="1"/><path d="M3 5V3.5a2 2 0 014 0V5"/></svg>
+        Secured by Stripe · NZD · No card stored
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ STRIPE SETUP INSTRUCTIONS (for you, Lola) ══ -->
+  <div class="stripe-setup">
+    <div class="stripe-box">
+      <h3>Connect your Stripe account</h3>
+      <p>After Matters uses <strong>Stripe Payment Links</strong> - the simplest way to take real payments with no code. Once you've created your links in Stripe, paste them below and they'll be saved for this device. When a customer clicks "Pay securely with Stripe" they'll go straight to your Stripe checkout page.</p>
+
+      <div class="stripe-steps">
+        <div class="stripe-step">
+          <div class="step-num">1</div>
+          <div class="step-text">Create a free Stripe account at <a href="https://stripe.com/nz" target="_blank">stripe.com/nz</a>. Complete identity verification - Stripe requires this before you can receive payments.</div>
+        </div>
+        <div class="stripe-step">
+          <div class="step-num">2</div>
+          <div class="step-text">In your Stripe dashboard, go to <strong>Payment Links → Create payment link</strong>. Create one link for each product: Vault Setup ($249), Family Vault ($399), Bereavement Pass ($199). Set currency to NZD.</div>
+        </div>
+        <div class="stripe-step">
+          <div class="step-num">3</div>
+          <div class="step-text">For each link, set the <strong>success redirect URL</strong> to <code>https://aftermatters.co.nz/onboarding.html</code> so customers land on your onboarding flow after payment.</div>
+        </div>
+        <div class="stripe-step">
+          <div class="step-num">4</div>
+          <div class="step-text">Copy each Payment Link URL (looks like <code>buy.stripe.com/xxxx</code>) and paste it into the fields below. Click Save - done.</div>
+        </div>
+        <div class="stripe-step">
+          <div class="step-num">5</div>
+          <div class="step-text">For the free Shoreline plan - no Stripe needed. The button links directly to <code>signin.html</code> to create a free account.</div>
+        </div>
+      </div>
+
+      <div class="link-inputs">
+        <div class="link-row">
+          <div class="link-label">Vault Setup ($249)</div>
+          <input class="link-field" id="link-vault" type="url" placeholder="https://buy.stripe.com/your-vault-link">
+        </div>
+        <div class="link-row">
+          <div class="link-label">Family Vault ($399)</div>
+          <input class="link-field" id="link-family" type="url" placeholder="https://buy.stripe.com/your-family-link">
+        </div>
+        <div class="link-row">
+          <div class="link-label">Bereavement Pass ($199)</div>
+          <input class="link-field" id="link-bereavement" type="url" placeholder="https://buy.stripe.com/your-bereavement-link">
+        </div>
+        <div class="link-row">
+          <div class="link-label">Annual Keep ($49/yr)</div>
+          <input class="link-field" id="link-keep" type="url" placeholder="https://buy.stripe.com/your-keep-link">
+        </div>
+      </div>
+
+      <button class="save-btn" onclick="saveLinks()">
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.3"><path d="M2 7l4 4 6-6"/></svg>
+        Save payment links
+      </button>
+      <div id="saveMsg" style="display:none;margin-top:10px;font-size:.72rem;color:#4a9e7a;text-align:center;">✓ Links saved. Your checkout is live.</div>
+    </div>
+  </div>
+
+  <!-- Trust bar -->
+  <div class="trust-bar">
+    <div class="trust-inner">
+      <div class="trust-item">
+        <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.1"><rect x="1" y="4" width="10" height="8" rx="1"/><path d="M3 4V3a3 3 0 016 0v1"/></svg>
+        Secured by Stripe
+      </div>
+      <div class="trust-item">
+        <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.1"><circle cx="6" cy="6" r="5"/><path d="M4 6l2 2 3-3"/></svg>
+        NZD · GST inclusive
+      </div>
+      <div class="trust-item">
+        <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.1"><path d="M6 1l1.5 3 3.5.5-2.5 2.5.5 3.5L6 9l-3 1.5.5-3.5L1 4.5 4.5 4z"/></svg>
+        NZ-owned & operated
+      </div>
+      <div class="trust-item">
+        <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.1"><path d="M2 6c0-2.2 1.8-4 4-4s4 1.8 4 4-1.8 4-4 4"/><path d="M6 8V6l-1.5-1"/></svg>
+        24-hour care team response
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+const cur=document.getElementById('cur'), ring=document.getElementById('cur2');
+document.addEventListener('mousemove',e=>{
+  cur.style.left=e.clientX+'px'; cur.style.top=e.clientY+'px';
+  ring.style.left=e.clientX+'px'; ring.style.top=e.clientY+'px';
+});
+
+// Plan data
+const PLANS = {
+  free:        { name:'Shoreline — Free forever',  price:'$0',    total:'$0 NZD',    note:'No payment needed. Create your free account and get started.',                                              url:'signin.html' },
+  vault:       { name:'Vault Setup',               price:'$249',  total:'$249 NZD',  note:'One-time payment. Annual Keep of $49/year begins from your first anniversary.',                             url:null },
+  family:      { name:'Family Vault (2 vaults)',   price:'$399',  total:'$399 NZD',  note:'One-time payment for two complete vaults. Annual Keep of $49/year per vault begins from your anniversary.', url:null },
+  bereavement: { name:'Bereavement Pass',          price:'$199',  total:'$199 NZD',  note:'12 months full access. Your memorial page lives on free after that.',                                       url:null },
+};
+
+let currentPlan = null;
+
+// Load saved Stripe links
+function loadLinks() {
+  ['vault','family','bereavement','keep'].forEach(k => {
+    const saved = localStorage.getItem('stripe_link_'+k);
+    if(saved) document.getElementById('link-'+k).value = saved;
+  });
+}
+
+function saveLinks() {
+  ['vault','family','bereavement','keep'].forEach(k => {
+    const val = document.getElementById('link-'+k).value.trim();
+    if(val) localStorage.setItem('stripe_link_'+k, val);
+  });
+  const msg = document.getElementById('saveMsg');
+  msg.style.display='block';
+  setTimeout(()=>msg.style.display='none', 4000);
+}
+
+function getStripeLink(plan) {
+  const saved = localStorage.getItem('stripe_link_'+plan);
+  return saved || null;
+}
+
+function selectPlan(id) {
+  // Deselect all
+  document.querySelectorAll('.plan').forEach(p=>p.classList.remove('selected'));
+  document.querySelectorAll('.plan-btn').forEach(b=>{b.classList.remove('selected-btn');});
+
+  currentPlan = id;
+  const plan = PLANS[id];
+  const card = document.getElementById('plan-'+id);
+  card.classList.add('selected');
+
+  // Update order box
+  document.getElementById('orderItem').textContent  = plan.name;
+  document.getElementById('orderPrice').textContent = plan.price;
+  document.getElementById('orderTotal').textContent = plan.total;
+  document.getElementById('orderNote').textContent  = plan.note;
+  document.getElementById('orderBox').classList.add('visible');
+
+  // Scroll to order box
+  setTimeout(()=>document.getElementById('orderBox').scrollIntoView({behavior:'smooth',block:'nearest'}), 100);
+
+  // Update checkout button
+  const btn = document.getElementById('checkoutBtn');
+  if(id === 'free') {
+    btn.textContent = 'Create free account →';
+    btn.disabled = false;
+  } else {
+    const link = getStripeLink(id);
+    btn.innerHTML = link
+      ? '<svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"><rect x="1" y="5" width="14" height="10" rx="1"/><path d="M4 5V4a4 4 0 018 0v1"/></svg> Pay securely with Stripe'
+      : '⚠ Stripe link not yet connected — paste your link above';
+    btn.disabled = !link;
+  }
+}
+
+function goToStripe() {
+  if(!currentPlan) return;
+  if(currentPlan === 'free') { window.location.href = 'signin.html'; return; }
+  const link = getStripeLink(currentPlan);
+  if(link) {
+    window.location.href = link;
+  } else {
+    document.getElementById('link-'+currentPlan).focus();
+    document.getElementById('link-'+currentPlan).scrollIntoView({behavior:'smooth', block:'center'});
+  }
+}
+
+// Read ?plan= from URL and pre-select
+function init() {
+  loadLinks();
+  const params = new URLSearchParams(window.location.search);
+  const plan = params.get('plan');
+  if(plan && PLANS[plan]) selectPlan(plan);
+  else selectPlan('vault'); // default to vault
+}
+
+init();
+</script>
+
+<!-- AFTER MATTERS EDITOR -->
+<style>
+/* ── Editor UI ── */
+#am-editor-btn {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  z-index: 99999;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 18px;
+  background: #f5c842;
+  color: #0d1520;
+  border: none;
+  font-family: 'Jost', sans-serif;
+  font-size: .62rem;
+  font-weight: 500;
+  letter-spacing: .18em;
+  text-transform: uppercase;
+  cursor: pointer;
+  box-shadow: 0 4px 24px rgba(0,0,0,.4);
+  transition: all .2s;
+  border-radius: 2px;
+}
+#am-editor-btn:hover { background: #fff; transform: translateY(-1px); box-shadow: 0 6px 32px rgba(0,0,0,.5); }
+#am-editor-btn svg { width: 14px; height: 14px; flex-shrink: 0; }
+#am-editor-btn.editing { background: #4a9e7a; color: #fff; }
+
+/* Save bar */
+#am-save-bar {
+  position: fixed;
+  bottom: 0; left: 0; right: 0;
+  z-index: 99998;
+  background: rgba(13,21,32,.97);
+  border-top: 1px solid rgba(245,200,66,.25);
+  padding: 14px 24px;
+  display: none;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  backdrop-filter: blur(12px);
+  font-family: 'Jost', sans-serif;
+}
+#am-save-bar.visible { display: flex; }
+#am-save-bar-msg {
+  font-size: .72rem;
+  color: rgba(255,255,255,.5);
+  flex: 1;
+}
+#am-save-bar-msg strong { color: #f5c842; font-weight: 400; }
+.am-bar-btn {
+  padding: 9px 20px;
+  font-family: 'Jost', sans-serif;
+  font-size: .6rem;
+  letter-spacing: .16em;
+  text-transform: uppercase;
+  border: none;
+  cursor: pointer;
+  transition: all .2s;
+  border-radius: 2px;
+}
+#am-btn-save { background: #f5c842; color: #0d1520; font-weight: 500; }
+#am-btn-save:hover { background: #fff; }
+#am-btn-cancel { background: rgba(255,255,255,.07); color: rgba(255,255,255,.5); border: 1px solid rgba(255,255,255,.1); }
+#am-btn-cancel:hover { background: rgba(255,255,255,.12); color: #fff; }
+
+/* Editable element styles */
+.am-editable {
+  outline: none;
+  border-radius: 2px;
+  transition: background .15s, box-shadow .15s;
+  position: relative;
+}
+.am-editable:hover {
+  background: rgba(245,200,66,.08) !important;
+  box-shadow: 0 0 0 2px rgba(245,200,66,.2);
+  cursor: text;
+}
+.am-editable:focus {
+  background: rgba(245,200,66,.12) !important;
+  box-shadow: 0 0 0 2px rgba(245,200,66,.5);
+  cursor: text;
+}
+
+/* Edit mode overlay hint */
+#am-edit-hint {
+  position: fixed;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 99999;
+  background: rgba(13,21,32,.95);
+  border: 1px solid rgba(245,200,66,.3);
+  padding: 10px 20px;
+  font-family: 'Jost', sans-serif;
+  font-size: .65rem;
+  letter-spacing: .14em;
+  color: rgba(255,255,255,.6);
+  display: none;
+  align-items: center;
+  gap: 10px;
+  backdrop-filter: blur(8px);
+  pointer-events: none;
+  white-space: nowrap;
+}
+#am-edit-hint.visible { display: flex; }
+#am-edit-hint span { color: #f5c842; }
+
+/* Change counter badge */
+#am-change-count {
+  background: #f5c842;
+  color: #0d1520;
+  font-size: .5rem;
+  font-weight: 600;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  position: absolute;
+  top: -6px;
+  right: -6px;
+}
+#am-editor-btn { position: relative; }
+#am-change-count.visible { display: flex; }
+</style>
+
+<!-- Editor button -->
+<button id="am-editor-btn" onclick="amToggleEdit()" title="Edit page text">
+  <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round">
+    <path d="M11 2l3 3-8 8H3v-3L11 2z"/>
+  </svg>
+  Edit Page
+  <span id="am-change-count"></span>
+</button>
+
+<!-- Save bar -->
+<div id="am-save-bar">
+  <div id="am-save-bar-msg">
+    <strong id="am-changes-label">0 changes</strong> made - download your updated file to save permanently.
+  </div>
+  <button class="am-bar-btn" id="am-btn-cancel" onclick="amCancelEdit()">Discard changes</button>
+  <button class="am-bar-btn" id="am-btn-save" onclick="amSavePage()">
+    <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" style="margin-right:6px;vertical-align:middle"><path d="M3 8l4 4 6-8"/></svg>
+    Download updated file
+  </button>
+</div>
+
+<!-- Edit mode hint -->
+<div id="am-edit-hint">
+  <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="#f5c842" stroke-width="1.3"><circle cx="8" cy="8" r="6"/><line x1="8" y1="6" x2="8" y2="8"/><circle cx="8" cy="11" r=".8" fill="#f5c842"/></svg>
+  <span>Edit mode on</span> - click any text to edit it
+</div>
+
+<script>
+(function() {
+  let amEditing = false;
+  let amOriginals = new Map();
+  let amChanges = 0;
+
+  // Tags we'll make editable — text content only, skip scripts/styles/inputs
+  const EDITABLE_TAGS = ['p','h1','h2','h3','h4','h5','h6','span','div','a','li','td','th','label','blockquote','figcaption','small','strong','em','b','i'];
+  // Classes/ids to skip
+  const SKIP_IDS = ['am-editor-btn','am-save-bar','am-edit-hint','am-change-count'];
+  const SKIP_CLASSES = ['am-editable','am-bar-btn','cursor','cursor-ring','tab-bar','tab-item'];
+
+  function shouldSkip(el) {
+    if (!el || !el.id && !el.className) return false;
+    if (SKIP_IDS.some(id => el.id === id)) return true;
+    if (el.closest && el.closest('#am-save-bar, #am-editor-btn, #am-edit-hint')) return true;
+    return false;
+  }
+
+  function isTextLeaf(el) {
+    // Only make elements editable if they contain direct text (not just child elements)
+    if (shouldSkip(el)) return false;
+    const text = Array.from(el.childNodes)
+      .filter(n => n.nodeType === 3)
+      .map(n => n.textContent.trim())
+      .join('');
+    return text.length > 1;
+  }
+
+  window.amToggleEdit = function() {
+    amEditing = !amEditing;
+    const btn = document.getElementById('am-editor-btn');
+    const hint = document.getElementById('am-edit-hint');
+    const saveBar = document.getElementById('am-save-bar');
+
+    if (amEditing) {
+      btn.classList.add('editing');
+      btn.querySelector('svg').style.display = 'none';
+      btn.childNodes[2].textContent = ' Stop Editing';
+      hint.classList.add('visible');
+      saveBar.classList.add('visible');
+      enableEditing();
+    } else {
+      btn.classList.remove('editing');
+      btn.querySelector('svg').style.display = '';
+      btn.childNodes[2].textContent = ' Edit Page';
+      hint.classList.remove('visible');
+      disableEditing();
+    }
+  };
+
+  function enableEditing() {
+    EDITABLE_TAGS.forEach(tag => {
+      document.querySelectorAll(tag).forEach(el => {
+        if (shouldSkip(el)) return;
+        if (!isTextLeaf(el)) return;
+        if (el.classList.contains('am-editable')) return;
+        // Store original
+        if (!amOriginals.has(el)) {
+          amOriginals.set(el, el.innerHTML);
+        }
+        el.classList.add('am-editable');
+        el.contentEditable = 'true';
+        el.spellcheck = true;
+        el.addEventListener('input', amOnInput);
+      });
+    });
+  }
+
+  function disableEditing() {
+    document.querySelectorAll('.am-editable').forEach(el => {
+      el.classList.remove('am-editable');
+      el.contentEditable = 'false';
+    });
+  }
+
+  function amOnInput(e) {
+    const el = e.target;
+    const original = amOriginals.get(el);
+    const changed = el.innerHTML !== original;
+    // Track unique changed elements
+    const changedEls = new Set();
+    amOriginals.forEach((orig, node) => {
+      if (node.innerHTML !== orig) changedEls.add(node);
+    });
+    amChanges = changedEls.size;
+    updateChangeCount();
+  }
+
+  function updateChangeCount() {
+    const badge = document.getElementById('am-change-count');
+    const label = document.getElementById('am-changes-label');
+    if (amChanges > 0) {
+      badge.textContent = amChanges;
+      badge.classList.add('visible');
+    } else {
+      badge.classList.remove('visible');
+    }
+    if (label) label.textContent = amChanges + (amChanges === 1 ? ' change' : ' changes');
+  }
+
+  window.amCancelEdit = function() {
+    // Restore originals
+    amOriginals.forEach((orig, el) => {
+      el.innerHTML = orig;
+    });
+    amChanges = 0;
+    updateChangeCount();
+    amOriginals.clear();
+    amEditing = true;
+    amToggleEdit(); // turn off
+  };
+
+  window.amSavePage = function() {
+    // Turn off editing mode cleanly
+    disableEditing();
+    // Remove editor UI from the clone
+    const clone = document.documentElement.cloneNode(true);
+    // Remove all am-editable classes from clone
+    clone.querySelectorAll('.am-editable').forEach(el => {
+      el.classList.remove('am-editable');
+      el.removeAttribute('contenteditable');
+      el.removeAttribute('spellcheck');
+    });
+    // Get filename from page title or URL
+    const rawTitle = document.title
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/^-|-$/g, '') || 'page';
+    const filename = rawTitle + '.html';
+    // Serialize and download
+    const html = '<!DOCTYPE html>\n' + clone.outerHTML;
+    const blob = new Blob([html], { type: 'text/html;charset=utf-8' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(a.href);
+    // Re-enable editing
+    if (amEditing) enableEditing();
+    // Show success
+    const msg = document.getElementById('am-save-bar-msg');
+    const orig = msg.innerHTML;
+    msg.innerHTML = '<strong style="color:#4a9e7a">✓ File downloaded!</strong> Replace the old file on Netlify to publish your changes.';
+    setTimeout(() => { msg.innerHTML = orig; updateChangeCount(); }, 4000);
+  };
+})();
+</script>
+
+</body>
+</html>

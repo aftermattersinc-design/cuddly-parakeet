@@ -1,0 +1,951 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dashboard - After Matters</title>
+<link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400;0,6..96,600;1,6..96,400&family=EB+Garamond:ital,wght@0,400;1,400&family=Jost:wght@200;300;400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+:root{
+  --night:#0d1520;--deep:#112035;--ocean:#1a3a5c;
+  --mist:#6b9ab8;--foam:#c8dde9;--beam:#f5c842;--beam-dim:rgba(245,200,66,.1);
+  --ink:#0a0a0a;--charcoal:#141414;--graphite:#222;
+  --silver:#888;--dust:#aaa;--fog:#ddd;--paper:#f5f4f2;
+  --white:#fefefe;--green:#4a9e7a;--green-dim:rgba(74,158,122,.1);
+  --red:rgba(220,80,60,1);--red-dim:rgba(220,80,60,.1);
+  --sidebar-w:64px;--spaces-w:220px;
+}
+html,body{height:100%;overflow:hidden;font-family:'Jost',sans-serif;}
+body{display:flex;background:var(--night);color:var(--white);cursor:none;}
+
+/* CURSOR */
+.cursor{position:fixed;width:7px;height:7px;background:var(--beam);border-radius:50%;pointer-events:none;z-index:9999;transform:translate(-50%,-50%);}
+.cursor-ring{position:fixed;width:28px;height:28px;border:1px solid rgba(245,200,66,.25);border-radius:50%;pointer-events:none;z-index:9998;transform:translate(-50%,-50%);}
+
+/* ══════════════════════
+   ICON SIDEBAR (leftmost)
+══════════════════════ */
+.icon-sidebar{
+  width:var(--sidebar-w);flex-shrink:0;
+  background:rgba(6,10,16,1);
+  border-right:1px solid rgba(255,255,255,.05);
+  display:flex;flex-direction:column;align-items:center;
+  padding:16px 0;gap:4px;z-index:10;
+}
+.is-logo{
+  width:36px;height:36px;display:flex;align-items:center;justify-content:center;
+  margin-bottom:16px;
+}
+.is-logo svg{opacity:.7;}
+.is-divider{width:24px;height:1px;background:rgba(255,255,255,.07);margin:6px 0;}
+.is-btn{
+  width:40px;height:40px;display:flex;align-items:center;justify-content:center;
+  border:none;background:none;cursor:none;border-radius:8px;
+  color:rgba(255,255,255,.25);transition:all .2s;position:relative;
+}
+.is-btn:hover{background:rgba(255,255,255,.05);color:rgba(255,255,255,.6);}
+.is-btn.active{background:var(--beam-dim);color:var(--beam);}
+.is-btn svg{width:18px;height:18px;}
+.is-tooltip{
+  position:absolute;left:calc(100% + 10px);
+  background:rgba(0,0,0,.9);border:1px solid rgba(255,255,255,.1);
+  padding:5px 10px;font-size:.62rem;letter-spacing:.12em;text-transform:uppercase;
+  white-space:nowrap;pointer-events:none;opacity:0;transition:opacity .2s;z-index:100;
+  color:rgba(255,255,255,.7);
+}
+.is-btn:hover .is-tooltip{opacity:1;}
+.is-spacer{flex:1;}
+.is-avatar{
+  width:32px;height:32px;border-radius:50%;
+  background:linear-gradient(135deg,#c8943a,#8c5a1e);
+  display:flex;align-items:center;justify-content:center;
+  font-size:.68rem;font-weight:500;color:var(--white);
+  border:1.5px solid rgba(245,200,66,.3);
+}
+
+/* ══════════════════════
+   SPACES PANEL
+══════════════════════ */
+.spaces-panel{
+  width:var(--spaces-w);flex-shrink:0;
+  background:rgba(10,14,22,1);
+  border-right:1px solid rgba(255,255,255,.06);
+  display:flex;flex-direction:column;
+  overflow:hidden;
+}
+.sp-header{
+  padding:18px 18px 14px;
+  border-bottom:1px solid rgba(255,255,255,.05);
+  flex-shrink:0;
+}
+.sp-header-label{font-size:.52rem;letter-spacing:.28em;text-transform:uppercase;color:rgba(255,255,255,.2);margin-bottom:12px;}
+.sp-user{display:flex;align-items:center;gap:10px;}
+.sp-user-avatar{width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,#c8943a,#8c5a1e);display:flex;align-items:center;justify-content:center;font-size:.6rem;font-weight:500;flex-shrink:0;}
+.sp-user-name{font-size:.78rem;color:var(--white);}
+.sp-user-plan{font-size:.58rem;color:var(--beam);letter-spacing:.1em;}
+
+.sp-section{padding:14px 0 8px;border-bottom:1px solid rgba(255,255,255,.04);}
+.sp-section-label{font-size:.5rem;letter-spacing:.28em;text-transform:uppercase;color:rgba(255,255,255,.18);padding:0 18px;margin-bottom:8px;}
+
+/* Space items */
+.space-item{
+  display:flex;align-items:center;gap:10px;
+  padding:9px 18px;cursor:none;
+  transition:background .2s;position:relative;
+}
+.space-item:hover{background:rgba(255,255,255,.04);}
+.space-item.active{background:rgba(255,255,255,.06);}
+.space-item.active::before{content:'';position:absolute;left:0;top:0;bottom:0;width:2px;background:var(--beam);}
+.si-dot{
+  width:28px;height:28px;border-radius:6px;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;
+  font-size:.65rem;font-weight:600;
+}
+.si-body{flex:1;min-width:0;}
+.si-name{font-size:.75rem;color:rgba(255,255,255,.75);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:1px;}
+.si-meta{font-size:.58rem;color:rgba(255,255,255,.28);}
+.si-badge{
+  width:18px;height:18px;border-radius:50%;
+  background:var(--red);font-size:.5rem;font-weight:500;
+  display:flex;align-items:center;justify-content:center;
+  color:var(--white);flex-shrink:0;
+}
+.si-badge.green{background:var(--green);}
+
+.sp-add{
+  display:flex;align-items:center;gap:10px;padding:9px 18px;
+  cursor:none;color:rgba(255,255,255,.25);transition:color .2s;
+  font-size:.7rem;background:none;border:none;font-family:'Jost',sans-serif;
+  width:100%;text-align:left;
+}
+.sp-add:hover{color:rgba(255,255,255,.5);}
+.sp-add svg{width:16px;height:16px;flex-shrink:0;}
+
+.sp-nav{margin-top:auto;border-top:1px solid rgba(255,255,255,.05);padding:12px 0;}
+.sp-nav-item{
+  display:flex;align-items:center;gap:10px;padding:8px 18px;
+  cursor:none;color:rgba(255,255,255,.28);font-size:.68rem;
+  background:none;border:none;font-family:'Jost',sans-serif;
+  transition:color .2s;width:100%;text-align:left;
+}
+.sp-nav-item:hover{color:rgba(255,255,255,.6);}
+.sp-nav-item svg{width:14px;height:14px;flex-shrink:0;opacity:.5;}
+
+/* ══════════════════════
+   MAIN CONTENT
+══════════════════════ */
+.main{
+  flex:1;display:flex;flex-direction:column;overflow:hidden;
+  background:var(--night);position:relative;
+}
+
+/* Top bar */
+.top-bar{
+  height:52px;flex-shrink:0;
+  background:rgba(8,8,8,.8);backdrop-filter:blur(16px);
+  border-bottom:1px solid rgba(255,255,255,.05);
+  display:flex;align-items:center;padding:0 28px;gap:16px;
+}
+.tb-space-name{font-family:'Bodoni Moda',serif;font-size:.95rem;color:var(--white);display:flex;align-items:center;gap:10px;}
+.tb-space-type{font-size:.55rem;letter-spacing:.22em;text-transform:uppercase;color:rgba(255,255,255,.25);border:1px solid rgba(255,255,255,.1);padding:3px 8px;}
+.tb-spacer{flex:1;}
+.tb-btn{
+  font-size:.6rem;letter-spacing:.18em;text-transform:uppercase;
+  padding:7px 16px;border:1px solid rgba(255,255,255,.1);
+  background:none;color:rgba(255,255,255,.4);cursor:none;
+  font-family:'Jost',sans-serif;transition:all .3s;
+}
+.tb-btn:hover{border-color:rgba(255,255,255,.3);color:var(--white);}
+.tb-btn-primary{background:var(--beam);color:var(--black);border-color:var(--beam);}
+.tb-btn-primary:hover{background:var(--white);border-color:var(--white);}
+
+/* Content area */
+.content{
+  flex:1;overflow-y:auto;padding:28px;
+  display:grid;
+  grid-template-columns:1fr 1fr 1fr;
+  grid-template-rows:auto auto auto;
+  gap:12px;
+  align-content:start;
+}
+.content::-webkit-scrollbar{width:3px;}
+.content::-webkit-scrollbar-thumb{background:rgba(255,255,255,.07);}
+
+/* Grain overlay */
+.main::before{
+  content:'';position:absolute;inset:0;pointer-events:none;z-index:0;opacity:.025;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size:200px;
+}
+
+/* ── CARDS ── */
+.card{
+  background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);
+  padding:20px;position:relative;overflow:hidden;
+  animation:fadeCard .4s ease both;
+}
+@keyframes fadeCard{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.card-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;}
+.card-title{font-size:.58rem;letter-spacing:.24em;text-transform:uppercase;color:rgba(255,255,255,.3);}
+.card-action{font-size:.58rem;letter-spacing:.14em;text-transform:uppercase;color:var(--beam);background:none;border:none;cursor:none;font-family:'Jost',sans-serif;transition:opacity .2s;}
+.card-action:hover{opacity:.6;}
+.card.span2{grid-column:span 2;}
+.card.span3{grid-column:span 3;}
+.card.full-row{grid-column:1/-1;}
+
+/* ── PROGRESS CARD ── */
+.progress-hero{margin-bottom:8px;}
+.ph-label{font-size:.6rem;letter-spacing:.2em;text-transform:uppercase;color:rgba(255,255,255,.3);margin-bottom:10px;}
+.ph-pct{font-family:'Bodoni Moda',serif;font-size:2.8rem;color:var(--white);line-height:1;margin-bottom:4px;}
+.ph-pct span{font-size:1rem;color:rgba(255,255,255,.25);font-style:italic;}
+.ph-sub{font-size:.7rem;color:rgba(255,255,255,.3);margin-bottom:16px;}
+.progress-track{height:3px;background:rgba(255,255,255,.07);margin-bottom:20px;}
+.progress-fill{height:100%;background:var(--beam);transition:width 1s ease;}
+.progress-sections{display:flex;flex-direction:column;gap:8px;}
+.ps-row{display:flex;align-items:center;gap:10px;}
+.ps-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0;}
+.ps-name{font-size:.7rem;color:rgba(255,255,255,.5);flex:1;}
+.ps-mini-track{width:60px;height:2px;background:rgba(255,255,255,.06);}
+.ps-mini-fill{height:100%;background:var(--beam);opacity:.5;}
+.ps-count{font-size:.65rem;color:rgba(255,255,255,.25);white-space:nowrap;}
+
+/* ── TASKS CARD ── */
+.task-list{display:flex;flex-direction:column;gap:1px;}
+.task-item{
+  display:flex;align-items:flex-start;gap:12px;
+  padding:11px 0;border-bottom:1px solid rgba(255,255,255,.04);
+  cursor:none;transition:opacity .2s;
+}
+.task-item:last-child{border-bottom:none;}
+.task-item:hover{opacity:.7;}
+.task-cb{
+  width:16px;height:16px;border-radius:50%;border:1px solid rgba(255,255,255,.2);
+  flex-shrink:0;margin-top:1px;display:flex;align-items:center;justify-content:center;
+  transition:all .2s;
+}
+.task-cb.done{background:var(--green);border-color:var(--green);}
+.task-cb.done::after{content:'✓';font-size:.5rem;color:var(--white);}
+.task-body{flex:1;min-width:0;}
+.task-text{font-size:.78rem;color:rgba(255,255,255,.7);margin-bottom:3px;line-height:1.4;}
+.task-text.done{text-decoration:line-through;color:rgba(255,255,255,.2);}
+.task-meta{display:flex;align-items:center;gap:8px;}
+.task-tag{font-size:.52rem;letter-spacing:.12em;text-transform:uppercase;border:1px solid;padding:2px 6px;}
+.tag-urgent{border-color:rgba(220,80,60,.4);color:rgba(220,80,60,.8);}
+.tag-important{border-color:rgba(245,200,66,.25);color:rgba(245,200,66,.6);}
+.tag-ready{border-color:rgba(255,255,255,.1);color:rgba(255,255,255,.28);}
+.tag-done{border-color:rgba(74,158,122,.3);color:rgba(74,158,122,.7);}
+.task-due{font-size:.58rem;color:rgba(255,255,255,.2);}
+.task-assignee{width:18px;height:18px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:.5rem;font-weight:500;color:var(--white);margin-top:1px;}
+
+/* ── ACTIVITY CARD ── */
+.activity-list{display:flex;flex-direction:column;gap:0;}
+.act-item{
+  display:flex;align-items:flex-start;gap:12px;
+  padding:10px 0;border-bottom:1px solid rgba(255,255,255,.04);
+}
+.act-item:last-child{border-bottom:none;}
+.act-avatar{width:26px;height:26px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:.58rem;font-weight:500;color:var(--white);}
+.act-body{flex:1;}
+.act-text{font-size:.75rem;color:rgba(255,255,255,.55);line-height:1.4;}
+.act-text strong{color:rgba(255,255,255,.8);font-weight:400;}
+.act-time{font-size:.58rem;color:rgba(255,255,255,.2);margin-top:3px;}
+
+/* ── CIRCLE CARD ── */
+.circle-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(80px,1fr));gap:10px;}
+.circle-member{display:flex;flex-direction:column;align-items:center;gap:6px;padding:12px 8px;background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.05);transition:background .2s;cursor:none;}
+.circle-member:hover{background:rgba(255,255,255,.05);}
+.cm-avatar{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.7rem;font-weight:500;color:var(--white);position:relative;}
+.cm-status{width:8px;height:8px;border-radius:50%;position:absolute;bottom:0;right:0;border:1.5px solid var(--night);}
+.cm-status.online{background:var(--green);}
+.cm-status.away{background:var(--beam);}
+.cm-status.offline{background:rgba(255,255,255,.2);}
+.cm-name{font-size:.62rem;color:rgba(255,255,255,.6);text-align:center;line-height:1.3;}
+.cm-role{font-size:.52rem;color:rgba(255,255,255,.2);text-align:center;}
+.circle-add{display:flex;flex-direction:column;align-items:center;gap:6px;padding:12px 8px;background:none;border:1px dashed rgba(255,255,255,.1);cursor:none;transition:border-color .2s;font-family:'Jost',sans-serif;}
+.circle-add:hover{border-color:rgba(255,255,255,.25);}
+.circle-add svg{opacity:.25;}
+.circle-add span{font-size:.58rem;color:rgba(255,255,255,.2);}
+
+/* ── TOOLS CARD ── */
+.tools-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;}
+.tool-btn{
+  display:flex;flex-direction:column;align-items:flex-start;gap:6px;
+  padding:14px 12px;background:rgba(255,255,255,.02);
+  border:1px solid rgba(255,255,255,.06);
+  cursor:none;transition:all .2s;font-family:'Jost',sans-serif;text-align:left;
+}
+.tool-btn:hover{background:rgba(255,255,255,.06);border-color:rgba(255,255,255,.12);}
+.tool-btn.highlight{border-color:rgba(245,200,66,.15);background:var(--beam-dim);}
+.tb-icon{opacity:.55;}
+.tb-name{font-size:.68rem;color:rgba(255,255,255,.7);}
+.tb-plan{font-size:.5rem;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.2);}
+.tb-plan.gold{color:rgba(245,200,66,.5);}
+
+/* ── DATES CARD ── */
+.dates-list{display:flex;flex-direction:column;gap:1px;}
+.date-item{
+  display:flex;align-items:center;gap:12px;
+  padding:10px 0;border-bottom:1px solid rgba(255,255,255,.04);
+}
+.date-item:last-child{border-bottom:none;}
+.date-cal{
+  width:38px;flex-shrink:0;text-align:center;
+  background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);
+  padding:4px 0;
+}
+.dc-month{font-size:.48rem;letter-spacing:.16em;text-transform:uppercase;color:var(--beam);}
+.dc-day{font-family:'Bodoni Moda',serif;font-size:1.1rem;color:var(--white);line-height:1.1;}
+.date-body{flex:1;}
+.date-name{font-size:.75rem;color:rgba(255,255,255,.7);}
+.date-meta{font-size:.6rem;color:rgba(255,255,255,.25);margin-top:2px;}
+.date-badge{font-size:.52rem;letter-spacing:.12em;text-transform:uppercase;border:1px solid;padding:2px 6px;white-space:nowrap;}
+.db-urgent{border-color:rgba(220,80,60,.3);color:rgba(220,80,60,.7);}
+.db-soon{border-color:rgba(245,200,66,.25);color:rgba(245,200,66,.55);}
+.db-ok{border-color:rgba(255,255,255,.1);color:rgba(255,255,255,.25);}
+
+/* ── MEMORIAL CARD ── */
+.memorial-preview{
+  background:var(--ink);border:1px solid rgba(255,255,255,.08);
+  overflow:hidden;cursor:none;transition:border-color .3s;
+  display:flex;flex-direction:column;
+}
+.memorial-preview:hover{border-color:rgba(255,255,255,.18);}
+.mp-hero{
+  height:90px;background:linear-gradient(160deg,#0a0a0a,#111);
+  display:flex;align-items:flex-end;padding:14px 16px;position:relative;overflow:hidden;
+}
+.mp-hero::before{
+  content:'';position:absolute;inset:0;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.06'/%3E%3C/svg%3E");
+  background-size:180px;
+}
+.mp-name{font-family:'Bodoni Moda',serif;font-size:1rem;color:var(--white);position:relative;z-index:1;}
+.mp-dates{font-size:.6rem;color:rgba(255,255,255,.3);position:relative;z-index:1;margin-top:2px;}
+.mp-body{padding:14px 16px;flex:1;}
+.mp-stats{display:flex;gap:16px;}
+.mp-stat{text-align:center;}
+.mps-n{font-family:'Bodoni Moda',serif;font-size:1.1rem;color:var(--white);}
+.mps-l{font-size:.52rem;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.22);}
+.mp-actions{display:flex;gap:6px;margin-top:12px;}
+.mp-btn{
+  flex:1;font-size:.58rem;letter-spacing:.14em;text-transform:uppercase;
+  padding:8px;border:1px solid rgba(255,255,255,.1);background:none;
+  color:rgba(255,255,255,.4);cursor:none;font-family:'Jost',sans-serif;transition:all .2s;
+}
+.mp-btn:hover{border-color:rgba(255,255,255,.25);color:var(--white);}
+.mp-btn.primary{background:rgba(255,255,255,.05);border-color:rgba(255,255,255,.12);color:rgba(255,255,255,.7);}
+
+/* ── BEREAVED BANNER ── */
+.urgent-banner{
+  grid-column:1/-1;
+  background:rgba(220,80,60,.06);border:1px solid rgba(220,80,60,.18);
+  padding:14px 18px;display:flex;align-items:center;gap:14px;
+  animation:fadeCard .3s ease both;
+}
+.ub-icon{width:28px;height:28px;flex-shrink:0;display:flex;align-items:center;justify-content:center;background:var(--red-dim);border:1px solid rgba(220,80,60,.2);}
+.ub-text{flex:1;}
+.ub-title{font-size:.75rem;color:rgba(255,255,255,.8);margin-bottom:2px;}
+.ub-sub{font-size:.65rem;color:rgba(255,255,255,.3);}
+.ub-btn{font-size:.58rem;letter-spacing:.16em;text-transform:uppercase;padding:8px 16px;background:var(--red-dim);border:1px solid rgba(220,80,60,.3);color:rgba(220,80,60,.9);cursor:none;font-family:'Jost',sans-serif;white-space:nowrap;transition:all .2s;}
+.ub-btn:hover{background:rgba(220,80,60,.15);}
+
+/* ── PLANNING BANNER ── */
+.planning-banner{
+  grid-column:1/-1;
+  background:var(--green-dim);border:1px solid rgba(74,158,122,.18);
+  padding:14px 18px;display:flex;align-items:center;gap:14px;
+}
+.pb-icon{width:28px;height:28px;flex-shrink:0;display:flex;align-items:center;justify-content:center;background:rgba(74,158,122,.1);border:1px solid rgba(74,158,122,.2);}
+.pb-text{flex:1;}
+.pb-title{font-size:.75rem;color:rgba(255,255,255,.8);margin-bottom:2px;}
+.pb-sub{font-size:.65rem;color:rgba(255,255,255,.3);}
+.pb-btn{font-size:.58rem;letter-spacing:.16em;text-transform:uppercase;padding:8px 16px;background:rgba(74,158,122,.1);border:1px solid rgba(74,158,122,.3);color:rgba(74,158,122,.9);cursor:none;font-family:'Jost',sans-serif;white-space:nowrap;transition:all .2s;}
+.pb-btn:hover{background:rgba(74,158,122,.2);}
+
+@keyframes spaceSwitchIn{from{opacity:0;transform:translateX(8px)}to{opacity:1;transform:translateX(0)}}
+.content{animation:spaceSwitchIn .3s ease both;}
+</style>
+</head>
+<body>
+<div class="cursor" id="cur"></div>
+<div class="cursor-ring" id="cur2"></div>
+
+<!-- ══ ICON SIDEBAR ══ -->
+<div class="icon-sidebar">
+  <div class="is-logo">
+    <svg width="20" height="32" viewBox="0 0 14 24" fill="none">
+      <rect x="4.5" y="1" width="5" height="2" rx=".6" fill="white" opacity=".5"/>
+      <rect x="3" y="3" width="8" height="6" rx=".6" fill="white" opacity=".5"/>
+      <path d="M1 9 L13 9 L14 16 L0 16 Z" fill="white" opacity=".35"/>
+      <path d="M0 16 L14 16 L14 23 L0 23 Z" fill="white" opacity=".2"/>
+      <circle cx="7" cy="5" r="1.4" fill="#f5c842" opacity=".8"/>
+    </svg>
+  </div>
+
+  <button class="is-btn active" title="Dashboard">
+    <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.3"><rect x="2" y="2" width="7" height="7"/><rect x="11" y="2" width="7" height="7"/><rect x="2" y="11" width="7" height="7"/><rect x="11" y="11" width="7" height="7"/></svg>
+    <span class="is-tooltip">Dashboard</span>
+  </button>
+  <button class="is-btn" title="Tasks">
+    <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.3"><rect x="3" y="3" width="14" height="14" rx="1"/><line x1="7" y1="7" x2="13" y2="7"/><line x1="7" y1="10" x2="13" y2="10"/><line x1="7" y1="13" x2="10" y2="13"/></svg>
+    <span class="is-tooltip">Tasks</span>
+  </button>
+  <button class="is-btn" title="Messages">
+    <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.3"><path d="M3 4h14v10H3z"/><path d="M3 14l3-3h11"/><line x1="7" y1="8" x2="13" y2="8"/><line x1="7" y1="11" x2="10" y2="11"/></svg>
+    <span class="is-tooltip">Messages</span>
+  </button>
+  <div class="is-divider"></div>
+  <button class="is-btn" title="Vault">
+    <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.3"><rect x="3" y="8" width="14" height="10" rx="1"/><path d="M7 8V6a3 3 0 016 0v2"/><circle cx="10" cy="13" r="2"/></svg>
+    <span class="is-tooltip">Vault</span>
+  </button>
+  <button class="is-btn" title="Memorials">
+    <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.3"><path d="M10 3 L10 3 C10 3 7 7 7 10 a3 3 0 006 0 C13 7 10 3 10 3Z"/><line x1="10" y1="16" x2="10" y2="18"/><line x1="7" y1="18" x2="13" y2="18"/></svg>
+    <span class="is-tooltip">Memorials</span>
+  </button>
+  <div class="is-spacer"></div>
+  <button class="is-btn" title="Settings">
+    <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.3"><circle cx="10" cy="10" r="3"/><path d="M10 2v2M10 16v2M2 10h2M16 10h2M4.9 4.9l1.4 1.4M13.7 13.7l1.4 1.4M4.9 15.1l1.4-1.4M13.7 6.3l1.4-1.4"/></svg>
+    <span class="is-tooltip">Settings</span>
+  </button>
+  <div class="is-avatar">SB</div>
+</div>
+
+<!-- ══ SPACES PANEL ══ -->
+<div class="spaces-panel">
+  <div class="sp-header">
+    <div class="sp-header-label">After Matters</div>
+    <div class="sp-user">
+      <div class="sp-user-avatar">SB</div>
+      <div>
+        <div class="sp-user-name">Sarah Bee</div>
+        <div class="sp-user-plan">Harbour plan</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- My spaces -->
+  <div class="sp-section">
+    <div class="sp-section-label">My Spaces</div>
+
+    <!-- Bereaved: Buzz -->
+    <div class="space-item active" onclick="switchSpace('buzz')">
+      <div class="si-dot" style="background:rgba(107,154,184,.15);color:#6b9ab8;">BB</div>
+      <div class="si-body">
+        <div class="si-name">Buzz Bee</div>
+        <div class="si-meta">Bereavement · 2024</div>
+      </div>
+      <div class="si-badge" title="3 urgent tasks">3</div>
+    </div>
+
+    <!-- Own planning -->
+    <div class="space-item" onclick="switchSpace('sarah')">
+      <div class="si-dot" style="background:rgba(74,158,122,.12);color:#4a9e7a;">SB</div>
+      <div class="si-body">
+        <div class="si-name">My Planning</div>
+        <div class="si-meta">Planning ahead</div>
+      </div>
+      <div class="si-badge green" title="1 reminder">1</div>
+    </div>
+
+    <button class="sp-add" onclick="">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.3"><line x1="8" y1="3" x2="8" y2="13"/><line x1="3" y1="8" x2="13" y2="8"/></svg>
+      New space
+    </button>
+  </div>
+
+  <!-- Invited into -->
+  <div class="sp-section">
+    <div class="sp-section-label">I'm Supporting</div>
+
+    <div class="space-item" onclick="switchSpace('aroha')">
+      <div class="si-dot" style="background:rgba(180,130,80,.12);color:#b48250;">AN</div>
+      <div class="si-body">
+        <div class="si-name">Aroha Ngata</div>
+        <div class="si-meta">Inner circle member</div>
+      </div>
+    </div>
+
+    <div class="space-item" onclick="switchSpace('mike')">
+      <div class="si-dot" style="background:rgba(140,90,120,.12);color:#8c5a78;">MT</div>
+      <div class="si-body">
+        <div class="si-name">Mike Thompson</div>
+        <div class="si-meta">Inner circle member</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="sp-nav">
+    <button class="sp-nav-item">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.3"><circle cx="8" cy="8" r="6"/><line x1="8" y1="5" x2="8" y2="8"/><circle cx="8" cy="11" r=".5" fill="currentColor"/></svg>
+      Help & resources
+    </button>
+    <button class="sp-nav-item">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.3"><path d="M3 3h10v8H3zM8 11v2M6 13h4"/></svg>
+      Give feedback
+    </button>
+  </div>
+</div>
+
+<!-- ══ MAIN ══ -->
+<div class="main">
+  <div class="top-bar" id="topBar">
+    <div class="tb-space-name" id="tbName">
+      <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="rgba(255,255,255,.25)" stroke-width="1.2"><circle cx="8" cy="8" r="6"/><line x1="8" y1="5" x2="8" y2="11"/><line x1="5" y1="8" x2="11" y2="8"/></svg>
+      Buzz Bee
+      <span class="tb-space-type">Bereavement</span>
+    </div>
+    <div class="tb-spacer"></div>
+    <button class="tb-btn" onclick="window.location.href='inner-circle-hub.html'">Inner Circle →</button>
+    <button class="tb-btn" onclick="window.location.href='waypoint.html'">The Waypoint →</button>
+    <button class="tb-btn tb-btn-primary" onclick="window.location.href='buzz-bee-memorial.html'">View Memorial →</button>
+  </div>
+
+  <div class="content" id="content">
+    <!-- populated by JS -->
+  </div>
+</div>
+
+<script>
+// ── CURSOR ──
+const cur=document.getElementById('cur'),cur2=document.getElementById('cur2');
+let mx=0,my=0,tx=0,ty=0;
+document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;cur.style.left=mx+'px';cur.style.top=my+'px';});
+(function loop(){tx+=(mx-tx)*.12;ty+=(my-ty)*.12;cur2.style.left=tx+'px';cur2.style.top=ty+'px';requestAnimationFrame(loop);})();
+
+// ── DATA ──
+const spaces={
+  buzz:{
+    type:'bereaved',
+    name:'Buzz Bee',
+    subName:'Brian "Buzz" Bee · 23 Jul 1949 – 13 Aug 2024',
+    progress:18,
+    sections:[
+      {name:'Legal & Admin',done:1,total:6,color:'#dc503c'},
+      {name:'Funeral & Service',done:3,total:5,color:'#f5c842'},
+      {name:'Financial',done:0,total:4,color:'#6b9ab8'},
+      {name:'Personal & Memorial',done:2,total:4,color:'#4a9e7a'},
+    ],
+    tasks:[
+      {text:'Register the death with BDM NZ',tag:'urgent',due:'Due today',done:false,assignee:'SB',color:'#c8943a'},
+      {text:'Order certified death certificates (×5)',tag:'urgent',due:'Due 3 days',done:false,assignee:'SB',color:'#c8943a'},
+      {text:'Notify IRD & Work and Income NZ',tag:'urgent',due:'Due 1 week',done:false,assignee:'JB',color:'#8c7a68'},
+      {text:'Confirm arrangements with funeral director',tag:'important',due:'This week',done:false,assignee:'SB',color:'#c8943a'},
+      {text:'Contact Westpac NZ to freeze accounts',tag:'important',due:'This week',done:false,assignee:'JB',color:'#8c7a68'},
+      {text:'Notify ANZ KiwiSaver (Buzz\'s account)',tag:'important',due:'2 weeks',done:false,assignee:'MW',color:'#6b9ab8'},
+      {text:'Funeral service music confirmed',tag:'done',due:'Done',done:true,assignee:'SB',color:'#c8943a'},
+      {text:'Immediate family notified',tag:'done',due:'Done',done:true,assignee:'SB',color:'#c8943a'},
+    ],
+    circle:[
+      {name:'Sarah Bee',initials:'SB',role:'Organiser',color:'#c8943a',status:'online'},
+      {name:'Jenny Bee',initials:'JB',role:'Wife',color:'#8c7a68',status:'online'},
+      {name:'Mike Thompson',initials:'MT',role:'Family friend',color:'#6b9ab8',status:'away'},
+      {name:'Aroha Ngata',initials:'AN',role:'Family friend',color:'#b48250',status:'offline'},
+      {name:'James Walker',initials:'JW',role:'Solicitor',color:'#5a7a6a',status:'away'},
+    ],
+    activity:[
+      {name:'Aroha',initials:'AN',color:'#b48250',text:'Added a message to <strong>Buzz\'s memorial page.</strong>',time:'12 min ago'},
+      {name:'Jenny',initials:'JB',color:'#8c7a68',text:'Uploaded <strong>Buzz\'s will</strong> to the Document Vault.',time:'1 hour ago'},
+      {name:'Mike',initials:'MT',color:'#6b9ab8',text:'Completed task: <strong>Fishing club notified.</strong>',time:'2 hours ago'},
+      {name:'Sarah',initials:'SB',color:'#c8943a',text:'Added <strong>3 photos</strong> to the memorial gallery.',time:'Yesterday'},
+      {name:'James',initials:'JW',color:'#5a7a6a',text:'Viewed <strong>probate documents</strong> in the vault.',time:'Yesterday'},
+    ],
+    dates:[
+      {month:'AUG',day:'16',name:'BDM registration deadline',meta:'Must be registered within 3 working days',badge:'urgent'},
+      {month:'AUG',day:'20',name:'Funeral service',meta:'Wellington, 2:00pm · St Andrews on The Terrace',badge:'soon'},
+      {month:'SEP',day:'13',name:'Estate solicitor meeting',meta:'James Walker · Wellington CBD',badge:'soon'},
+      {month:'OCT',day:'1',name:'Probate application',meta:'Suggested deadline — James Walker',badge:'ok'},
+    ],
+    memorial:{
+      name:'Brian "Buzz" Bee',
+      dates:'23 July 1949 – 13 August 2024',
+      candles:24,
+      messages:18,
+      photos:12,
+    },
+    tools:[
+      {icon:'✓',name:'Closure Checklist',plan:'Free',highlight:false,href:'life-closure-checklist.html'},
+      {icon:'<svg width="28" height="28" viewBox="0 0 90 90" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="45" cy="45" r="44" fill="#f5c842"/><circle cx="45" cy="18" r="7" fill="none" stroke="#0D1520" stroke-width="5.5"/>
+  <rect x="42.5" y="24" width="5" height="38" fill="#0D1520" rx="2"/>
+  <rect x="19" y="29" width="52" height="6" fill="#0D1520" rx="3"/>
+  <circle cx="19" cy="32" r="5.5" fill="#0D1520"/>
+  <circle cx="71" cy="32" r="5.5" fill="#0D1520"/>
+  <path d="M45 62 Q26 62 20 73 L28 67 L26 76 L37 72 Q37 65 45 65Z" fill="#0D1520"/>
+  <path d="M45 62 Q64 62 70 73 L62 67 L64 76 L53 72 Q53 65 45 65Z" fill="#0D1520"/>
+  <circle cx="45" cy="63" r="4" fill="#0D1520"/></svg>',name:'The Waypoint',plan:'Harbour',highlight:true,href:'waypoint.html'},
+      {icon:'<svg width="28" height="28" viewBox="0 0 90 90" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="45" cy="45" r="44" fill="#f5c842"/><circle cx="45" cy="45" r="28" fill="none" stroke="#0D1520" stroke-width="11"/>
+  <path d="M45 17 A28 28 0 0 1 73 45" stroke="#0D1520" stroke-width="11" fill="none"/>
+  <path d="M73 45 A28 28 0 0 1 45 73" stroke="#C8943A" stroke-width="11" fill="none"/>
+  <path d="M45 73 A28 28 0 0 1 17 45" stroke="#0D1520" stroke-width="11" fill="none"/>
+  <path d="M17 45 A28 28 0 0 1 45 17" stroke="#C8943A" stroke-width="11" fill="none"/>
+  <circle cx="45" cy="45" r="14" fill="#f5c842"/>
+  <rect x="42" y="8" width="6" height="9" fill="#0D1520" rx="2"/>
+  <rect x="42" y="73" width="6" height="9" fill="#0D1520" rx="2"/>
+  <rect x="8" y="42" width="9" height="6" fill="#0D1520" rx="2"/>
+  <rect x="73" y="42" width="9" height="6" fill="#0D1520" rx="2"/></svg>',name:'Inner Circle',plan:'Harbour',highlight:false,href:'inner-circle-hub.html'},
+      {icon:'<svg width="28" height="28" viewBox="0 0 90 90" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="45" cy="45" r="44" fill="#f5c842"/><rect x="12" y="48" width="66" height="30" fill="#0D1520" rx="3"/>
+  <path d="M12 48 Q12 24 45 24 Q78 24 78 48Z" fill="#0D1520"/>
+  <rect x="12" y="44" width="66" height="6" fill="#C8943A" rx="1"/>
+  <rect x="12" y="58" width="66" height="5" fill="#C8943A" opacity=".55"/>
+  <rect x="12" y="70" width="66" height="5" fill="#C8943A" opacity=".55"/>
+  <rect x="30" y="48" width="5" height="30" fill="#C8943A" opacity=".45"/>
+  <rect x="55" y="48" width="5" height="30" fill="#C8943A" opacity=".45"/>
+  <rect x="38" y="52" width="14" height="12" fill="#f5c842" rx="2"/>
+  <path d="M41 52 L41 48 Q41 44 45 44 Q49 44 49 48 L49 52" stroke="#f5c842" stroke-width="3.5" fill="none" stroke-linecap="round"/>
+  <circle cx="45" cy="57.5" r="3" fill="#0D1520"/></svg>',name:'Document Vault',plan:'Lighthouse',highlight:false,href:'document-vault.html'},
+      {icon:'✦',name:'Memorial Page',plan:'All plans',highlight:false,href:'buzz-bee-memorial.html'},
+      {icon:'<svg width="28" height="28" viewBox="0 0 90 90" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="45" cy="45" r="44" fill="#f5c842"/><circle cx="45" cy="28" r="13" fill="#0D1520"/>
+  <rect x="43" y="8" width="4" height="8" fill="#0D1520" rx="2"/>
+  <rect x="43" y="44" width="4" height="5" fill="#0D1520" rx="2"/>
+  <rect x="25" y="26" width="8" height="4" fill="#0D1520" rx="2"/>
+  <rect x="57" y="26" width="8" height="4" fill="#0D1520" rx="2"/>
+  <rect x="29" y="12" width="4" height="8" fill="#0D1520" rx="2" transform="rotate(45 31 16)"/>
+  <rect x="57" y="12" width="4" height="8" fill="#0D1520" rx="2" transform="rotate(-45 59 16)"/>
+  <rect x="29" y="34" width="4" height="8" fill="#0D1520" rx="2" transform="rotate(-45 31 38)"/>
+  <rect x="57" y="34" width="4" height="8" fill="#0D1520" rx="2" transform="rotate(45 59 38)"/>
+  <path d="M1 56 C12 52 22 58 34 54 C46 50 58 58 70 54 C78 51 84 55 89 53 L89 64 C84 62 78 66 70 63 C58 60 46 66 34 63 C22 60 12 65 1 62Z" fill="#0D1520"/>
+  <path d="M1 68 C14 64 28 71 44 67 C60 63 74 71 89 67 L89 82 L1 82Z" fill="#0D1520"/></svg>',name:'Community',plan:'Coming soon',highlight:false,href:'#'},
+    ]
+  },
+
+  sarah:{
+    type:'planning',
+    name:'My Planning',
+    subName:'Sarah Bee · Planning ahead',
+    progress:22,
+    sections:[
+      {name:'Legal documents',done:0,total:4,color:'#6b9ab8'},
+      {name:'Document Vault',done:1,total:5,color:'#f5c842'},
+      {name:'End-of-life wishes',done:0,total:3,color:'#4a9e7a'},
+      {name:'Memorial page',done:0,total:2,color:'#b48250'},
+    ],
+    tasks:[
+      {text:'Write or update your will',tag:'important',due:'When ready',done:false,assignee:'SB',color:'#c8943a'},
+      {text:'Set up Lasting Power of Attorney (LPA)',tag:'important',due:'When ready',done:false,assignee:'SB',color:'#c8943a'},
+      {text:'Complete your Life Closure Checklist',tag:'ready',due:'Ongoing',done:false,assignee:'SB',color:'#c8943a'},
+      {text:'Upload key documents to your Vault',tag:'ready',due:'When ready',done:false,assignee:'SB',color:'#c8943a'},
+      {text:'Write your personal wishes letter',tag:'ready',due:'When ready',done:false,assignee:'SB',color:'#c8943a'},
+      {text:'Create your memorial page',tag:'ready',due:'When ready',done:false,assignee:'SB',color:'#c8943a'},
+      {text:'Account created & onboarding complete',tag:'done',due:'Done',done:true,assignee:'SB',color:'#c8943a'},
+    ],
+    circle:[
+      {name:'Sarah Bee',initials:'SB',role:'You',color:'#c8943a',status:'online'},
+    ],
+    activity:[
+      {name:'Sarah',initials:'SB',color:'#c8943a',text:'Completed <strong>onboarding</strong> and set up your planning space.',time:'Just now'},
+      {name:'After Matters',initials:'AM',color:'#f5c842',text:'Your <strong>Document Vault</strong> is ready — start uploading documents.',time:'Just now'},
+      {name:'After Matters',initials:'AM',color:'#f5c842',text:'Reminder: <strong>KiwiSaver nomination</strong> — have you nominated a beneficiary?',time:'Today'},
+    ],
+    dates:[
+      {month:'NOW',day:'→',name:'Write or review your will',meta:'Recommended: see a solicitor or use Public Trust NZ',badge:'soon'},
+      {month:'NOW',day:'→',name:'Check your KiwiSaver nomination',meta:'Log in to your provider and confirm your beneficiary',badge:'soon'},
+      {month:'ANY',day:'·',name:'Upload documents to vault',meta:'Will, insurance, LPAs, Advance Care Directive',badge:'ok'},
+    ],
+    memorial:{
+      name:'Sarah Bee',
+      dates:'Your memorial page · Not yet published',
+      candles:0,
+      messages:0,
+      photos:0,
+    },
+    tools:[
+      {icon:'✓',name:'Closure Checklist',plan:'Free',highlight:true,href:'life-closure-checklist.html'},
+      {icon:'<svg width="28" height="28" viewBox="0 0 90 90" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="45" cy="45" r="44" fill="#f5c842"/><circle cx="45" cy="18" r="7" fill="none" stroke="#0D1520" stroke-width="5.5"/>
+  <rect x="42.5" y="24" width="5" height="38" fill="#0D1520" rx="2"/>
+  <rect x="19" y="29" width="52" height="6" fill="#0D1520" rx="3"/>
+  <circle cx="19" cy="32" r="5.5" fill="#0D1520"/>
+  <circle cx="71" cy="32" r="5.5" fill="#0D1520"/>
+  <path d="M45 62 Q26 62 20 73 L28 67 L26 76 L37 72 Q37 65 45 65Z" fill="#0D1520"/>
+  <path d="M45 62 Q64 62 70 73 L62 67 L64 76 L53 72 Q53 65 45 65Z" fill="#0D1520"/>
+  <circle cx="45" cy="63" r="4" fill="#0D1520"/></svg>',name:'The Waypoint',plan:'Harbour',highlight:false,href:'waypoint.html'},
+      {icon:'<svg width="28" height="28" viewBox="0 0 90 90" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="45" cy="45" r="44" fill="#f5c842"/><circle cx="45" cy="45" r="28" fill="none" stroke="#0D1520" stroke-width="11"/>
+  <path d="M45 17 A28 28 0 0 1 73 45" stroke="#0D1520" stroke-width="11" fill="none"/>
+  <path d="M73 45 A28 28 0 0 1 45 73" stroke="#C8943A" stroke-width="11" fill="none"/>
+  <path d="M45 73 A28 28 0 0 1 17 45" stroke="#0D1520" stroke-width="11" fill="none"/>
+  <path d="M17 45 A28 28 0 0 1 45 17" stroke="#C8943A" stroke-width="11" fill="none"/>
+  <circle cx="45" cy="45" r="14" fill="#f5c842"/>
+  <rect x="42" y="8" width="6" height="9" fill="#0D1520" rx="2"/>
+  <rect x="42" y="73" width="6" height="9" fill="#0D1520" rx="2"/>
+  <rect x="8" y="42" width="9" height="6" fill="#0D1520" rx="2"/>
+  <rect x="73" y="42" width="9" height="6" fill="#0D1520" rx="2"/></svg>',name:'Inner Circle',plan:'Harbour',highlight:false,href:'inner-circle-hub.html'},
+      {icon:'<svg width="28" height="28" viewBox="0 0 90 90" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="45" cy="45" r="44" fill="#f5c842"/><rect x="12" y="48" width="66" height="30" fill="#0D1520" rx="3"/>
+  <path d="M12 48 Q12 24 45 24 Q78 24 78 48Z" fill="#0D1520"/>
+  <rect x="12" y="44" width="66" height="6" fill="#C8943A" rx="1"/>
+  <rect x="12" y="58" width="66" height="5" fill="#C8943A" opacity=".55"/>
+  <rect x="12" y="70" width="66" height="5" fill="#C8943A" opacity=".55"/>
+  <rect x="30" y="48" width="5" height="30" fill="#C8943A" opacity=".45"/>
+  <rect x="55" y="48" width="5" height="30" fill="#C8943A" opacity=".45"/>
+  <rect x="38" y="52" width="14" height="12" fill="#f5c842" rx="2"/>
+  <path d="M41 52 L41 48 Q41 44 45 44 Q49 44 49 48 L49 52" stroke="#f5c842" stroke-width="3.5" fill="none" stroke-linecap="round"/>
+  <circle cx="45" cy="57.5" r="3" fill="#0D1520"/></svg>',name:'Document Vault',plan:'Lighthouse',highlight:false,href:'document-vault.html'},
+      {icon:'✦',name:'Memorial Page',plan:'All plans',highlight:false,href:'buzz-bee-memorial.html'},
+      {icon:'<svg width="28" height="28" viewBox="0 0 90 90" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="45" cy="45" r="44" fill="#f5c842"/><circle cx="45" cy="28" r="13" fill="#0D1520"/>
+  <rect x="43" y="8" width="4" height="8" fill="#0D1520" rx="2"/>
+  <rect x="43" y="44" width="4" height="5" fill="#0D1520" rx="2"/>
+  <rect x="25" y="26" width="8" height="4" fill="#0D1520" rx="2"/>
+  <rect x="57" y="26" width="8" height="4" fill="#0D1520" rx="2"/>
+  <rect x="29" y="12" width="4" height="8" fill="#0D1520" rx="2" transform="rotate(45 31 16)"/>
+  <rect x="57" y="12" width="4" height="8" fill="#0D1520" rx="2" transform="rotate(-45 59 16)"/>
+  <rect x="29" y="34" width="4" height="8" fill="#0D1520" rx="2" transform="rotate(-45 31 38)"/>
+  <rect x="57" y="34" width="4" height="8" fill="#0D1520" rx="2" transform="rotate(45 59 38)"/>
+  <path d="M1 56 C12 52 22 58 34 54 C46 50 58 58 70 54 C78 51 84 55 89 53 L89 64 C84 62 78 66 70 63 C58 60 46 66 34 63 C22 60 12 65 1 62Z" fill="#0D1520"/>
+  <path d="M1 68 C14 64 28 71 44 67 C60 63 74 71 89 67 L89 82 L1 82Z" fill="#0D1520"/></svg>',name:'Community',plan:'Coming soon',highlight:false,href:'#'},
+    ]
+  },
+
+  aroha:{
+    type:'circle',
+    name:'Aroha Ngata',
+    subName:"You're supporting Aroha's family",
+    progress:0,tasks:[],circle:[],activity:[],dates:[],memorial:null,tools:[],sections:[]
+  },
+  mike:{
+    type:'circle',
+    name:'Mike Thompson',
+    subName:"You're in Mike's inner circle",
+    progress:0,tasks:[],circle:[],activity:[],dates:[],memorial:null,tools:[],sections:[]
+  }
+};
+
+let currentSpace='buzz';
+
+function switchSpace(id){
+  // Update sidebar active state
+  document.querySelectorAll('.space-item').forEach(el=>el.classList.remove('active'));
+  event.currentTarget.classList.add('active');
+  currentSpace=id;
+  renderSpace(id);
+}
+
+function renderSpace(id){
+  const sp=spaces[id];
+  const content=document.getElementById('content');
+  const topBar=document.getElementById('topBar');
+
+  // Update top bar
+  const typeLabel=sp.type==='bereaved'?'Bereavement':sp.type==='planning'?'Planning ahead':'Inner circle';
+  document.getElementById('tbName').innerHTML=`
+    <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="rgba(255,255,255,.25)" stroke-width="1.2"><circle cx="8" cy="8" r="6"/><line x1="8" y1="5" x2="8" y2="11"/><line x1="5" y1="8" x2="11" y2="8"/></svg>
+    ${sp.name}
+    <span class="tb-space-type">${typeLabel}</span>
+  `;
+
+  // Circle/limited spaces
+  if(sp.type==='circle'){
+    content.innerHTML=`
+      <div class="card span3" style="text-align:center;padding:60px 40px;">
+        <div style="font-family:'Bodoni Moda',serif;font-size:1.6rem;color:var(--white);margin-bottom:12px;">${sp.name}</div>
+        <div style="font-family:'EB Garamond',serif;font-style:italic;color:rgba(255,255,255,.35);font-size:1rem;margin-bottom:32px;">${sp.subName}</div>
+        <div style="font-size:.65rem;letter-spacing:.2em;text-transform:uppercase;color:rgba(255,255,255,.2);margin-bottom:24px;">You have been invited into this inner circle. When they share access, their dashboard will appear here.</div>
+        <button class="tb-btn" style="margin:0 auto;display:block;" onclick="">View inner circle →</button>
+      </div>`;
+    return;
+  }
+
+  const tagClass={urgent:'tag-urgent',important:'tag-important',ready:'tag-ready',done:'tag-done'};
+  const tagLabel={urgent:'Urgent',important:'Important',ready:'When ready',done:'Done'};
+
+  const banner=sp.type==='bereaved'
+    ? `<div class="urgent-banner">
+        <div class="ub-icon"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="rgba(220,80,60,.8)" stroke-width="1.3"><circle cx="8" cy="8" r="6"/><line x1="8" y1="5" x2="8" y2="8"/><circle cx="8" cy="11" r=".5" fill="rgba(220,80,60,.8)"/></svg></div>
+        <div class="ub-text">
+          <div class="ub-title">BDM registration required within 3 working days of death</div>
+          <div class="ub-sub">Visit bdmonline.govt.nz to register Buzz's death. You'll need the medical certificate of cause of death.</div>
+        </div>
+        <button class="ub-btn">Register now →</button>
+      </div>`
+    : `<div class="planning-banner">
+        <div class="pb-icon"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="rgba(74,158,122,.8)" stroke-width="1.3"><path d="M8 2L8 2C8 2 5 6 5 9a3 3 0 006 0C11 6 8 2 8 2Z"/><line x1="8" y1="12" x2="8" y2="14"/></svg></div>
+        <div class="pb-text">
+          <div class="pb-title">Your planning space is set up</div>
+          <div class="pb-sub">Start with your will and document vault — these are the most important first steps.</div>
+        </div>
+        <button class="pb-btn">Open checklist →</button>
+      </div>`;
+
+  // Progress section items
+  const sectionRows=sp.sections.map(s=>{
+    const pct=s.total>0?Math.round(s.done/s.total*100):0;
+    return `<div class="ps-row">
+      <div class="ps-dot" style="background:${s.color}"></div>
+      <div class="ps-name">${s.name}</div>
+      <div class="ps-mini-track"><div class="ps-mini-fill" style="width:${pct}%;background:${s.color}"></div></div>
+      <div class="ps-count">${s.done}/${s.total}</div>
+    </div>`;
+  }).join('');
+
+  // Tasks
+  const taskItems=sp.tasks.map(t=>`
+    <div class="task-item" onclick="toggleTask(this)">
+      <div class="task-cb${t.done?' done':''}"></div>
+      <div class="task-body">
+        <div class="task-text${t.done?' done':''}">${t.text}</div>
+        <div class="task-meta">
+          <span class="task-tag ${tagClass[t.tag]}">${tagLabel[t.tag]}</span>
+          <span class="task-due">${t.due}</span>
+        </div>
+      </div>
+      <div class="task-assignee" style="background:${t.color}" title="${t.assignee}">${t.assignee}</div>
+    </div>`).join('');
+
+  // Circle
+  const circleItems=sp.circle.map(m=>`
+    <div class="circle-member">
+      <div class="cm-avatar" style="background:${m.color}">
+        ${m.initials}
+        <div class="cm-status ${m.status}"></div>
+      </div>
+      <div class="cm-name">${m.name.split(' ')[0]}</div>
+      <div class="cm-role">${m.role}</div>
+    </div>`).join('');
+
+  // Activity
+  const actItems=sp.activity.map(a=>`
+    <div class="act-item">
+      <div class="act-avatar" style="background:${a.color}">${a.initials}</div>
+      <div class="act-body">
+        <div class="act-text">${a.text}</div>
+        <div class="act-time">${a.time}</div>
+      </div>
+    </div>`).join('');
+
+  // Dates
+  const dateItems=sp.dates.map(d=>`
+    <div class="date-item">
+      <div class="date-cal">
+        <div class="dc-month">${d.month}</div>
+        <div class="dc-day">${d.day}</div>
+      </div>
+      <div class="date-body">
+        <div class="date-name">${d.name}</div>
+        <div class="date-meta">${d.meta}</div>
+      </div>
+      <span class="date-badge ${d.badge==='urgent'?'db-urgent':d.badge==='soon'?'db-soon':'db-ok'}">${d.badge==='urgent'?'Today':d.badge==='soon'?'Soon':'Ongoing'}</span>
+    </div>`).join('');
+
+  // Tools
+  const toolItems=sp.tools.map(t=>`
+    <button class="tool-btn${t.highlight?' highlight':''}" onclick="if('${t.href}'!=='#')window.location.href='${t.href}'">
+      <div class="tb-icon">${t.icon}</div>
+      <div class="tb-name">${t.name}</div>
+      <div class="tb-plan${t.plan==='Harbour'||t.plan==='Lighthouse'?' gold':''}">${t.plan}</div>
+    </button>`).join('');
+
+  // Memorial
+  const memCard = sp.memorial ? `
+    <div class="card" style="grid-column:span 1;padding:0;">
+      <div class="card-header" style="padding:16px 18px 0;">
+        <div class="card-title">Memorial page</div>
+        <button class="card-action" onclick="window.location.href='buzz-bee-memorial.html'">View →</button>
+      </div>
+      <div style="padding:0 18px 18px;">
+        <div class="mp-hero" style="margin:12px 0 0;">
+          <div>
+            <div class="mp-name">${sp.memorial.name}</div>
+            <div class="mp-dates">${sp.memorial.dates}</div>
+          </div>
+        </div>
+        <div class="mp-body" style="padding:14px 0 0;">
+          <div class="mp-stats">
+            <div class="mp-stat"><div class="mps-n">${sp.memorial.candles}</div><div class="mps-l">Candles</div></div>
+            <div class="mp-stat"><div class="mps-n">${sp.memorial.messages}</div><div class="mps-l">Messages</div></div>
+            <div class="mp-stat"><div class="mps-n">${sp.memorial.photos}</div><div class="mps-l">Photos</div></div>
+          </div>
+          <div class="mp-actions">
+            <button class="mp-btn primary" onclick="window.location.href='buzz-bee-memorial.html'">Open memorial</button>
+            <button class="mp-btn">Share</button>
+          </div>
+        </div>
+      </div>
+    </div>` : '';
+
+  content.style.animation='none';
+  content.offsetHeight; // reflow
+  content.style.animation='spaceSwitchIn .3s ease both';
+
+  content.innerHTML=`
+    ${banner}
+
+    <!-- Row 1: Progress + Tasks -->
+    <div class="card" style="animation-delay:.05s">
+      <div class="card-header">
+        <div class="card-title">Overall progress</div>
+        <button class="card-action">All tasks →</button>
+      </div>
+      <div class="progress-hero">
+        <div class="ph-label">Completed</div>
+        <div class="ph-pct">${sp.progress}<span>%</span></div>
+        <div class="ph-sub">${sp.type==='bereaved'?'of estate tasks done':'of planning checklist done'}</div>
+      </div>
+      <div class="progress-track"><div class="progress-fill" style="width:0%" id="pfill"></div></div>
+      <div class="progress-sections">${sectionRows}</div>
+    </div>
+
+    <div class="card span2" style="animation-delay:.1s">
+      <div class="card-header">
+        <div class="card-title">Tasks</div>
+        <button class="card-action" onclick="window.location.href='inner-circle-hub.html'">All tasks →</button>
+      </div>
+      <div class="task-list">${taskItems}</div>
+    </div>
+
+    <!-- Row 2: Circle + Activity + Memorial -->
+    <div class="card" style="animation-delay:.15s">
+      <div class="card-header">
+        <div class="card-title">Inner circle</div>
+        <button class="card-action" onclick="window.location.href='inner-circle-hub.html'">Manage →</button>
+      </div>
+      <div class="circle-grid">
+        ${circleItems}
+        <button class="circle-add">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.2"><line x1="10" y1="5" x2="10" y2="15"/><line x1="5" y1="10" x2="15" y2="10"/></svg>
+          <span>Invite</span>
+        </button>
+      </div>
+    </div>
+
+    <div class="card" style="animation-delay:.2s">
+      <div class="card-header">
+        <div class="card-title">Recent activity</div>
+      </div>
+      <div class="activity-list">${actItems}</div>
+    </div>
+
+    ${memCard}
+
+    <!-- Row 3: Dates + Tools -->
+    <div class="card span2" style="animation-delay:.25s">
+      <div class="card-header">
+        <div class="card-title">Upcoming dates & deadlines</div>
+      </div>
+      <div class="dates-list">${dateItems}</div>
+    </div>
+
+    <div class="card" style="animation-delay:.3s">
+      <div class="card-header">
+        <div class="card-title">Platform tools</div>
+      </div>
+      <div class="tools-grid">${toolItems}</div>
+    </div>
+  `;
+
+  // Animate progress bar
+  setTimeout(()=>{
+    const pf=document.getElementById('pfill');
+    if(pf) pf.style.width=sp.progress+'%';
+  },200);
+}
+
+function toggleTask(el){
+  const cb=el.querySelector('.task-cb');
+  const txt=el.querySelector('.task-text');
+  cb.classList.toggle('done');
+  txt.classList.toggle('done');
+}
+
+// Initial render
+renderSpace('buzz');
+</script>
+</body>
+</html>

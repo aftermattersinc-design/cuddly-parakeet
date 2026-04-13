@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>QR Code Generator - After Matters</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+:root{
+  --night:#0d1520;--ocean:#1a3a5c;--beam:#f5c842;
+  --cream:#f2ead8;--gold:#C8943A;--green:#4a9e7a;
+  --mid:#6e5e48;--white:#fefefe;
+}
+body{background:var(--night);color:var(--white);font-family:'Arial',sans-serif;min-height:100vh;padding:0;}
+nav{background:rgba(8,12,20,.95);border-bottom:1px solid rgba(255,255,255,.09);padding:0 32px;height:56px;display:flex;align-items:center;justify-content:space-between;}
+nav img{height:30px;}
+nav span{font-size:.6rem;letter-spacing:.2em;text-transform:uppercase;color:rgba(255,255,255,.4);}
+.page{max-width:900px;margin:0 auto;padding:48px 24px 80px;}
+h1{font-size:1.6rem;font-family:Georgia,serif;color:var(--white);margin-bottom:8px;}
+.sub{font-size:.82rem;color:rgba(255,255,255,.5);line-height:1.7;margin-bottom:40px;}
+
+.generator{display:grid;grid-template-columns:1fr 1fr;gap:2px;margin-bottom:40px;}
+.gen-panel{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.09);padding:28px;}
+.gen-panel h2{font-size:.85rem;font-weight:600;color:var(--white);margin-bottom:20px;letter-spacing:.04em;}
+.field-group{margin-bottom:16px;}
+label{display:block;font-size:.6rem;letter-spacing:.2em;text-transform:uppercase;color:rgba(255,255,255,.5);margin-bottom:6px;}
+input,select{width:100%;padding:10px 14px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.14);color:var(--white);font-family:Arial,sans-serif;font-size:.85rem;outline:none;}
+input:focus,select:focus{border-color:rgba(245,200,66,.5);}
+select option{background:var(--ocean);}
+.gen-btn{width:100%;padding:13px;background:rgba(245,200,66,.12);border:1px solid rgba(245,200,66,.4);color:var(--beam);font-size:.62rem;letter-spacing:.2em;text-transform:uppercase;cursor:pointer;transition:all .2s;margin-top:8px;}
+.gen-btn:hover{background:rgba(245,200,66,.22);border-color:var(--beam);}
+
+/* Output panel */
+.output{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.09);padding:28px;}
+.output h2{font-size:.85rem;font-weight:600;color:var(--white);margin-bottom:20px;letter-spacing:.04em;}
+.qr-cards{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;}
+.qr-card{background:white;padding:16px;text-align:center;}
+.qr-card .qr-title{font-size:.55rem;letter-spacing:.2em;text-transform:uppercase;color:#666;margin-bottom:10px;}
+.qr-card .qr-box{width:100%;aspect-ratio:1;margin-bottom:10px;display:flex;align-items:center;justify-content:center;}
+.qr-card .qr-url{font-size:.55rem;color:#888;word-break:break-all;line-height:1.4;}
+.qr-card .qr-id{font-size:.55rem;color:var(--gold);margin-top:4px;letter-spacing:.1em;}
+
+/* Customer list */
+.customers{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.09);padding:28px;margin-top:2px;}
+.customers h2{font-size:.85rem;font-weight:600;color:var(--white);margin-bottom:20px;letter-spacing:.04em;}
+.cust-table{width:100%;border-collapse:collapse;font-size:.75rem;}
+.cust-table th{text-align:left;padding:8px 12px;font-size:.55rem;letter-spacing:.2em;text-transform:uppercase;color:rgba(255,255,255,.4);border-bottom:1px solid rgba(255,255,255,.09);font-weight:400;}
+.cust-table td{padding:10px 12px;border-bottom:1px solid rgba(255,255,255,.06);color:rgba(255,255,255,.75);}
+.cust-table tr:hover td{background:rgba(255,255,255,.03);}
+.badge{display:inline-block;padding:2px 8px;font-size:.55rem;letter-spacing:.12em;text-transform:uppercase;border-radius:2px;}
+.badge-vault{background:rgba(245,200,66,.1);color:var(--beam);border:1px solid rgba(245,200,66,.25);}
+.badge-family{background:rgba(107,154,184,.1);color:#6b9ab8;border:1px solid rgba(107,154,184,.25);}
+.badge-bereavement{background:rgba(200,100,100,.1);color:#d4827a;border:1px solid rgba(200,100,100,.2);}
+.btn-sm{padding:4px 10px;background:none;border:1px solid rgba(255,255,255,.15);color:rgba(255,255,255,.5);font-size:.55rem;letter-spacing:.12em;text-transform:uppercase;cursor:pointer;transition:all .2s;}
+.btn-sm:hover{border-color:var(--beam);color:var(--beam);}
+.print-area{display:none;}
+
+/* Print styles */
+@media print{
+  body{background:white;color:black;}
+  nav,.gen-panel,.customers,.sub,h1,.print-btn-row{display:none;}
+  .output{border:none;padding:0;background:white;}
+  .output h2{display:none;}
+  .qr-cards{grid-template-columns:1fr 1fr 1fr;}
+  .qr-card{border:1px solid #ddd;}
+  .qr-card .qr-title{color:#333;}
+  .qr-card .qr-url{color:#333;}
+}
+.print-btn-row{display:flex;gap:10px;margin-top:20px;flex-wrap:wrap;}
+.dl-btn{padding:10px 20px;background:rgba(74,158,122,.1);border:1px solid rgba(74,158,122,.35);color:var(--green);font-size:.62rem;letter-spacing:.16em;text-transform:uppercase;cursor:pointer;transition:all .2s;}
+.dl-btn:hover{background:rgba(74,158,122,.2);}
+.empty-state{text-align:center;padding:40px;color:rgba(255,255,255,.3);font-size:.82rem;font-style:italic;}
+</style>
+</head>
+<body>
+
+<nav>
+  <img src="data:image/png;base64,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" alt="After Matters">
+  <span>Internal tool · QR Code Generator</span>
+</nav>
+
+<div class="page">
+  <h1>Card QR Code Generator</h1>
+  <p class="sub">Generate unique QR codes for each customer's set of cards. Each code is pre-linked to their vault, keyholder reference, or memorial page. Download or print the QR sheet to insert into the card before sending.</p>
+
+  <div class="generator">
+    <!-- Input panel -->
+    <div class="gen-panel">
+      <h2>Customer details</h2>
+      <div class="field-group">
+        <label>Customer name</label>
+        <input type="text" id="custName" placeholder="Sarah Bee">
+      </div>
+      <div class="field-group">
+        <label>Plan</label>
+        <select id="custPlan">
+          <option value="vault">Vault Setup ($249)</option>
+          <option value="family">Family Vault ($399)</option>
+          <option value="bereavement">Bereavement Pass ($199)</option>
+        </select>
+      </div>
+      <div class="field-group">
+        <label>Vault ID (auto-generated)</label>
+        <input type="text" id="vaultId" placeholder="AM-2024-XXXX" readonly style="color:var(--beam);cursor:default;">
+      </div>
+      <div class="field-group">
+        <label>Keyholder name</label>
+        <input type="text" id="keyholderName" placeholder="Lola Bee">
+      </div>
+      <div class="field-group">
+        <label>Memorial URL slug (optional)</label>
+        <input type="text" id="memSlug" placeholder="buzz-bee">
+      </div>
+      <div class="field-group">
+        <label>Base URL</label>
+        <input type="text" id="baseUrl" value="https://aftermatters.co.nz">
+      </div>
+      <button class="gen-btn" onclick="generateQRs()">Generate QR codes →</button>
+    </div>
+
+    <!-- Preview panel -->
+    <div class="gen-panel" id="previewPanel">
+      <h2>Card text preview</h2>
+      <div id="cardPreview" style="font-size:.78rem;color:rgba(255,255,255,.6);line-height:1.8;">
+        <em style="opacity:.4;">Fill in customer details and click Generate to preview card text.</em>
+      </div>
+    </div>
+  </div>
+
+  <!-- QR output -->
+  <div class="output" id="outputSection">
+    <h2>QR codes - ready to print</h2>
+    <div class="qr-cards" id="qrCards">
+      <div class="empty-state" style="grid-column:1/-1;">Generate QR codes above to see them here.</div>
+    </div>
+    <div class="print-btn-row" id="printBtns" style="display:none;">
+      <button class="gen-btn" onclick="window.print()">Print QR sheet →</button>
+      <button class="dl-btn" onclick="saveToList()">Save customer to list</button>
+    </div>
+  </div>
+
+  <!-- Customer list -->
+  <div class="customers">
+    <h2>Customer card log</h2>
+    <table class="cust-table" id="custTable">
+      <thead>
+        <tr>
+          <th>Date</th>
+          <th>Customer</th>
+          <th>Plan</th>
+          <th>Vault ID</th>
+          <th>Keyholder</th>
+          <th>Cards sent</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody id="custTableBody">
+        <tr><td colspan="7" class="empty-state">No customers yet. Generate QR codes above and save to list.</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<script>
+// Generate vault ID
+function makeVaultId() {
+  const yr = new Date().getFullYear();
+  const num = Math.random().toString(36).substr(2,4).toUpperCase();
+  return `AM-${yr}-${num}`;
+}
+
+// Auto-fill vault ID on load
+document.getElementById('vaultId').value = makeVaultId();
+
+// Load saved customers
+let customers = JSON.parse(localStorage.getItem('am_customers') || '[]');
+renderTable();
+
+function generateQRs() {
+  const name     = document.getElementById('custName').value.trim() || 'Customer';
+  const plan     = document.getElementById('custPlan').value;
+  const vaultId  = document.getElementById('vaultId').value;
+  const keyholder = document.getElementById('keyholderName').value.trim();
+  const memSlug  = document.getElementById('memSlug').value.trim();
+  const base     = document.getElementById('baseUrl').value.trim().replace(/\/$/, '');
+
+  // Build URLs
+  const urls = {
+    vault:       `${base}/signin?vault=${vaultId}&ref=card`,
+    keyholder:   `${base}/unlock?kh=${vaultId}&ref=card`,
+    memorial:    memSlug ? `${base}/${memSlug}` : null,
+  };
+
+  // Update preview
+  const planLabels = {vault:'Vault Setup',family:'Family Vault',bereavement:'Bereavement Pass'};
+  document.getElementById('cardPreview').innerHTML = `
+    <div style="margin-bottom:12px;">
+      <strong style="color:rgba(255,255,255,.85);">Card 1 — Setup Card</strong><br>
+      <em>"You've just done something loving."</em><br>
+      QR → ${urls.vault}
+    </div>
+    ${keyholder ? `<div style="margin-bottom:12px;">
+      <strong style="color:rgba(255,255,255,.85);">Card 2 — Keyholder Card</strong><br>
+      For: <strong style="color:var(--beam);">${keyholder}</strong><br>
+      <em>"Someone who loves you has named you."</em><br>
+      QR → ${urls.keyholder}
+    </div>` : ''}
+    ${memSlug ? `<div>
+      <strong style="color:rgba(255,255,255,.85);">Card 3 — Memorial Card</strong><br>
+      <em>"A life worth remembering."</em><br>
+      QR → ${urls.memorial}
+    </div>` : '<div style="opacity:.4;font-style:italic;">Card 3 — add memorial URL slug to enable</div>'}
+  `;
+
+  // Generate QR codes
+  const container = document.getElementById('qrCards');
+  container.innerHTML = '';
+
+  const cards = [
+    { title:'Card 1 — Setup Card', url:urls.vault, id:vaultId },
+    ...(keyholder ? [{ title:'Card 2 — Keyholder Card', url:urls.keyholder, id:vaultId }] : []),
+    ...(memSlug ? [{ title:'Card 3 — Memorial Card', url:urls.memorial, id:'' }] : []),
+  ];
+
+  cards.forEach((card, i) => {
+    const div = document.createElement('div');
+    div.className = 'qr-card';
+    div.innerHTML = `
+      <div class="qr-title">${card.title}</div>
+      <div class="qr-box" id="qr-${i}"></div>
+      <div class="qr-url">${card.url}</div>
+      ${card.id ? `<div class="qr-id">${card.id}</div>` : ''}
+    `;
+    container.appendChild(div);
+
+    new QRCode(document.getElementById(`qr-${i}`), {
+      text: card.url,
+      width: 140,
+      height: 140,
+      colorDark: '#0D1520',
+      colorLight: '#ffffff',
+      correctLevel: QRCode.CorrectLevel.H,
+    });
+  });
+
+  document.getElementById('printBtns').style.display = 'flex';
+
+  // Store current for saving
+  window._currentCustomer = { name, plan, vaultId, keyholder, memSlug, date: new Date().toLocaleDateString('en-NZ') };
+}
+
+function saveToList() {
+  if(!window._currentCustomer) return;
+  customers.unshift({...window._currentCustomer, sent: false});
+  localStorage.setItem('am_customers', JSON.stringify(customers));
+  renderTable();
+  // Generate new vault ID for next customer
+  document.getElementById('vaultId').value = makeVaultId();
+}
+
+function markSent(idx) {
+  customers[idx].sent = true;
+  localStorage.setItem('am_customers', JSON.stringify(customers));
+  renderTable();
+}
+
+function deleteCustomer(idx) {
+  if(confirm('Remove this customer from the list?')) {
+    customers.splice(idx, 1);
+    localStorage.setItem('am_customers', JSON.stringify(customers));
+    renderTable();
+  }
+}
+
+function renderTable() {
+  const tbody = document.getElementById('custTableBody');
+  if(!customers.length) {
+    tbody.innerHTML = '<tr><td colspan="7" class="empty-state">No customers yet.</td></tr>';
+    return;
+  }
+  const planLabels = {vault:'Vault Setup',family:'Family Vault',bereavement:'Bereavement Pass'};
+  const planBadges = {vault:'badge-vault',family:'badge-family',bereavement:'badge-bereavement'};
+  tbody.innerHTML = customers.map((c, i) => `
+    <tr>
+      <td>${c.date}</td>
+      <td style="color:var(--white);">${c.name}</td>
+      <td><span class="badge ${planBadges[c.plan] || 'badge-vault'}">${planLabels[c.plan] || c.plan}</span></td>
+      <td style="color:var(--beam);font-size:.7rem;">${c.vaultId}</td>
+      <td>${c.keyholder || '—'}</td>
+      <td>
+        <span style="color:${c.sent ? '#4a9e7a' : 'rgba(255,255,255,.3)'};">
+          ${c.sent ? '✓ Sent' : '○ Not sent'}
+        </span>
+      </td>
+      <td style="display:flex;gap:6px;">
+        ${!c.sent ? `<button class="btn-sm" onclick="markSent(${i})">Mark sent</button>` : ''}
+        <button class="btn-sm" onclick="deleteCustomer(${i})" style="color:rgba(200,80,60,.5);">Remove</button>
+      </td>
+    </tr>
+  `).join('');
+}
+
+// Export customer list as CSV
+function exportCSV() {
+  const rows = [['Date','Name','Plan','Vault ID','Keyholder','Sent']];
+  customers.forEach(c => rows.push([c.date,c.name,c.plan,c.vaultId,c.keyholder||'',c.sent?'Yes':'No']));
+  const csv = rows.map(r => r.map(v => `"${v}"`).join(',')).join('\n');
+  const a = document.createElement('a');
+  a.href = 'data:text/csv;charset=utf-8,' + encodeURIComponent(csv);
+  a.download = 'after-matters-card-log.csv';
+  a.click();
+}
+</script>
+
+</body>
+</html>

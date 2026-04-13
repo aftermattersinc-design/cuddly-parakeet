@@ -1,0 +1,1469 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Community - After Matters</title>
+<link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400;0,6..96,600;1,6..96,400&family=EB+Garamond:ital,wght@1,400&family=Jost:wght@200;300;400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+:root{
+  --night:#0d1520;--deep:#112035;--ocean:#1a3a5c;
+  --mist:#6b9ab8;--foam:#c8dde9;--beam:#f5c842;
+  --black:#080808;--charcoal:#1a1a1a;--graphite:#252525;
+  --silver:#c0c0c0;--dust:#d0d0d0;--white:#fefefe;
+  --green:#4a9e7a;--green-dim:rgba(74,158,122,.1);
+  --card:rgba(255,255,255,0.32);--border:rgba(255,255,255,0.35);
+  --beam-dim:rgba(245,200,66,.08);
+}
+html{scroll-behavior:smooth;}
+body{font-family:'Jost',sans-serif;background:var(--night);color:var(--white);min-height:100vh;cursor:none;}
+
+/* CURSOR */
+.cursor{position:fixed;width:8px;height:8px;background:var(--beam);border-radius:50%;pointer-events:none;z-index:9999;transform:translate(-50%,-50%);mix-blend-mode:screen;}
+.cursor-ring{position:fixed;width:32px;height:32px;border:1px solid rgba(245,200,66,.3);border-radius:50%;pointer-events:none;z-index:9998;transform:translate(-50%,-50%);transition:transform .12s ease;}
+
+/* NAV */
+nav{
+  position:sticky;top:0;z-index:100;
+  height:60px;
+  background:rgba(8,12,20,.96);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+  border-bottom:1px solid var(--border);
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 48px;
+}
+.nav-logo{display:flex;align-items:center;gap:10px;font-family:'Bodoni Moda',serif;font-size:.9rem;color:var(--white);text-decoration:none;letter-spacing:.02em;}
+.nav-logo svg{opacity:.8;}
+.nav-center{display:flex;align-items:center;gap:4px;}
+.nav-tab{
+  padding:8px 16px;font-size:.6rem;letter-spacing:.2em;text-transform:uppercase;
+  background:none;border:none;color:rgba(255,255,255,0.48);
+  font-family:'Jost',sans-serif;transition:color .2s;position:relative;
+}
+.nav-tab:hover{color:rgba(255,255,255,.7);}
+.nav-tab.active{color:var(--beam);}
+.nav-tab.active::after{content:'';position:absolute;bottom:-1px;left:16px;right:16px;height:1px;background:var(--beam);}
+.nav-right{display:flex;align-items:center;gap:12px;}
+.nav-btn{
+  padding:8px 20px;font-family:'Jost',sans-serif;font-size:.6rem;
+  letter-spacing:.18em;text-transform:uppercase;border:none;
+  background:var(--beam);color:var(--night);font-weight:500;transition:background .2s;
+}
+.nav-btn:hover{background:var(--white);}
+.nav-ghost{
+  padding:8px 16px;font-family:'Jost',sans-serif;font-size:.6rem;
+  letter-spacing:.18em;text-transform:uppercase;
+  background:none;border:1px solid rgba(255,255,255,0.4);color:rgba(255,255,255,0.52);
+  transition:all .2s;
+}
+.nav-ghost:hover{border-color:rgba(255,255,255,0.48);color:var(--white);}
+
+/* ── LAYOUT ── */
+.layout{display:grid;grid-template-columns:260px 1fr 280px;gap:0;min-height:calc(100vh - 60px);}
+
+/* ── LEFT SIDEBAR ── */
+.left-bar{
+  border-right:1px solid var(--border);
+  padding:28px 0;
+  position:sticky;top:60px;height:calc(100vh - 60px);
+  overflow-y:auto;display:flex;flex-direction:column;gap:0;
+}
+.left-bar::-webkit-scrollbar{width:3px;}
+.left-bar::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.36);}
+
+.lb-section{margin-bottom:6px;}
+.lb-label{font-size:.5rem;letter-spacing:.3em;text-transform:uppercase;color:rgba(255,255,255,0.42);padding:14px 24px 6px;}
+.lb-btn{
+  display:flex;align-items:center;gap:12px;padding:10px 24px;
+  background:none;border:none;width:100%;text-align:left;
+  border-left:2px solid transparent;transition:all .18s;
+  font-family:'Jost',sans-serif;
+}
+.lb-btn:hover{background:rgba(255,255,255,0.32);}
+.lb-btn.active{background:var(--beam-dim);border-left-color:var(--beam);}
+.lb-icon{width:28px;height:28px;border-radius:6px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:.75rem;}
+.lb-text{flex:1;}
+.lb-name{font-size:.72rem;color:rgba(255,255,255,.55);display:block;line-height:1.3;transition:color .18s;}
+.lb-btn:hover .lb-name,.lb-btn.active .lb-name{color:var(--white);}
+.lb-count{font-size:.58rem;color:rgba(255,255,255,0.42);}
+.lb-badge{font-size:.5rem;background:var(--beam);color:var(--night);padding:1px 6px;border-radius:8px;font-weight:600;}
+.lb-badge.green{background:var(--green);}
+
+.lb-divider{height:1px;background:var(--border);margin:8px 24px;}
+
+/* My Circles */
+.circle-item{display:flex;align-items:center;gap:10px;padding:9px 24px;cursor:none;transition:background .18s;}
+.circle-item:hover{background:rgba(255,255,255,0.32);}
+.ci-av{width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.58rem;font-weight:500;flex-shrink:0;}
+.ci-name{font-size:.7rem;color:rgba(255,255,255,.45);flex:1;}
+.ci-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0;}
+.ci-dot.online{background:var(--green);}
+.ci-dot.quiet{background:rgba(255,255,255,0.37);}
+
+.lb-new-circle{
+  margin:8px 24px 0;
+  padding:9px 14px;
+  border:1.5px dashed rgba(255,255,255,0.38);
+  font-size:.6rem;letter-spacing:.14em;text-transform:uppercase;
+  color:rgba(255,255,255,0.42);background:none;
+  font-family:'Jost',sans-serif;width:calc(100% - 48px);
+  transition:all .2s;
+}
+.lb-new-circle:hover{border-color:rgba(245,200,66,.3);color:rgba(245,200,66,.6);}
+
+/* ── FEED ── */
+.feed{border-right:1px solid var(--border);padding:0;}
+
+/* Topic filter bar */
+.topic-bar{
+  display:flex;align-items:center;gap:6px;
+  padding:16px 28px;border-bottom:1px solid var(--border);
+  overflow-x:auto;-webkit-overflow-scrolling:touch;
+  position:sticky;top:60px;z-index:50;
+  background:rgba(8,12,20,.97);backdrop-filter:blur(12px);
+}
+.topic-bar::-webkit-scrollbar{display:none;}
+.topic-chip{
+  flex-shrink:0;padding:7px 16px;
+  font-size:.58rem;letter-spacing:.16em;text-transform:uppercase;
+  background:var(--card);border:1px solid var(--border);
+  color:rgba(255,255,255,0.47);font-family:'Jost',sans-serif;
+  transition:all .2s;white-space:nowrap;
+}
+.topic-chip:hover{background:rgba(255,255,255,0.35);color:rgba(255,255,255,.7);}
+.topic-chip.active{background:var(--beam-dim);border-color:rgba(245,200,66,.3);color:var(--beam);}
+
+/* Compose */
+.compose-bar{
+  padding:20px 28px;border-bottom:1px solid var(--border);
+  display:flex;align-items:center;gap:14px;
+}
+.compose-av{width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,#c8943a,#8c5a1e);display:flex;align-items:center;justify-content:center;font-size:.7rem;font-weight:500;flex-shrink:0;}
+.compose-input{
+  flex:1;padding:10px 16px;
+  background:rgba(255,255,255,0.32);border:1px solid rgba(255,255,255,0.36);
+  font-family:'Jost',sans-serif;font-size:.8rem;font-weight:300;
+  color:var(--white);outline:none;transition:border-color .2s;
+}
+.compose-input::placeholder{color:rgba(255,255,255,0.42);}
+.compose-input:focus{border-color:rgba(245,200,66,.3);}
+.compose-post{
+  padding:10px 18px;background:var(--beam);color:var(--night);
+  border:none;font-family:'Jost',sans-serif;font-size:.58rem;
+  letter-spacing:.16em;text-transform:uppercase;font-weight:500;
+  transition:background .2s;flex-shrink:0;
+}
+.compose-post:hover{background:var(--white);}
+
+/* Posts */
+.post{
+  padding:24px 28px;border-bottom:1px solid var(--border);
+  transition:background .15s;
+}
+.post:hover{background:rgba(255,255,255,0.3);}
+
+.post-header{display:flex;align-items:flex-start;gap:12px;margin-bottom:14px;}
+.post-av{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.68rem;font-weight:500;flex-shrink:0;color:var(--night);}
+.post-meta{flex:1;}
+.post-author{font-size:.8rem;color:rgba(255,255,255,.8);margin-bottom:2px;}
+.post-author em{font-family:'EB Garamond',serif;font-style:italic;color:rgba(255,255,255,0.47);font-size:.9rem;}
+.post-time{font-size:.6rem;color:rgba(255,255,255,0.44);}
+.post-topic{
+  font-size:.5rem;letter-spacing:.16em;text-transform:uppercase;
+  border:1px solid;padding:3px 8px;flex-shrink:0;margin-top:2px;
+}
+.topic-grief{border-color:rgba(107,154,184,.35);color:rgba(107,154,184,.8);}
+.topic-admin{border-color:rgba(245,200,66,.3);color:rgba(245,200,66,.7);}
+.topic-planning{border-color:rgba(74,158,122,.35);color:rgba(74,158,122,.8);}
+.topic-memory{border-color:rgba(200,157,100,.35);color:rgba(200,157,100,.8);}
+
+.post-body{margin-bottom:14px;}
+.post-title{font-family:'Bodoni Moda',serif;font-size:1rem;color:var(--white);margin-bottom:6px;line-height:1.35;}
+.post-text{font-size:.8rem;color:rgba(255,255,255,.5);line-height:1.75;font-weight:300;}
+.post-text.preview{display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;}
+
+.post-actions{display:flex;align-items:center;gap:0;}
+.pa-btn{
+  display:flex;align-items:center;gap:6px;padding:7px 14px;
+  background:none;border:none;color:rgba(255,255,255,0.43);
+  font-family:'Jost',sans-serif;font-size:.6rem;letter-spacing:.1em;
+  transition:color .2s;
+}
+.pa-btn:hover{color:rgba(255,255,255,.7);}
+.pa-btn.liked{color:rgba(107,154,184,.8);}
+.pa-btn svg{width:14px;height:14px;}
+.pa-divider{width:1px;height:16px;background:rgba(255,255,255,0.35);margin:0 4px;}
+
+/* Circle badge on post */
+.post-circle-badge{
+  display:inline-flex;align-items:center;gap:6px;
+  background:rgba(74,158,122,.08);border:1px solid rgba(74,158,122,.2);
+  padding:4px 10px;margin-bottom:10px;
+  font-size:.56rem;letter-spacing:.14em;text-transform:uppercase;color:var(--green);
+}
+.pcb-dot{width:5px;height:5px;border-radius:50%;background:var(--green);}
+
+/* Pinned post */
+.post.pinned{background:rgba(245,200,66,.03);border-left:2px solid rgba(245,200,66,.25);}
+.pin-label{font-size:.52rem;letter-spacing:.2em;text-transform:uppercase;color:rgba(245,200,66,.4);margin-bottom:10px;display:flex;align-items:center;gap:8px;}
+.pin-label::before{content:'';display:block;width:12px;height:1px;background:rgba(245,200,66,.3);}
+
+/* Load more */
+.load-more{
+  display:block;width:100%;padding:18px;
+  background:none;border:none;border-top:1px solid var(--border);
+  font-family:'Jost',sans-serif;font-size:.6rem;letter-spacing:.2em;text-transform:uppercase;
+  color:rgba(255,255,255,0.43);transition:color .2s,background .2s;
+}
+.load-more:hover{color:var(--beam);background:var(--beam-dim);}
+
+/* ── RIGHT SIDEBAR ── */
+.right-bar{padding:28px 24px;display:flex;flex-direction:column;gap:24px;}
+
+.rb-card{border:1px solid var(--border);background:var(--card);padding:20px;}
+.rb-title{font-family:'Bodoni Moda',serif;font-size:.9rem;color:var(--white);margin-bottom:4px;}
+.rb-sub{font-size:.68rem;color:rgba(255,255,255,0.46);margin-bottom:16px;font-weight:300;line-height:1.5;}
+
+/* Stats */
+.rb-stats{display:flex;gap:0;border:1px solid var(--border);margin-bottom:16px;}
+.rb-stat{flex:1;text-align:center;padding:12px 8px;border-right:1px solid var(--border);}
+.rb-stat:last-child{border-right:none;}
+.rbs-n{font-family:'Bodoni Moda',serif;font-size:1.1rem;color:var(--white);}
+.rbs-l{font-size:.48rem;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,0.42);}
+
+/* Suggested circles */
+.suggested-circle{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid rgba(255,255,255,0.32);}
+.suggested-circle:last-child{border-bottom:none;}
+.sc-av{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:.65rem;}
+.sc-body{flex:1;}
+.sc-name{font-size:.75rem;color:rgba(255,255,255,.7);margin-bottom:1px;}
+.sc-members{font-size:.6rem;color:rgba(255,255,255,0.44);}
+.sc-join{
+  font-size:.55rem;letter-spacing:.12em;text-transform:uppercase;
+  background:none;border:1px solid rgba(255,255,255,0.4);color:rgba(255,255,255,0.47);
+  padding:5px 10px;font-family:'Jost',sans-serif;transition:all .2s;
+}
+.sc-join:hover{border-color:var(--beam);color:var(--beam);}
+
+/* Trending */
+.trend-item{display:flex;align-items:flex-start;gap:10px;padding:9px 0;border-bottom:1px solid rgba(255,255,255,0.32);}
+.trend-item:last-child{border-bottom:none;}
+.trend-num{font-family:'Bodoni Moda',serif;font-size:.85rem;color:rgba(255,255,255,0.4);min-width:18px;}
+.trend-body{}
+.trend-title{font-size:.72rem;color:rgba(255,255,255,.6);line-height:1.35;margin-bottom:2px;}
+.trend-meta{font-size:.58rem;color:rgba(255,255,255,0.42);}
+
+/* ── HARBOUR VIEW (Circles) ── */
+.view{display:none;}
+.view.active{display:block;}
+
+.circles-hero{
+  padding:48px 40px 36px;
+  background:linear-gradient(160deg,var(--deep) 0%,var(--night) 100%);
+  border-bottom:1px solid var(--border);
+  position:relative;overflow:hidden;
+}
+.circles-hero::before{
+  content:'';position:absolute;inset:0;
+  background-image:url('data:image/jpeg;base64,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');
+  background-size:cover;background-position:center 60%;
+  opacity:.12;mix-blend-mode:luminosity;
+  filter:sepia(20%);
+  pointer-events:none;
+}
+.circles-hero::before{
+  content:'';position:absolute;top:-40px;right:-40px;
+  width:220px;height:220px;
+  border:40px solid rgba(74,158,122,.04);border-radius:50%;
+}
+.ch-eyebrow{font-size:.52rem;letter-spacing:.32em;text-transform:uppercase;color:var(--green);margin-bottom:10px;display:flex;align-items:center;gap:12px;}
+.ch-eyebrow::before{content:'';display:block;width:20px;height:1px;background:var(--green);}
+.ch-title{font-family:'Bodoni Moda',serif;font-size:1.8rem;color:var(--white);margin-bottom:8px;line-height:1.2;}
+.ch-sub{font-size:.82rem;color:rgba(255,255,255,0.47);font-weight:300;line-height:1.7;max-width:500px;}
+
+.circles-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:2px;padding:24px 28px;}
+
+.circle-card{
+  background:var(--card);border:1px solid var(--border);
+  padding:24px;transition:background .2s,border-color .2s;
+  position:relative;overflow:hidden;
+}
+.circle-card:hover{background:rgba(255,255,255,0.34);border-color:rgba(255,255,255,0.4);}
+.circle-card.joined{border-color:rgba(74,158,122,.25);}
+.circle-card.joined::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--green);}
+
+.cc-header{display:flex;align-items:flex-start;gap:12px;margin-bottom:14px;}
+.cc-icon{width:40px;height:40px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:.9rem;flex-shrink:0;}
+.cc-info{flex:1;}
+.cc-name{font-family:'Bodoni Moda',serif;font-size:.95rem;color:var(--white);margin-bottom:3px;}
+.cc-type{font-size:.52rem;letter-spacing:.18em;text-transform:uppercase;color:rgba(255,255,255,0.43);}
+.cc-joined-badge{font-size:.5rem;letter-spacing:.14em;text-transform:uppercase;background:var(--green-dim);color:var(--green);border:1px solid rgba(74,158,122,.25);padding:2px 8px;flex-shrink:0;}
+
+.cc-desc{font-size:.75rem;color:rgba(255,255,255,0.52);line-height:1.65;margin-bottom:16px;font-weight:300;}
+.cc-meta{display:flex;align-items:center;gap:16px;margin-bottom:16px;}
+.cc-m-n{font-family:'Bodoni Moda',serif;font-size:.95rem;color:var(--white);}
+.cc-m-l{font-size:.52rem;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,0.44);}
+.cc-avatars{display:flex;}
+.cc-av{width:20px;height:20px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.45rem;font-weight:500;border:1.5px solid var(--night);margin-right:-5px;}
+.cc-join-btn{
+  width:100%;padding:10px;
+  font-family:'Jost',sans-serif;font-size:.58rem;letter-spacing:.16em;text-transform:uppercase;
+  background:rgba(255,255,255,0.33);border:1px solid rgba(255,255,255,0.38);color:rgba(255,255,255,0.52);
+  transition:all .2s;
+}
+.cc-join-btn:hover{background:var(--green-dim);border-color:rgba(74,158,122,.3);color:var(--green);}
+.cc-join-btn.joined{background:var(--green-dim);border-color:rgba(74,158,122,.25);color:var(--green);}
+
+.new-circle-card{
+  border:1.5px dashed rgba(255,255,255,0.38);
+  padding:24px;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:10px;text-align:center;min-height:200px;
+  transition:border-color .2s,background .2s;
+}
+.new-circle-card:hover{border-color:rgba(245,200,66,.3);background:var(--beam-dim);}
+.ncc-icon{width:44px;height:44px;border-radius:50%;border:1px solid rgba(255,255,255,0.4);display:flex;align-items:center;justify-content:center;font-size:1.2rem;color:rgba(255,255,255,0.42);}
+.ncc-label{font-size:.68rem;color:rgba(255,255,255,0.48);}
+.ncc-sub{font-size:.6rem;color:rgba(255,255,255,0.4);line-height:1.5;}
+
+/* ── ANIMATIONS ── */
+@keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+.post{animation:fadeUp .3s ease both;}
+.post:nth-child(2){animation-delay:.05s;}
+.post:nth-child(3){animation-delay:.1s;}
+.post:nth-child(4){animation-delay:.15s;}
+.post:nth-child(5){animation-delay:.2s;}
+.circle-card{animation:fadeUp .3s ease both;}
+
+/* ── MOBILE ── */
+@media(max-width:768px){
+  body{cursor:auto;}
+  .cursor,.cursor-ring{display:none;}
+  nav{padding:0 16px;}
+  .nav-center{display:none;}
+  .nav-ghost{display:none;}
+  .nav-btn{padding:7px 14px;font-size:.56rem;}
+
+  .layout{grid-template-columns:1fr;display:block;}
+  .left-bar{display:none;}
+  .right-bar{display:none;}
+
+  .topic-bar{padding:12px 16px;top:60px;}
+  .topic-chip{padding:6px 12px;font-size:.54rem;}
+  .compose-bar{padding:14px 16px;}
+  .compose-input{font-size:.85rem;}
+  .compose-post{padding:10px 14px;font-size:.56rem;}
+  .post{padding:18px 16px;}
+  .post-title{font-size:.9rem;}
+  .post-text{font-size:.78rem;}
+  .circles-hero{padding:28px 20px;}
+  .circles-grid{grid-template-columns:1fr;padding:16px;}
+  .ch-title{font-size:1.4rem;}
+
+  /* Mobile bottom nav for view switching */
+  .mobile-view-tabs{
+    display:flex;position:fixed;bottom:0;left:0;right:0;
+    height:60px;background:rgba(6,10,16,.97);
+    border-top:1px solid var(--border);z-index:200;
+    padding-bottom:env(safe-area-inset-bottom,0);
+  }
+  .mvt-btn{
+    flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;
+    gap:4px;background:none;border:none;color:rgba(255,255,255,0.46);
+    font-family:'Jost',sans-serif;font-size:.5rem;letter-spacing:.12em;text-transform:uppercase;
+    padding-top:8px;
+  }
+  .mvt-btn.active{color:var(--beam);}
+  .mvt-btn svg{width:20px;height:20px;}
+  .feed,.view{padding-bottom:70px;}
+}
+@media(min-width:769px){.mobile-view-tabs{display:none;}}
+
+/* ── WARM ICON STYLE (global) ── */
+.icon-circle {
+  width:48px;height:48px;border-radius:50%;
+  display:inline-flex;align-items:center;justify-content:center;
+  flex-shrink:0;
+}
+.icon-circle svg { display:block; }
+
+.circles-photo {
+  position:absolute;top:0;right:0;bottom:0;width:45%;
+  background-image:url('data:image/jpeg;base64,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');
+  background-size:cover;background-position:center;
+  mask-image:linear-gradient(to left,rgba(0,0,0,.8) 0%,transparent 100%);
+  -webkit-mask-image:linear-gradient(to left,rgba(0,0,0,.8) 0%,transparent 100%);
+  opacity:.7;
+}
+@media(max-width:768px){.circles-photo{display:none;}}
+
+.feed-header-photo {
+  position:absolute;top:0;right:0;
+  width:180px;height:180px;
+  background-image:url('data:image/jpeg;base64,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');
+  background-size:cover;background-position:center;
+  mask-image:radial-gradient(circle at right top, rgba(0,0,0,.6) 0%, transparent 70%);
+  -webkit-mask-image:radial-gradient(circle at right top, rgba(0,0,0,.6) 0%, transparent 70%);
+  opacity:.4;pointer-events:none;
+}
+
+/* Logo lighthouse watermark */
+.lh-watermark {
+  position:fixed;bottom:20px;right:20px;
+  width:44px;height:57px;
+  color:rgba(255,255,255,.04);
+  pointer-events:none;z-index:0;
+  animation:gentleFloat 8s ease-in-out infinite;
+}
+@keyframes gentleFloat{0%,100%{transform:translateY(0);}50%{transform:translateY(-5px);}}
+@media(max-width:768px){.lh-watermark{width:32px;height:42px;opacity:.6;}}
+</style>
+</head>
+<body>
+
+<div class="cursor" id="cur"></div>
+<div class="cursor-ring" id="cur2"></div>
+
+<!-- NAV -->
+<nav>
+  <a href="index.html" class="nav-logo">
+    <img src="data:image/png;base64,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" alt="After Matters" style="height:36px;width:auto;display:block;" class="">
+  </a>
+  <div class="nav-center">
+    <button class="nav-tab active" onclick="showView('feed',this)">The Harbour</button>
+    <button class="nav-tab" onclick="showView('circles',this)">My Circles</button>
+  </div>
+  <div class="nav-right">
+    <button class="nav-ghost" onclick="window.location.href='signin.html'">Sign in</button>
+    <button class="nav-btn" onclick="window.location.href='signin.html'">Join free</button>
+  </div>
+</nav>
+
+<!-- LAYOUT -->
+<div class="layout">
+
+  <!-- ── LEFT SIDEBAR ── -->
+  <aside class="left-bar">
+    <div class="lb-section">
+      <div class="lb-label">The Harbour</div>
+            <button class="lb-btn active" onclick="filterTopic('all',this)">
+        <div style="width:28px;height:28px;flex-shrink:0;"><svg width="28" height="28" viewBox="0 0 90 90" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="45" cy="45" r="44" fill="#f5c842"/><circle cx="45" cy="28" r="13" fill="#0D1520"/>
+  <rect x="43" y="8" width="4" height="8" fill="#0D1520" rx="2"/>
+  <rect x="43" y="44" width="4" height="5" fill="#0D1520" rx="2"/>
+  <rect x="25" y="26" width="8" height="4" fill="#0D1520" rx="2"/>
+  <rect x="57" y="26" width="8" height="4" fill="#0D1520" rx="2"/>
+  <rect x="29" y="12" width="4" height="8" fill="#0D1520" rx="2" transform="rotate(45 31 16)"/>
+  <rect x="57" y="12" width="4" height="8" fill="#0D1520" rx="2" transform="rotate(-45 59 16)"/>
+  <rect x="29" y="34" width="4" height="8" fill="#0D1520" rx="2" transform="rotate(-45 31 38)"/>
+  <rect x="57" y="34" width="4" height="8" fill="#0D1520" rx="2" transform="rotate(45 59 38)"/>
+  <path d="M1 56 C12 52 22 58 34 54 C46 50 58 58 70 54 C78 51 84 55 89 53 L89 64 C84 62 78 66 70 63 C58 60 46 66 34 63 C22 60 12 65 1 62Z" fill="#0D1520"/>
+  <path d="M1 68 C14 64 28 71 44 67 C60 63 74 71 89 67 L89 82 L1 82Z" fill="#0D1520"/></svg></div>
+        <span class="lb-btn-text">All posts</span>
+        
+      </button>
+      <button class="lb-btn" onclick="filterTopic('grief',this)">
+        <div style="width:28px;height:28px;flex-shrink:0;"><svg width="28" height="28" viewBox="0 0 90 90" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="45" cy="45" r="44" fill="#f5c842"/><path d="M45 8 C45 8 34 21 34 31 C34 39 39 44 45 44 C51 44 56 39 56 31 C56 21 45 8 45 8Z" fill="#0D1520"/>
+  <path d="M45 15 C45 15 38 25 38 31 C38 35 41 38 45 38 C49 38 52 35 52 31 C52 25 45 15 45 15Z" fill="#f5c842" opacity=".35"/>
+  <rect x="43" y="44" width="4" height="5" fill="#0D1520" rx="2"/>
+  <rect x="30" y="49" width="30" height="24" fill="#0D1520" rx="3"/>
+  <rect x="30" y="59" width="30" height="4" fill="#f5c842" opacity=".25"/>
+  <rect x="24" y="73" width="42" height="9" fill="#0D1520" rx="4"/></svg></div>
+        <span class="lb-btn-text">Grief & stories</span>
+        <span class="lb-count">312</span>
+      </button>
+      <button class="lb-btn" onclick="filterTopic('admin',this)">
+        <div style="width:28px;height:28px;flex-shrink:0;"><svg width="28" height="28" viewBox="0 0 90 90" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="45" cy="45" r="44" fill="#f5c842"/><rect x="22" y="26" width="46" height="44" fill="#0D1520" rx="2"/>
+  <ellipse cx="45" cy="26" rx="23" ry="8" fill="#0D1520"/>
+  <ellipse cx="45" cy="26" rx="14" ry="5" fill="#f5c842"/>
+  <ellipse cx="45" cy="26" rx="6" ry="3" fill="#0D1520"/>
+  <rect x="30" y="36" width="30" height="4" fill="#f5c842" rx="2"/>
+  <rect x="30" y="45" width="24" height="4" fill="#f5c842" rx="2"/>
+  <rect x="30" y="54" width="28" height="4" fill="#f5c842" rx="2"/>
+  <circle cx="62" cy="64" r="11" fill="#4A9E7A"/>
+  <path d="M57 64 L61 68 L68 60" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        <span class="lb-btn-text">Estate & admin help</span>
+        <span class="lb-count">142</span>
+      </button>
+      <button class="lb-btn" onclick="filterTopic('planning',this)">
+        <div style="width:28px;height:28px;flex-shrink:0;"><svg width="28" height="28" viewBox="0 0 90 90" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="45" cy="45" r="44" fill="#f5c842"/><circle cx="45" cy="45" r="36" fill="none" stroke="#0D1520" stroke-width="3.5"/>
+  <path d="M45 9 L49.5 40 L45 37 L40.5 40 Z" fill="#0D1520"/>
+  <path d="M45 81 L48.5 52 L45 55 L41.5 52 Z" fill="#0D1520" opacity=".65"/>
+  <path d="M81 45 L52 41.5 L55 45 L52 48.5 Z" fill="#0D1520" opacity=".65"/>
+  <path d="M9 45 L38 41.5 L35 45 L38 48.5 Z" fill="#0D1520" opacity=".65"/>
+  <path d="M45 45 L24 24 L38 38 Z" fill="#0D1520" opacity=".4"/>
+  <path d="M45 45 L66 24 L52 38 Z" fill="#0D1520" opacity=".4"/>
+  <path d="M45 45 L24 66 L38 52 Z" fill="#0D1520" opacity=".4"/>
+  <path d="M45 45 L66 66 L52 52 Z" fill="#0D1520" opacity=".4"/>
+  <circle cx="45" cy="45" r="8" fill="#0D1520"/>
+  <circle cx="45" cy="45" r="3.5" fill="#f5c842"/>
+  <rect x="43" y="9" width="4" height="7" fill="#C8943A" rx="1.5"/></svg></div>
+        <span class="lb-btn-text">Planning ahead</span>
+        <span class="lb-count">98</span>
+      </button>
+      <button class="lb-btn" onclick="filterTopic('celebration',this)">
+        <div style="width:28px;height:28px;flex-shrink:0;"><svg width="28" height="28" viewBox="0 0 90 90" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="45" cy="45" r="44" fill="#f5c842"/><circle cx="45" cy="45" r="28" fill="none" stroke="#0D1520" stroke-width="11"/>
+  <path d="M45 17 A28 28 0 0 1 73 45" stroke="#0D1520" stroke-width="11" fill="none"/>
+  <path d="M73 45 A28 28 0 0 1 45 73" stroke="#C8943A" stroke-width="11" fill="none"/>
+  <path d="M45 73 A28 28 0 0 1 17 45" stroke="#0D1520" stroke-width="11" fill="none"/>
+  <path d="M17 45 A28 28 0 0 1 45 17" stroke="#C8943A" stroke-width="11" fill="none"/>
+  <circle cx="45" cy="45" r="14" fill="#f5c842"/>
+  <rect x="42" y="8" width="6" height="9" fill="#0D1520" rx="2"/>
+  <rect x="42" y="73" width="6" height="9" fill="#0D1520" rx="2"/>
+  <rect x="8" y="42" width="9" height="6" fill="#0D1520" rx="2"/>
+  <rect x="73" y="42" width="9" height="6" fill="#0D1520" rx="2"/></svg></div>
+        <span class="lb-btn-text">End of life celebrations</span>
+        <span class="lb-count">64</span>
+      </button>
+      <button class="lb-btn" onclick="filterTopic('legacy',this)">
+        <div style="width:28px;height:28px;flex-shrink:0;"><svg width="28" height="28" viewBox="0 0 90 90" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="45" cy="45" r="44" fill="#f5c842"/><rect x="12" y="48" width="66" height="30" fill="#0D1520" rx="3"/>
+  <path d="M12 48 Q12 24 45 24 Q78 24 78 48Z" fill="#0D1520"/>
+  <rect x="12" y="44" width="66" height="6" fill="#C8943A" rx="1"/>
+  <rect x="12" y="58" width="66" height="5" fill="#C8943A" opacity=".55"/>
+  <rect x="12" y="70" width="66" height="5" fill="#C8943A" opacity=".55"/>
+  <rect x="30" y="48" width="5" height="30" fill="#C8943A" opacity=".45"/>
+  <rect x="55" y="48" width="5" height="30" fill="#C8943A" opacity=".45"/>
+  <rect x="38" y="52" width="14" height="12" fill="#f5c842" rx="2"/>
+  <path d="M41 52 L41 48 Q41 44 45 44 Q49 44 49 48 L49 52" stroke="#f5c842" stroke-width="3.5" fill="none" stroke-linecap="round"/>
+  <circle cx="45" cy="57.5" r="3" fill="#0D1520"/></svg></div>
+        <span class="lb-btn-text">Estate & legacy planning</span>
+        <span class="lb-count">77</span>
+      </button>
+      <button class="lb-btn" onclick="filterTopic('afterlife',this)">
+        <div style="width:28px;height:28px;flex-shrink:0;"><svg width="28" height="28" viewBox="0 0 90 90" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="45" cy="45" r="44" fill="#f5c842"/><path d="M8 78 Q18 68 30 72 Q40 64 50 68 Q60 62 70 66 Q78 62 82 68 L82 82 L8 82Z" fill="#0D1520"/>
+  <path d="M33 72 L35 57 L55 57 L57 72Z" fill="#0D1520"/>
+  <path d="M35 57 L37 43 L53 43 L55 57Z" fill="#0D1520"/>
+  <path d="M37 43 L39 32 L51 32 L53 43Z" fill="#0D1520"/>
+  <rect x="35" y="30" width="20" height="4" fill="#0D1520" rx="1"/>
+  <path d="M37 30 L39 18 L51 18 L53 30Z" fill="#0D1520"/>
+  <path d="M37 18 Q45 11 53 18Z" fill="#0D1520"/>
+  <rect x="44" y="7" width="2" height="6" fill="#0D1520" rx="1"/>
+  <circle cx="45" cy="23" r="5" fill="#f5c842"/>
+  <circle cx="45" cy="23" r="9" fill="#f5c842" opacity=".3"/>
+  <path d="M14 32 C16 29 19 28 22 30" stroke="#0D1520" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+  <path d="M64 26 C66 23 69 22 72 24" stroke="#0D1520" stroke-width="2.5" fill="none" stroke-linecap="round"/></svg></div>
+        <span class="lb-btn-text">Signs, spirit & beyond</span>
+        <span class="lb-count">51</span>
+      </button>
+      <button class="lb-btn" onclick="filterTopic('memory',this)">
+        <div style="width:28px;height:28px;flex-shrink:0;"><svg width="28" height="28" viewBox="0 0 90 90" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="45" cy="45" r="44" fill="#f5c842"/><circle cx="45" cy="28" r="13" fill="#0D1520"/>
+  <rect x="43" y="8" width="4" height="8" fill="#0D1520" rx="2"/>
+  <rect x="43" y="44" width="4" height="5" fill="#0D1520" rx="2"/>
+  <rect x="25" y="26" width="8" height="4" fill="#0D1520" rx="2"/>
+  <rect x="57" y="26" width="8" height="4" fill="#0D1520" rx="2"/>
+  <rect x="29" y="12" width="4" height="8" fill="#0D1520" rx="2" transform="rotate(45 31 16)"/>
+  <rect x="57" y="12" width="4" height="8" fill="#0D1520" rx="2" transform="rotate(-45 59 16)"/>
+  <rect x="29" y="34" width="4" height="8" fill="#0D1520" rx="2" transform="rotate(-45 31 38)"/>
+  <rect x="57" y="34" width="4" height="8" fill="#0D1520" rx="2" transform="rotate(45 59 38)"/>
+  <path d="M1 56 C12 52 22 58 34 54 C46 50 58 58 70 54 C78 51 84 55 89 53 L89 64 C84 62 78 66 70 63 C58 60 46 66 34 63 C22 60 12 65 1 62Z" fill="#0D1520"/>
+  <path d="M1 68 C14 64 28 71 44 67 C60 63 74 71 89 67 L89 82 L1 82Z" fill="#0D1520"/></svg></div>
+        <span class="lb-btn-text">Celebrating lives</span>
+        <span class="lb-count">203</span>
+      </button>
+</div>
+
+    <div class="lb-divider"></div>
+
+    <div class="lb-section">
+      <div class="lb-label">My Circles</div>
+      <div class="circle-item">
+        <div class="ci-av" style="background:rgba(107,154,184,.2);color:#6b9ab8;">WG</div>
+        <span class="ci-name">Wellington Grief Group</span>
+        <div class="ci-dot online"></div>
+      </div>
+      <div class="circle-item">
+        <div class="ci-av" style="background:rgba(245,200,66,.1);color:#c8943a;">PL</div>
+        <span class="ci-name">Planning Ahead NZ</span>
+        <div class="ci-dot quiet"></div>
+      </div>
+      <div class="circle-item">
+        <div class="ci-av" style="background:rgba(74,158,122,.1);color:#4a9e7a;">50</div>
+        <span class="ci-name">Loss after 50</span>
+        <div class="ci-dot online"></div>
+      </div>
+    </div>
+    <button class="lb-new-circle" onclick="showView('circles',null)">+ Create or join a circle</button>
+  </aside>
+
+  <!-- ── MAIN FEED (view) ── -->
+  <div class="view active" id="view-feed">
+
+    <!-- Topic filter -->
+    <div class="topic-bar">
+      <button class="topic-chip active" onclick="filterTopic('all',this)">All posts</button>
+      <button class="topic-chip" onclick="filterTopic('grief',this)">Grief & stories</button>
+      <button class="topic-chip" onclick="filterTopic('admin',this)">Death admin</button>
+      <button class="topic-chip" onclick="filterTopic('planning',this)">Death positivity</button>
+      <button class="topic-chip" onclick="filterTopic('memory',this)">Celebrating lives</button>
+    </div>
+
+    <!-- Compose -->
+    <div class="compose-bar">
+      <div class="compose-av">SB</div>
+      <input class="compose-input" placeholder="Share something with the harbour…" onfocus="this.style.borderColor='rgba(245,200,66,.3)'" onblur="this.style.borderColor='rgba(255,255,255,.08)'">
+      <button class="compose-post">Post</button>
+    </div>
+
+    <!-- Pinned post -->
+    <div class="post pinned" data-topic="grief">
+      <div class="pin-label">Pinned by moderators</div>
+      <div class="post-header">
+        <div class="post-av" style="background:#6b9ab8;">AM</div>
+        <div class="post-meta">
+          <div class="post-author">After Matters <em>· team</em></div>
+          <div class="post-time">Always here</div>
+        </div>
+        <span class="post-topic topic-grief">Grief & stories</span>
+      </div>
+      <div class="post-body">
+        <div class="post-title">Welcome to The Harbour - a place to rest</div>
+        <div class="post-text">This is a space for people who are navigating loss, planning ahead, or simply holding space for life's biggest questions. Be kind. Be honest. You are not alone here. New to After Matters? Introduce yourself below.</div>
+      </div>
+      <div class="post-actions">
+        <button class="pa-btn liked" onclick="toggleLike(this)">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.3"><path d="M8 13 C8 13 2 9 2 5 a3 3 0 016 0 3 3 0 016 0 C14 9 8 13 8 13Z"/></svg>
+          248
+        </button>
+        <div class="pa-divider"></div>
+        <button class="pa-btn">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.3"><path d="M2 3h12v8H9l-3 2v-2H2z"/></svg>
+          94 replies
+        </button>
+      </div>
+    </div>
+
+    <!-- Post 1 -->
+    <div class="post" data-topic="celebration">
+      <div class="post-header">
+        <div class="post-av" style="background:#f5c84222;color:#f5c842;border:1px solid #f5c84244;">AW</div>
+        <div class="post-info">
+          <div class="post-author">Aroha W.</div>
+          <div class="post-time">2 hours ago</div>
+        </div>
+        <span class="post-topic" style="background:#f5c84218;color:#f5c842;border:1px solid #f5c84233;">End of life celebration</span>
+      </div>
+      <div class="post-body">
+        <div class="post-title">Dad wanted a party, not a funeral - so we gave him one</div>
+        <div class="post-text">We had 80 people in the backyard. Live music, his favourite food, photos everywhere. He got to hear every speech. He cried. We all cried. But it was the most beautiful day. If your person is open to it - please consider this.</div>
+      </div>
+      <div class="post-footer">
+        <button class="post-btn" onclick="likePost(this)">
+          <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M8 14s-6-4.5-6-8a4 4 0 0 1 6-3.45A4 4 0 0 1 14 6c0 3.5-6 8-6 8z"/></svg>
+          47
+        </button>
+        <button class="post-btn">
+          <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 9a5 5 0 0 1-5 5H3l-1 1V6a5 5 0 0 1 5-5h2a5 5 0 0 1 5 5v3z"/></svg>
+          23 replies
+        </button>
+        <button class="post-btn">Share</button>
+      </div>
+    </div>
+    <div class="post" data-topic="afterlife">
+      <div class="post-header">
+        <div class="post-av" style="background:#6b9ab822;color:#6b9ab8;border:1px solid #6b9ab844;">SB</div>
+        <div class="post-info">
+          <div class="post-author">Sarah B.</div>
+          <div class="post-time">5 hours ago</div>
+        </div>
+        <span class="post-topic" style="background:#6b9ab818;color:#6b9ab8;border:1px solid #6b9ab833;">Signs & spirit</span>
+      </div>
+      <div class="post-body">
+        <div class="post-title">The butterfly that appeared at mum's funeral</div>
+        <div class="post-text">I know it sounds silly but a monarch butterfly landed on the coffin during the service and stayed the whole time. Mum loved butterflies. Every time I tell this story, someone says they have one just like it. Has this happened to you?</div>
+      </div>
+      <div class="post-footer">
+        <button class="post-btn" onclick="likePost(this)">
+          <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M8 14s-6-4.5-6-8a4 4 0 0 1 6-3.45A4 4 0 0 1 14 6c0 3.5-6 8-6 8z"/></svg>
+          89
+        </button>
+        <button class="post-btn">
+          <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 9a5 5 0 0 1-5 5H3l-1 1V6a5 5 0 0 1 5-5h2a5 5 0 0 1 5 5v3z"/></svg>
+          61 replies
+        </button>
+        <button class="post-btn">Share</button>
+      </div>
+    </div>
+    <div class="post" data-topic="grief">
+      <div class="post-header">
+        <div class="post-av" style="background:#6b9ab822;color:#6b9ab8;border:1px solid #6b9ab844;">MT</div>
+        <div class="post-info">
+          <div class="post-author">Mike T.</div>
+          <div class="post-time">8 hours ago</div>
+        </div>
+        <span class="post-topic" style="background:#6b9ab818;color:#6b9ab8;border:1px solid #6b9ab833;">Grief & stories</span>
+      </div>
+      <div class="post-body">
+        <div class="post-title">Six months on - what nobody tells you about grief</div>
+        <div class="post-text">Everyone prepares you for the first few weeks. Nobody prepares you for month six when the world has moved on but you haven't. The grief gets quieter but it doesn't get smaller. It just changes shape.</div>
+      </div>
+      <div class="post-footer">
+        <button class="post-btn" onclick="likePost(this)">
+          <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M8 14s-6-4.5-6-8a4 4 0 0 1 6-3.45A4 4 0 0 1 14 6c0 3.5-6 8-6 8z"/></svg>
+          134
+        </button>
+        <button class="post-btn">
+          <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 9a5 5 0 0 1-5 5H3l-1 1V6a5 5 0 0 1 5-5h2a5 5 0 0 1 5 5v3z"/></svg>
+          48 replies
+        </button>
+        <button class="post-btn">Share</button>
+      </div>
+    </div>
+    <div class="post" data-topic="legacy">
+      <div class="post-header">
+        <div class="post-av" style="background:#C8943A22;color:#C8943A;border:1px solid #C8943A44;">JF</div>
+        <div class="post-info">
+          <div class="post-author">James F.</div>
+          <div class="post-time">Yesterday</div>
+        </div>
+        <span class="post-topic" style="background:#C8943A18;color:#C8943A;border:1px solid #C8943A33;">Legacy planning</span>
+      </div>
+      <div class="post-body">
+        <div class="post-title">How we created a family archive - photos, letters, voice recordings</div>
+        <div class="post-text">Before mum passed we spent three afternoons recording her stories on an iPhone. Her childhood, her parents, how she met dad. We have 4 hours of her voice. It's the most precious thing we own. Start this now - don't wait.</div>
+      </div>
+      <div class="post-footer">
+        <button class="post-btn" onclick="likePost(this)">
+          <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M8 14s-6-4.5-6-8a4 4 0 0 1 6-3.45A4 4 0 0 1 14 6c0 3.5-6 8-6 8z"/></svg>
+          92
+        </button>
+        <button class="post-btn">
+          <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 9a5 5 0 0 1-5 5H3l-1 1V6a5 5 0 0 1 5-5h2a5 5 0 0 1 5 5v3z"/></svg>
+          34 replies
+        </button>
+        <button class="post-btn">Share</button>
+      </div>
+    </div>
+    <div class="post" data-topic="planning">
+      <div class="post-header">
+        <div class="post-av" style="background:#4a9e7a22;color:#4a9e7a;border:1px solid #4a9e7a44;">LM</div>
+        <div class="post-info">
+          <div class="post-author">Linda M.</div>
+          <div class="post-time">Yesterday</div>
+        </div>
+        <span class="post-topic" style="background:#4a9e7a18;color:#4a9e7a;border:1px solid #4a9e7a33;">Planning ahead</span>
+      </div>
+      <div class="post-body">
+        <div class="post-title">I finally had the conversation with my parents - here's how</div>
+        <div class="post-text">I'd been putting it off for two years. In the end I just said "I want to make sure I know what you want, because I love you." That's it. That's the opening. Mum cried a little. Dad made a joke. But we talked for three hours and now I know everything.</div>
+      </div>
+      <div class="post-footer">
+        <button class="post-btn" onclick="likePost(this)">
+          <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M8 14s-6-4.5-6-8a4 4 0 0 1 6-3.45A4 4 0 0 1 14 6c0 3.5-6 8-6 8z"/></svg>
+          76
+        </button>
+        <button class="post-btn">
+          <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 9a5 5 0 0 1-5 5H3l-1 1V6a5 5 0 0 1 5-5h2a5 5 0 0 1 5 5v3z"/></svg>
+          29 replies
+        </button>
+        <button class="post-btn">Share</button>
+      </div>
+    </div>
+    <div class="post" data-topic="admin">
+      <div class="post-header">
+        <div class="post-av" style="background:#C8943A22;color:#C8943A;border:1px solid #C8943A44;">RK</div>
+        <div class="post-info">
+          <div class="post-author">Rachel K.</div>
+          <div class="post-time">2 days ago</div>
+        </div>
+        <span class="post-topic" style="background:#C8943A18;color:#C8943A;border:1px solid #C8943A33;">Admin help</span>
+      </div>
+      <div class="post-body">
+        <div class="post-title">KiwiSaver after death - what I wish I'd known</div>
+        <div class="post-text">It took 4 months and 11 phone calls to access dad's KiwiSaver. His beneficiary nomination was 20 years old. The provider was kind but the process was exhausting. Please check your nominations - and make sure your parents have checked theirs.</div>
+      </div>
+      <div class="post-footer">
+        <button class="post-btn" onclick="likePost(this)">
+          <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M8 14s-6-4.5-6-8a4 4 0 0 1 6-3.45A4 4 0 0 1 14 6c0 3.5-6 8-6 8z"/></svg>
+          58
+        </button>
+        <button class="post-btn">
+          <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 9a5 5 0 0 1-5 5H3l-1 1V6a5 5 0 0 1 5-5h2a5 5 0 0 1 5 5v3z"/></svg>
+          41 replies
+        </button>
+        <button class="post-btn">Share</button>
+      </div>
+    </div>
+    <div class="post" data-topic="celebration">
+      <div class="post-header">
+        <div class="post-av" style="background:#f5c84222;color:#f5c842;border:1px solid #f5c84244;">TN</div>
+        <div class="post-info">
+          <div class="post-author">Te Aroha N.</div>
+          <div class="post-time">3 days ago</div>
+        </div>
+        <span class="post-topic" style="background:#f5c84218;color:#f5c842;border:1px solid #f5c84233;">End of life celebration</span>
+      </div>
+      <div class="post-body">
+        <div class="post-title">Planning nan's celebration of life - ideas welcome</div>
+        <div class="post-text">Nan is 84 and has told us she wants a celebration not a funeral. She wants dancing, her favourite songs, and everyone to wear bright colours. We're planning now while she can be involved. What have others done that worked beautifully?</div>
+      </div>
+      <div class="post-footer">
+        <button class="post-btn" onclick="likePost(this)">
+          <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M8 14s-6-4.5-6-8a4 4 0 0 1 6-3.45A4 4 0 0 1 14 6c0 3.5-6 8-6 8z"/></svg>
+          103
+        </button>
+        <button class="post-btn">
+          <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 9a5 5 0 0 1-5 5H3l-1 1V6a5 5 0 0 1 5-5h2a5 5 0 0 1 5 5v3z"/></svg>
+          67 replies
+        </button>
+        <button class="post-btn">Share</button>
+      </div>
+    </div>
+    <div class="post" data-topic="afterlife">
+      <div class="post-header">
+        <div class="post-av" style="background:#6b9ab822;color:#6b9ab8;border:1px solid #6b9ab844;">DH</div>
+        <div class="post-info">
+          <div class="post-author">David H.</div>
+          <div class="post-time">4 days ago</div>
+        </div>
+        <span class="post-topic" style="background:#6b9ab818;color:#6b9ab8;border:1px solid #6b9ab833;">Signs & spirit</span>
+      </div>
+      <div class="post-body">
+        <div class="post-title">Does anyone else find comfort in talking to their person?</div>
+        <div class="post-text">Every morning I make two cups of tea. I sit with dad's photo and tell him about what's happening. I know he can't hear me but it feels like the most natural thing in the world. My sister thinks it's strange. I think it's beautiful.</div>
+      </div>
+      <div class="post-footer">
+        <button class="post-btn" onclick="likePost(this)">
+          <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M8 14s-6-4.5-6-8a4 4 0 0 1 6-3.45A4 4 0 0 1 14 6c0 3.5-6 8-6 8z"/></svg>
+          118
+        </button>
+        <button class="post-btn">
+          <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 9a5 5 0 0 1-5 5H3l-1 1V6a5 5 0 0 1 5-5h2a5 5 0 0 1 5 5v3z"/></svg>
+          84 replies
+        </button>
+        <button class="post-btn">Share</button>
+      </div>
+    </div>
+    
+
+    <button class="load-more">Load more posts</button>
+  </div><!-- end feed -->
+
+  <!-- ── CIRCLES VIEW ── -->
+  <div class="view" id="view-circles">
+    <div class="circles-hero" style="min-height:200px;"><div class="circles-photo"></div>
+      <div class="ch-eyebrow">Private circles</div>
+      <h1 class="ch-title">Find your harbour.<br><em style="color:rgba(255,255,255,.35);">Small groups, real connection.</em></h1>
+      <p class="ch-sub">Circles are private groups of up to 20 people - safe spaces to share more deeply with others who truly understand. Join an existing circle or start your own.</p>
+    </div>
+    <div class="circles-grid">
+
+      <div class="circle-card joined">
+        <div class="cc-header">
+          <div class="cc-icon" style="background:rgba(107,154,184,.12);"><svg width="20" height="20" viewBox="0 0 90 90" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="45" cy="45" r="44" fill="#f5c842"/><circle cx="45" cy="45" r="36" fill="none" stroke="#0D1520" stroke-width="3.5"/>
+  <path d="M45 9 L49.5 40 L45 37 L40.5 40 Z" fill="#0D1520"/>
+  <path d="M45 81 L48.5 52 L45 55 L41.5 52 Z" fill="#0D1520" opacity=".65"/>
+  <path d="M81 45 L52 41.5 L55 45 L52 48.5 Z" fill="#0D1520" opacity=".65"/>
+  <path d="M9 45 L38 41.5 L35 45 L38 48.5 Z" fill="#0D1520" opacity=".65"/>
+  <path d="M45 45 L24 24 L38 38 Z" fill="#0D1520" opacity=".4"/>
+  <path d="M45 45 L66 24 L52 38 Z" fill="#0D1520" opacity=".4"/>
+  <path d="M45 45 L24 66 L38 52 Z" fill="#0D1520" opacity=".4"/>
+  <path d="M45 45 L66 66 L52 52 Z" fill="#0D1520" opacity=".4"/>
+  <circle cx="45" cy="45" r="8" fill="#0D1520"/>
+  <circle cx="45" cy="45" r="3.5" fill="#f5c842"/>
+  <rect x="43" y="9" width="4" height="7" fill="#C8943A" rx="1.5"/></svg></div>
+          <div class="cc-info">
+            <div class="cc-name">Wellington Grief Group</div>
+            <div class="cc-type">Open circle · Grief support</div>
+          </div>
+          <span class="cc-joined-badge">Joined</span>
+        </div>
+        <div class="cc-desc">A warm, open circle for those navigating loss in the Wellington region. Monthly online kōrero plus occasional in-person gatherings. All welcome.</div>
+        <div class="cc-meta">
+          <div><div class="cc-m-n">14</div><div class="cc-m-l">Members</div></div>
+          <div><div class="cc-m-n">3</div><div class="cc-m-l">Online now</div></div>
+          <div class="cc-avatars">
+            <div class="cc-av" style="background:#b48250;">AT</div>
+            <div class="cc-av" style="background:#7a6a5a;">MN</div>
+            <div class="cc-av" style="background:#6b9ab8;">JK</div>
+          </div>
+        </div>
+        <button class="cc-join-btn joined">Open circle →</button>
+      </div>
+
+      <div class="circle-card joined">
+        <div class="cc-header">
+          <div class="cc-icon" style="background:rgba(245,200,66,.08);"><svg width="20" height="20" viewBox="0 0 90 90" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="45" cy="45" r="44" fill="#f5c842"/><path d="M45 8 C45 8 34 21 34 31 C34 39 39 44 45 44 C51 44 56 39 56 31 C56 21 45 8 45 8Z" fill="#0D1520"/>
+  <path d="M45 15 C45 15 38 25 38 31 C38 35 41 38 45 38 C49 38 52 35 52 31 C52 25 45 15 45 15Z" fill="#f5c842" opacity=".35"/>
+  <rect x="43" y="44" width="4" height="5" fill="#0D1520" rx="2"/>
+  <rect x="30" y="49" width="30" height="24" fill="#0D1520" rx="3"/>
+  <rect x="30" y="59" width="30" height="4" fill="#f5c842" opacity=".25"/>
+  <rect x="24" y="73" width="42" height="9" fill="#0D1520" rx="4"/></svg></div>
+          <div class="cc-info">
+            <div class="cc-name">Planning Ahead NZ</div>
+            <div class="cc-type">Open circle · End-of-life planning</div>
+          </div>
+          <span class="cc-joined-badge">Joined</span>
+        </div>
+        <div class="cc-desc">For people who want to get their affairs in order and talk openly about death with others who aren't afraid of the conversation. Practical and philosophical.</div>
+        <div class="cc-meta">
+          <div><div class="cc-m-n">20</div><div class="cc-m-l">Members</div></div>
+          <div><div class="cc-m-n">1</div><div class="cc-m-l">Online now</div></div>
+          <div class="cc-avatars">
+            <div class="cc-av" style="background:#4a9e7a;">RK</div>
+            <div class="cc-av" style="background:#5a7a6a;">PH</div>
+            <div class="cc-av" style="background:#3a5a4a;">TD</div>
+          </div>
+        </div>
+        <button class="cc-join-btn joined">Open circle →</button>
+      </div>
+
+      <div class="circle-card">
+        <div class="cc-header">
+          <div class="cc-icon" style="background:rgba(180,130,80,.1);"><svg width="20" height="20" viewBox="0 0 90 90" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="45" cy="45" r="44" fill="#f5c842"/><circle cx="45" cy="18" r="7" fill="none" stroke="#0D1520" stroke-width="5.5"/>
+  <rect x="42.5" y="24" width="5" height="38" fill="#0D1520" rx="2"/>
+  <rect x="19" y="29" width="52" height="6" fill="#0D1520" rx="3"/>
+  <circle cx="19" cy="32" r="5.5" fill="#0D1520"/>
+  <circle cx="71" cy="32" r="5.5" fill="#0D1520"/>
+  <path d="M45 62 Q26 62 20 73 L28 67 L26 76 L37 72 Q37 65 45 65Z" fill="#0D1520"/>
+  <path d="M45 62 Q64 62 70 73 L62 67 L64 76 L53 72 Q53 65 45 65Z" fill="#0D1520"/>
+  <circle cx="45" cy="63" r="4" fill="#0D1520"/></svg></div>
+          <div class="cc-info">
+            <div class="cc-name">Celebrating Lives NZ</div>
+            <div class="cc-type">Open circle · Memory keeping</div>
+          </div>
+        </div>
+        <div class="cc-desc">Share stories, photos, and memories of those you've loved. A place to keep their stories alive and find joy in remembering.</div>
+        <div class="cc-meta">
+          <div><div class="cc-m-n">18</div><div class="cc-m-l">Members</div></div>
+          <div><div class="cc-m-n">5</div><div class="cc-m-l">Online now</div></div>
+          <div class="cc-avatars">
+            <div class="cc-av" style="background:#5a3a2a;">TW</div>
+            <div class="cc-av" style="background:#8a6a4a;">NK</div>
+            <div class="cc-av" style="background:#6a5a3a;">HP</div>
+          </div>
+        </div>
+        <button class="cc-join-btn" onclick="joinCircle(this)">Join circle</button>
+      </div>
+
+      <div class="circle-card">
+        <div class="cc-header">
+          <div class="cc-icon" style="background:rgba(107,154,184,.08);"><svg width="20" height="20" viewBox="0 0 90 90" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="45" cy="45" r="44" fill="#f5c842"/><circle cx="45" cy="45" r="28" fill="none" stroke="#0D1520" stroke-width="11"/>
+  <path d="M45 17 A28 28 0 0 1 73 45" stroke="#0D1520" stroke-width="11" fill="none"/>
+  <path d="M73 45 A28 28 0 0 1 45 73" stroke="#C8943A" stroke-width="11" fill="none"/>
+  <path d="M45 73 A28 28 0 0 1 17 45" stroke="#0D1520" stroke-width="11" fill="none"/>
+  <path d="M17 45 A28 28 0 0 1 45 17" stroke="#C8943A" stroke-width="11" fill="none"/>
+  <circle cx="45" cy="45" r="14" fill="#f5c842"/>
+  <rect x="42" y="8" width="6" height="9" fill="#0D1520" rx="2"/>
+  <rect x="42" y="73" width="6" height="9" fill="#0D1520" rx="2"/>
+  <rect x="8" y="42" width="9" height="6" fill="#0D1520" rx="2"/>
+  <rect x="73" y="42" width="9" height="6" fill="#0D1520" rx="2"/></svg></div>
+          <div class="cc-info">
+            <div class="cc-name">Loss after 50</div>
+            <div class="cc-type">Open circle · Grief support</div>
+          </div>
+        </div>
+        <div class="cc-desc">Navigating grief in your 50s, 60s and beyond - losing partners, siblings, lifelong friends. Understanding loss at a time of life when it becomes more frequent.</div>
+        <div class="cc-meta">
+          <div><div class="cc-m-n">11</div><div class="cc-m-l">Members</div></div>
+          <div><div class="cc-m-n">2</div><div class="cc-m-l">Online now</div></div>
+          <div class="cc-avatars">
+            <div class="cc-av" style="background:#6a7a8a;">GW</div>
+            <div class="cc-av" style="background:#5a6a7a;">EB</div>
+          </div>
+        </div>
+        <button class="cc-join-btn" onclick="joinCircle(this)">Join circle</button>
+      </div>
+
+      <div class="circle-card">
+        <div class="cc-header">
+          <div class="cc-icon" style="background:rgba(74,158,122,.08);"><svg width="20" height="20" viewBox="0 0 90 90" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="45" cy="45" r="44" fill="#f5c842"/><circle cx="45" cy="28" r="13" fill="#0D1520"/>
+  <rect x="43" y="8" width="4" height="8" fill="#0D1520" rx="2"/>
+  <rect x="43" y="44" width="4" height="5" fill="#0D1520" rx="2"/>
+  <rect x="25" y="26" width="8" height="4" fill="#0D1520" rx="2"/>
+  <rect x="57" y="26" width="8" height="4" fill="#0D1520" rx="2"/>
+  <rect x="29" y="12" width="4" height="8" fill="#0D1520" rx="2" transform="rotate(45 31 16)"/>
+  <rect x="57" y="12" width="4" height="8" fill="#0D1520" rx="2" transform="rotate(-45 59 16)"/>
+  <rect x="29" y="34" width="4" height="8" fill="#0D1520" rx="2" transform="rotate(-45 31 38)"/>
+  <rect x="57" y="34" width="4" height="8" fill="#0D1520" rx="2" transform="rotate(45 59 38)"/>
+  <path d="M1 56 C12 52 22 58 34 54 C46 50 58 58 70 54 C78 51 84 55 89 53 L89 64 C84 62 78 66 70 63 C58 60 46 66 34 63 C22 60 12 65 1 62Z" fill="#0D1520"/>
+  <path d="M1 68 C14 64 28 71 44 67 C60 63 74 71 89 67 L89 82 L1 82Z" fill="#0D1520"/></svg></div>
+          <div class="cc-info">
+            <div class="cc-name">Death Admin NZ</div>
+            <div class="cc-type">Open circle · Practical help</div>
+          </div>
+        </div>
+        <div class="cc-desc">Cut through the paperwork together. NZ-specific advice on probate, IRD, BDM registration, KiwiSaver, Westpac bereavement, and everything in between.</div>
+        <div class="cc-meta">
+          <div><div class="cc-m-n">9</div><div class="cc-m-l">Members</div></div>
+          <div><div class="cc-m-n">0</div><div class="cc-m-l">Online now</div></div>
+          <div class="cc-avatars">
+            <div class="cc-av" style="background:#4a6a8a;">JM</div>
+            <div class="cc-av" style="background:#3a5a6a;">SW</div>
+          </div>
+        </div>
+        <button class="cc-join-btn" onclick="joinCircle(this)">Join circle</button>
+      </div>
+
+      <!-- New circle card -->
+      <div class="new-circle-card" onclick="createCircle()">
+        <div class="ncc-icon">+</div>
+        <div class="ncc-label">Create a circle</div>
+        <div class="ncc-sub">Start a private group for up to 20 people.<br>You set the topic, the rules, the tone.</div>
+      </div>
+
+    </div>
+  </div><!-- end circles -->
+
+  <!-- ── RIGHT SIDEBAR ── -->
+  <aside class="right-bar">
+
+    <!-- Community stats -->
+    <div class="rb-card">
+      <div class="rb-title">The harbour</div>
+      <div class="rb-sub">A growing community of people navigating life's biggest questions - together.</div>
+      <div class="rb-stats">
+        <div class="rb-stat"><div class="rbs-n">1.2k</div><div class="rbs-l">Members</div></div>
+        <div class="rb-stat"><div class="rbs-n">24</div><div class="rbs-l">Online</div></div>
+        <div class="rb-stat"><div class="rbs-n">18</div><div class="rbs-l">Circles</div></div>
+      </div>
+      <button class="cc-join-btn" style="width:100%;margin-top:4px;" onclick="window.location.href='signin.html'">Join the harbour →</button>
+    </div>
+
+    <!-- Trending -->
+    <div class="rb-card">
+      <div class="rb-title">Trending this week</div>
+      <div class="rb-sub">What the community is talking about.</div>
+      <div class="trend-item">
+        <div class="trend-num">1</div>
+        <div class="trend-body"><div class="trend-title">KiwiSaver claims after death - the complete guide</div><div class="trend-meta">89 replies · Death admin</div></div>
+      </div>
+      <div class="trend-item">
+        <div class="trend-num">2</div>
+        <div class="trend-body"><div class="trend-title">What do you wish someone had told you in the first week?</div><div class="trend-meta">64 replies · Grief</div></div>
+      </div>
+      <div class="trend-item">
+        <div class="trend-num">3</div>
+        <div class="trend-body"><div class="trend-title">Planning your own funeral - a checklist and a conversation</div><div class="trend-meta">41 replies · Planning</div></div>
+      </div>
+      <div class="trend-item">
+        <div class="trend-num">4</div>
+        <div class="trend-body"><div class="trend-title">Share a photo and a memory of someone you've loved</div><div class="trend-meta">203 replies · Celebrating lives</div></div>
+      </div>
+    </div>
+
+    <!-- Suggested circles -->
+    <div class="rb-card">
+      <div class="rb-title">Suggested circles</div>
+      <div class="rb-sub">Based on what you're going through.</div>
+      <div class="suggested-circle">
+        <div class="sc-av" style="background:rgba(107,154,184,.15);"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="#6b9ab8" stroke-width="1.2"><path d="M8 13 C8 13 2 9 2 5 a3 3 0 016 0 3 3 0 016 0 C14 9 8 13 8 13Z"/></svg></div>
+        <div class="sc-body"><div class="sc-name">Wellington Grief Group</div><div class="sc-members">14 members</div></div>
+        <button class="sc-join" onclick="joinCircle(this)">Join</button>
+      </div>
+      <div class="suggested-circle">
+        <div class="sc-av" style="background:rgba(74,158,122,.12);"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="#4a9e7a" stroke-width="1.2"><rect x="2" y="2" width="12" height="12" rx="1"/><line x1="5" y1="6" x2="11" y2="6"/><line x1="5" y1="9" x2="9" y2="9"/></svg></div>
+        <div class="sc-body"><div class="sc-name">Death Admin NZ</div><div class="sc-members">9 members</div></div>
+        <button class="sc-join" onclick="joinCircle(this)">Join</button>
+      </div>
+      <div class="suggested-circle">
+        <div class="sc-av" style="background:rgba(180,130,80,.1);"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="rgba(180,130,80,.8)" stroke-width="1.2"><path d="M3 3h10v8H3z"/><line x1="5" y1="6" x2="11" y2="6"/></svg></div>
+        <div class="sc-body"><div class="sc-name">Celebrating Lives NZ</div><div class="sc-members">18 members</div></div>
+        <button class="sc-join" onclick="joinCircle(this)">Join</button>
+      </div>
+    </div>
+
+  </aside>
+
+</div><!-- end layout -->
+
+<!-- Mobile bottom nav -->
+<div class="mobile-view-tabs">
+  <button class="mvt-btn active" id="mvt-feed" onclick="showView('feed',this);setMobileTab('feed')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M3 5h18M3 10h18M3 15h12"/></svg>
+    Feed
+  </button>
+  <button class="mvt-btn" id="mvt-circles" onclick="showView('circles',this);setMobileTab('circles')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><circle cx="9" cy="9" r="4"/><circle cx="16" cy="15" r="4"/><path d="M13 9h4M9 13v4"/></svg>
+    Circles
+  </button>
+  <button class="mvt-btn" onclick="window.location.href='signin.html'">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+    Sign in
+  </button>
+</div>
+
+<script>
+// Cursor
+const cur=document.getElementById('cur'),cur2=document.getElementById('cur2');
+document.addEventListener('mousemove',e=>{
+  cur.style.left=e.clientX+'px';cur.style.top=e.clientY+'px';
+  cur2.style.left=e.clientX+'px';cur2.style.top=e.clientY+'px';
+});
+
+// View switching
+function showView(id, btn) {
+  document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+  document.getElementById('view-'+id).classList.add('active');
+  if(btn) {
+    document.querySelectorAll('.nav-tab').forEach(t=>t.classList.remove('active'));
+    if(btn.classList.contains('nav-tab')) btn.classList.add('active');
+  }
+}
+
+function setMobileTab(id) {
+  document.querySelectorAll('.mvt-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('mvt-'+id)?.classList.add('active');
+}
+
+// Topic filtering
+function filterTopic(topic, btn) {
+  document.querySelectorAll('.lb-btn').forEach(b => b.classList.remove('active'));
+  if(btn) btn.classList.add('active');
+  document.querySelectorAll('.post-card').forEach(card => {
+    if(topic === 'all' || card.dataset.topic === topic) {
+      card.style.display = '';
+    } else {
+      card.style.display = 'none';
+    }
+  });
+} else {
+      p.style.display='none';
+    }
+  });
+}
+
+// Like toggle
+function toggleLike(btn) {
+  const n = parseInt(btn.textContent.trim());
+  btn.classList.toggle('liked');
+  btn.innerHTML = btn.innerHTML.replace(/\d+/, btn.classList.contains('liked') ? n+1 : n-1);
+}
+
+// Join circle
+function joinCircle(btn) {
+  const card = btn.closest('.circle-card');
+  if(btn.textContent.trim() === 'Join circle' || btn.textContent.trim() === 'Join') {
+    btn.textContent = 'Joined ✓';
+    btn.classList.add('joined');
+    if(card) { card.classList.add('joined'); }
+    setTimeout(()=>{ btn.textContent = 'Open circle →'; },1500);
+  }
+}
+
+function createCircle() {
+  alert('Create your own circle — coming soon! Join the waitlist at aftermatters.co.nz to be notified.');
+}
+</script>
+<div class="lh-watermark" aria-hidden="true"><svg viewBox="0 0 200 260" fill="currentColor" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%;">
+  <path d="M20 230 Q40 210 60 220 Q75 208 95 215 Q110 205 130 212 Q150 205 170 215 Q185 208 200 220 L200 260 L20 260 Z" opacity=".85"/>
+  <path d="M72 215 L74 160 L126 160 L128 215 Z" opacity=".8"/>
+  <path d="M76 160 L79 100 L121 100 L124 160 Z"/>
+  <path d="M80 100 L83 68 L117 68 L120 100 Z"/>
+  <rect x="74" y="63" width="52" height="7" rx="1"/>
+  <path d="M82 63 L85 28 L115 28 L118 63 Z" opacity=".9"/>
+  <path d="M82 28 Q100 14 118 28 Z"/>
+  <line x1="100" y1="14" x2="100" y2="4" stroke="currentColor" stroke-width="3" fill="none"/>
+  <circle cx="100" cy="3" r="3"/>
+  <circle cx="100" cy="44" r="11" fill="#f5c842"/>
+  <path d="M30 80 C34 74 39 71 45 74 C48 75.5 50 80 53 80" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" opacity=".65"/>
+  <path d="M148 90 C152 84 157 81 163 84 C166 85.5 168 90 171 90" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" opacity=".55"/>
+</svg></div>
+<!-- AFTER MATTERS EDITOR -->
+<style>
+/* ── Editor UI ── */
+#am-editor-btn {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  z-index: 99999;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 18px;
+  background: #f5c842;
+  color: #0d1520;
+  border: none;
+  font-family: 'Jost', sans-serif;
+  font-size: .62rem;
+  font-weight: 500;
+  letter-spacing: .18em;
+  text-transform: uppercase;
+  cursor: pointer;
+  box-shadow: 0 4px 24px rgba(0,0,0,.4);
+  transition: all .2s;
+  border-radius: 2px;
+}
+#am-editor-btn:hover { background: #fff; transform: translateY(-1px); box-shadow: 0 6px 32px rgba(0,0,0,.5); }
+#am-editor-btn svg { width: 14px; height: 14px; flex-shrink: 0; }
+#am-editor-btn.editing { background: #4a9e7a; color: #fff; }
+
+/* Save bar */
+#am-save-bar {
+  position: fixed;
+  bottom: 0; left: 0; right: 0;
+  z-index: 99998;
+  background: rgba(13,21,32,.97);
+  border-top: 1px solid rgba(245,200,66,.25);
+  padding: 14px 24px;
+  display: none;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  backdrop-filter: blur(12px);
+  font-family: 'Jost', sans-serif;
+}
+#am-save-bar.visible { display: flex; }
+#am-save-bar-msg {
+  font-size: .72rem;
+  color: rgba(255,255,255,.5);
+  flex: 1;
+}
+#am-save-bar-msg strong { color: #f5c842; font-weight: 400; }
+.am-bar-btn {
+  padding: 9px 20px;
+  font-family: 'Jost', sans-serif;
+  font-size: .6rem;
+  letter-spacing: .16em;
+  text-transform: uppercase;
+  border: none;
+  cursor: pointer;
+  transition: all .2s;
+  border-radius: 2px;
+}
+#am-btn-save { background: #f5c842; color: #0d1520; font-weight: 500; }
+#am-btn-save:hover { background: #fff; }
+#am-btn-cancel { background: rgba(255,255,255,0.35); color: rgba(255,255,255,.5); border: 1px solid rgba(255,255,255,0.38); }
+#am-btn-cancel:hover { background: rgba(255,255,255,0.4); color: #fff; }
+
+/* Editable element styles */
+.am-editable {
+  outline: none;
+  border-radius: 2px;
+  transition: background .15s, box-shadow .15s;
+  position: relative;
+}
+.am-editable:hover {
+  background: rgba(245,200,66,.08) !important;
+  box-shadow: 0 0 0 2px rgba(245,200,66,.2);
+  cursor: text;
+}
+.am-editable:focus {
+  background: rgba(245,200,66,.12) !important;
+  box-shadow: 0 0 0 2px rgba(245,200,66,.5);
+  cursor: text;
+}
+
+/* Edit mode overlay hint */
+#am-edit-hint {
+  position: fixed;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 99999;
+  background: rgba(13,21,32,.95);
+  border: 1px solid rgba(245,200,66,.3);
+  padding: 10px 20px;
+  font-family: 'Jost', sans-serif;
+  font-size: .65rem;
+  letter-spacing: .14em;
+  color: rgba(255,255,255,.6);
+  display: none;
+  align-items: center;
+  gap: 10px;
+  backdrop-filter: blur(8px);
+  pointer-events: none;
+  white-space: nowrap;
+}
+#am-edit-hint.visible { display: flex; }
+#am-edit-hint span { color: #f5c842; }
+
+/* Change counter badge */
+#am-change-count {
+  background: #f5c842;
+  color: #0d1520;
+  font-size: .5rem;
+  font-weight: 600;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  position: absolute;
+  top: -6px;
+  right: -6px;
+}
+#am-editor-btn { position: relative; }
+#am-change-count.visible { display: flex; }
+
+.post-topic { font-size:.58rem; letter-spacing:.12em; text-transform:uppercase; padding:3px 9px; border-radius:2px; white-space:nowrap; font-weight:500; }
+</style>
+
+<!-- Editor button -->
+<button id="am-editor-btn" onclick="amToggleEdit()" title="Edit page text">
+  <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round">
+    <path d="M11 2l3 3-8 8H3v-3L11 2z"/>
+  </svg>
+  Edit Page
+  <span id="am-change-count"></span>
+</button>
+
+<!-- Save bar -->
+<div id="am-save-bar">
+  <div id="am-save-bar-msg">
+    <strong id="am-changes-label">0 changes</strong> made - download your updated file to save permanently.
+  </div>
+  <button class="am-bar-btn" id="am-btn-cancel" onclick="amCancelEdit()">Discard changes</button>
+  <button class="am-bar-btn" id="am-btn-save" onclick="amSavePage()">
+    <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" style="margin-right:6px;vertical-align:middle"><path d="M3 8l4 4 6-8"/></svg>
+    Download updated file
+  </button>
+</div>
+
+<!-- Edit mode hint -->
+<div id="am-edit-hint">
+  <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="#f5c842" stroke-width="1.3"><circle cx="8" cy="8" r="6"/><line x1="8" y1="6" x2="8" y2="8"/><circle cx="8" cy="11" r=".8" fill="#f5c842"/></svg>
+  <span>Edit mode on</span> - click any text to edit it
+</div>
+
+<script>
+(function() {
+  let amEditing = false;
+  let amOriginals = new Map();
+  let amChanges = 0;
+
+  // Tags we'll make editable — text content only, skip scripts/styles/inputs
+  const EDITABLE_TAGS = ['p','h1','h2','h3','h4','h5','h6','span','div','a','li','td','th','label','blockquote','figcaption','small','strong','em','b','i'];
+  // Classes/ids to skip
+  const SKIP_IDS = ['am-editor-btn','am-save-bar','am-edit-hint','am-change-count'];
+  const SKIP_CLASSES = ['am-editable','am-bar-btn','cursor','cursor-ring','tab-bar','tab-item'];
+
+  function shouldSkip(el) {
+    if (!el || !el.id && !el.className) return false;
+    if (SKIP_IDS.some(id => el.id === id)) return true;
+    if (el.closest && el.closest('#am-save-bar, #am-editor-btn, #am-edit-hint')) return true;
+    return false;
+  }
+
+  function isTextLeaf(el) {
+    // Only make elements editable if they contain direct text (not just child elements)
+    if (shouldSkip(el)) return false;
+    const text = Array.from(el.childNodes)
+      .filter(n => n.nodeType === 3)
+      .map(n => n.textContent.trim())
+      .join('');
+    return text.length > 1;
+  }
+
+  window.amToggleEdit = function() {
+    amEditing = !amEditing;
+    const btn = document.getElementById('am-editor-btn');
+    const hint = document.getElementById('am-edit-hint');
+    const saveBar = document.getElementById('am-save-bar');
+
+    if (amEditing) {
+      btn.classList.add('editing');
+      btn.querySelector('svg').style.display = 'none';
+      btn.childNodes[2].textContent = ' Stop Editing';
+      hint.classList.add('visible');
+      saveBar.classList.add('visible');
+      enableEditing();
+    } else {
+      btn.classList.remove('editing');
+      btn.querySelector('svg').style.display = '';
+      btn.childNodes[2].textContent = ' Edit Page';
+      hint.classList.remove('visible');
+      disableEditing();
+    }
+  };
+
+  function enableEditing() {
+    EDITABLE_TAGS.forEach(tag => {
+      document.querySelectorAll(tag).forEach(el => {
+        if (shouldSkip(el)) return;
+        if (!isTextLeaf(el)) return;
+        if (el.classList.contains('am-editable')) return;
+        // Store original
+        if (!amOriginals.has(el)) {
+          amOriginals.set(el, el.innerHTML);
+        }
+        el.classList.add('am-editable');
+        el.contentEditable = 'true';
+        el.spellcheck = true;
+        el.addEventListener('input', amOnInput);
+      });
+    });
+  }
+
+  function disableEditing() {
+    document.querySelectorAll('.am-editable').forEach(el => {
+      el.classList.remove('am-editable');
+      el.contentEditable = 'false';
+    });
+  }
+
+  function amOnInput(e) {
+    const el = e.target;
+    const original = amOriginals.get(el);
+    const changed = el.innerHTML !== original;
+    // Track unique changed elements
+    const changedEls = new Set();
+    amOriginals.forEach((orig, node) => {
+      if (node.innerHTML !== orig) changedEls.add(node);
+    });
+    amChanges = changedEls.size;
+    updateChangeCount();
+  }
+
+  function updateChangeCount() {
+    const badge = document.getElementById('am-change-count');
+    const label = document.getElementById('am-changes-label');
+    if (amChanges > 0) {
+      badge.textContent = amChanges;
+      badge.classList.add('visible');
+    } else {
+      badge.classList.remove('visible');
+    }
+    if (label) label.textContent = amChanges + (amChanges === 1 ? ' change' : ' changes');
+  }
+
+  window.amCancelEdit = function() {
+    // Restore originals
+    amOriginals.forEach((orig, el) => {
+      el.innerHTML = orig;
+    });
+    amChanges = 0;
+    updateChangeCount();
+    amOriginals.clear();
+    amEditing = true;
+    amToggleEdit(); // turn off
+  };
+
+  window.amSavePage = function() {
+    // Turn off editing mode cleanly
+    disableEditing();
+    // Remove editor UI from the clone
+    const clone = document.documentElement.cloneNode(true);
+    // Remove all am-editable classes from clone
+    clone.querySelectorAll('.am-editable').forEach(el => {
+      el.classList.remove('am-editable');
+      el.removeAttribute('contenteditable');
+      el.removeAttribute('spellcheck');
+    });
+    // Get filename from page title or URL
+    const rawTitle = document.title
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/^-|-$/g, '') || 'page';
+    const filename = rawTitle + '.html';
+    // Serialize and download
+    const html = '<!DOCTYPE html>\n' + clone.outerHTML;
+    const blob = new Blob([html], { type: 'text/html;charset=utf-8' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(a.href);
+    // Re-enable editing
+    if (amEditing) enableEditing();
+    // Show success
+    const msg = document.getElementById('am-save-bar-msg');
+    const orig = msg.innerHTML;
+    msg.innerHTML = '<strong style="color:#4a9e7a">✓ File downloaded!</strong> Replace the old file on Netlify to publish your changes.';
+    setTimeout(() => { msg.innerHTML = orig; updateChangeCount(); }, 4000);
+  };
+})();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,1634 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Inner Circle - After Matters</title>
+<link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,wght@0,400;0,600;1,400&family=EB+Garamond:ital,wght@0,400;1,400&family=Jost:wght@200;300;400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+:root{
+  --black:#080808; --ink:#111; --charcoal:#1a1a1a; --graphite:#252525;
+  --panel:#2a2a2a; --mid:#888; --silver:#c0c0c0; --dust:#d0d0d0;
+  --fog:#ccc; --smoke:#e8e8e8; --paper:#f4f3f1; --white:#fefefe;
+  --beam:#f0c040; --beam-dim:rgba(240,192,64,.1);
+  --done:#4a9e7a; --done-dim:rgba(74,158,122,.1);
+  --sb:220px; --chat:300px;
+}
+html{scroll-behavior:smooth;}
+body{font-family:'Jost',sans-serif;background:var(--charcoal);color:var(--white);height:100vh;display:flex;overflow:hidden;cursor:none;}
+
+/* CURSOR */
+.cursor{position:fixed;width:7px;height:7px;background:var(--beam);border-radius:50%;pointer-events:none;z-index:9999;transform:translate(-50%,-50%);}
+.cursor-ring{position:fixed;width:28px;height:28px;border:1px solid rgba(240,192,64,.3);border-radius:50%;pointer-events:none;z-index:9998;transform:translate(-50%,-50%);}
+
+/* ── LEFT SIDEBAR ── */
+.sidebar{
+  width:var(--sb);flex-shrink:0;background:var(--black);
+  display:flex;flex-direction:column;height:100vh;
+  border-right:1px solid rgba(255,255,255,0.33);
+}
+.sb-brand{padding:22px 20px 18px;border-bottom:1px solid rgba(255,255,255,0.33);}
+.sb-logo{font-family:'Bodoni Moda',serif;font-size:.88rem;color:var(--white);display:block;margin-bottom:2px;}
+.sb-sub{font-size:.52rem;letter-spacing:.28em;text-transform:uppercase;color:rgba(255,255,255,0.42);}
+.sb-for{padding:14px 20px;border-bottom:1px solid rgba(255,255,255,0.33);}
+.sb-for-label{font-size:.52rem;letter-spacing:.22em;text-transform:uppercase;color:rgba(255,255,255,0.4);margin-bottom:5px;}
+.sb-for-name{font-family:'Bodoni Moda',serif;font-size:.88rem;font-style:italic;color:rgba(255,255,255,.55);}
+.sb-for-dates{font-size:.6rem;color:rgba(255,255,255,0.42);margin-top:1px;}
+
+.sb-nav{flex:1;padding:12px 0;overflow-y:auto;}
+.sb-nav::-webkit-scrollbar{width:3px;}
+.sb-nav::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.35);}
+.sb-section-lbl{font-size:.5rem;letter-spacing:.3em;text-transform:uppercase;color:rgba(255,255,255,0.38);padding:14px 20px 6px;}
+.sb-btn{
+  display:flex;align-items:center;gap:10px;padding:10px 20px;
+  background:none;border:none;width:100%;text-align:left;cursor:none;
+  border-left:2px solid transparent;transition:background .2s,border-color .2s;
+  position:relative;
+}
+.sb-btn:hover{background:rgba(255,255,255,0.32);}
+.sb-btn.active{background:rgba(240,192,64,.07);border-left-color:var(--beam);}
+.sb-btn-icon{width:26px;height:26px;border-radius:50%;background:rgba(255,255,255,0.33);display:flex;align-items:center;justify-content:center;font-size:.72rem;flex-shrink:0;}
+.sb-btn.active .sb-btn-icon{background:var(--beam-dim);}
+.sb-btn-text{font-size:.7rem;font-weight:300;color:rgba(255,255,255,0.54);transition:color .2s;flex:1;}
+.sb-btn:hover .sb-btn-text,.sb-btn.active .sb-btn-text{color:var(--white);}
+.sb-badge{font-size:.52rem;background:var(--beam);color:var(--black);padding:2px 6px;border-radius:8px;font-weight:500;}
+.sb-unread{font-size:.52rem;background:rgba(240,192,64,.2);color:var(--beam);padding:2px 6px;border-radius:8px;}
+
+/* Members in sidebar */
+.sb-member{display:flex;align-items:center;gap:10px;padding:8px 20px;cursor:none;transition:background .2s;}
+.sb-member:hover{background:rgba(255,255,255,0.32);}
+.member-avatar{width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.65rem;font-weight:500;flex-shrink:0;color:var(--black);}
+.member-info{flex:1;min-width:0;}
+.member-name{font-size:.7rem;color:rgba(255,255,255,.5);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.member-role{font-size:.58rem;color:rgba(255,255,255,0.44);}
+.online-dot{width:6px;height:6px;border-radius:50%;background:var(--done);flex-shrink:0;}
+.offline-dot{width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,0.37);flex-shrink:0;}
+
+.sb-footer{padding:16px 20px;border-top:1px solid rgba(255,255,255,0.33);}
+.sb-footer-text{font-size:.58rem;color:rgba(255,255,255,0.4);line-height:1.5;}
+
+/* ── MAIN CONTENT ── */
+.main{flex:1;display:flex;flex-direction:column;min-width:0;height:100vh;}
+
+/* Topbar */
+.topbar{
+  background:rgba(8,8,8,.95);backdrop-filter:blur(12px);
+  border-bottom:1px solid rgba(255,255,255,0.33);
+  padding:14px 28px;display:flex;align-items:center;justify-content:space-between;
+  flex-shrink:0;
+}
+.tb-title{font-family:'Bodoni Moda',serif;font-size:.95rem;color:var(--white);display:flex;align-items:center;gap:12px;}
+.tb-title::before{content:'';display:block;width:16px;height:1px;background:var(--beam);}
+.tb-right{display:flex;align-items:center;gap:12px;}
+.tb-chip{font-size:.58rem;letter-spacing:.16em;text-transform:uppercase;border:1px solid rgba(255,255,255,0.36);color:rgba(255,255,255,0.48);padding:6px 12px;}
+.tb-btn{font-size:.6rem;letter-spacing:.16em;text-transform:uppercase;background:var(--beam);color:var(--black);border:none;padding:8px 18px;font-family:'Jost',sans-serif;font-weight:500;cursor:none;transition:background .3s;}
+.tb-btn:hover{background:var(--white);}
+
+/* Content area */
+.content{flex:1;display:flex;min-height:0;}
+
+/* ── PANELS ── */
+.view{display:none;flex:1;flex-direction:column;min-width:0;min-height:0;}
+.view.active{display:flex;}
+
+/* ── TASKS VIEW ── */
+.tasks-layout{display:flex;flex:1;min-height:0;}
+.tasks-main{flex:1;overflow-y:auto;padding:28px 32px;}
+.tasks-main::-webkit-scrollbar{width:4px;}
+.tasks-main::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.36);}
+
+/* Progress bar */
+.tasks-progress{background:var(--graphite);padding:20px 24px;margin-bottom:20px;display:flex;align-items:center;gap:20px;flex-shrink:0;}
+.tp-label{font-size:.6rem;letter-spacing:.22em;text-transform:uppercase;color:var(--silver);white-space:nowrap;}
+.tp-track{flex:1;height:3px;background:rgba(255,255,255,0.35);border-radius:2px;}
+.tp-fill{height:100%;background:linear-gradient(to right,var(--done),var(--beam));border-radius:2px;transition:width .6s ease;}
+.tp-pct{font-family:'Bodoni Moda',serif;font-size:1rem;color:var(--beam);min-width:36px;text-align:right;}
+
+/* Task section */
+.task-section{margin-bottom:6px;}
+.task-section-hd{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:10px 0;border-bottom:1px solid rgba(255,255,255,0.33);margin-bottom:6px;cursor:none;
+}
+.tsh-left{display:flex;align-items:center;gap:10px;}
+.tsh-name{font-size:.62rem;letter-spacing:.28em;text-transform:uppercase;color:var(--silver);}
+.tsh-count{font-size:.58rem;color:rgba(255,255,255,0.42);}
+.tsh-toggle{font-size:.65rem;color:rgba(255,255,255,0.42);background:none;border:none;cursor:none;transition:color .2s;font-family:'Jost',sans-serif;}
+.tsh-toggle:hover{color:var(--beam);}
+
+/* Task item */
+.task-item{
+  background:var(--graphite);border:1px solid rgba(255,255,255,0.32);
+  padding:16px 18px;margin-bottom:3px;
+  display:grid;grid-template-columns:22px 1fr auto;gap:14px;align-items:start;
+  transition:background .2s,border-color .2s;
+  position:relative;
+}
+.task-item:hover{background:var(--panel);border-color:rgba(255,255,255,0.36);}
+.task-item.done{opacity:.55;}
+.task-item.done .task-title{text-decoration:line-through;text-decoration-color:rgba(255,255,255,0.42);}
+
+/* Checkbox */
+.task-cb{
+  width:20px;height:20px;border-radius:50%;border:1.5px solid rgba(255,255,255,0.4);
+  display:flex;align-items:center;justify-content:center;
+  cursor:none;flex-shrink:0;margin-top:1px;
+  transition:all .25s;background:transparent;
+}
+.task-cb:hover{border-color:var(--done);}
+.task-item.done .task-cb{background:var(--done);border-color:var(--done);}
+.task-cb svg{display:none;width:10px;height:10px;}
+.task-item.done .task-cb svg{display:block;}
+
+.task-body{}
+.task-title{font-size:.82rem;color:var(--white);margin-bottom:5px;line-height:1.4;}
+.task-meta{display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
+.task-assignee{display:flex;align-items:center;gap:5px;}
+.assignee-avatar{width:18px;height:18px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.52rem;font-weight:500;color:var(--black);flex-shrink:0;}
+.assignee-name{font-size:.65rem;color:var(--silver);}
+.task-due{font-size:.62rem;color:var(--dust);}
+.task-due.overdue{color:#e07a5a;}
+.task-tag{font-size:.55rem;letter-spacing:.15em;text-transform:uppercase;border:1px solid rgba(255,255,255,0.36);color:rgba(255,255,255,0.43);padding:2px 8px;}
+.task-actions{display:flex;gap:6px;align-items:flex-start;flex-shrink:0;}
+.task-action-btn{background:none;border:none;cursor:none;font-size:.68rem;color:rgba(255,255,255,0.4);padding:4px;transition:color .2s;font-family:'Jost',sans-serif;}
+.task-action-btn:hover{color:var(--beam);}
+
+/* Thread indicator */
+.task-thread{
+  margin-top:8px;padding-top:8px;border-top:1px solid rgba(255,255,255,0.33);
+  display:flex;align-items:center;gap:8px;cursor:none;
+}
+.task-thread:hover .thread-label{color:var(--beam);}
+.thread-avatars{display:flex;}
+.thread-avatar{width:16px;height:16px;border-radius:50%;border:1px solid var(--graphite);margin-right:-4px;display:flex;align-items:center;justify-content:center;font-size:.45rem;font-weight:500;color:var(--black);}
+.thread-label{font-size:.62rem;color:rgba(255,255,255,0.43);transition:color .2s;}
+.thread-dot{width:5px;height:5px;border-radius:50%;background:var(--beam);margin-left:auto;}
+
+/* Add task */
+.add-task-bar{
+  padding:20px 32px;background:var(--charcoal);border-top:1px solid rgba(255,255,255,0.33);flex-shrink:0;
+  display:flex;gap:10px;align-items:center;
+}
+.add-task-input{
+  flex:1;padding:11px 16px;background:rgba(255,255,255,0.33);
+  border:1px solid rgba(255,255,255,0.36);
+  font-family:'Jost',sans-serif;font-size:.82rem;font-weight:300;
+  color:var(--white);outline:none;transition:border-color .3s;
+}
+.add-task-input::placeholder{color:rgba(255,255,255,0.42);}
+.add-task-input:focus{border-color:rgba(240,192,64,.4);}
+.add-task-select{
+  padding:11px 14px;background:rgba(255,255,255,0.33);
+  border:1px solid rgba(255,255,255,0.36);
+  font-family:'Jost',sans-serif;font-size:.72rem;color:var(--dust);
+  outline:none;cursor:none;
+}
+.add-task-btn{
+  background:var(--beam);color:var(--black);border:none;
+  padding:11px 22px;font-family:'Jost',sans-serif;
+  font-size:.62rem;font-weight:500;letter-spacing:.15em;text-transform:uppercase;
+  cursor:none;transition:background .3s;white-space:nowrap;
+}
+.add-task-btn:hover{background:var(--white);}
+
+/* Task thread panel */
+.task-thread-panel{
+  width:320px;flex-shrink:0;background:var(--black);
+  border-left:1px solid rgba(255,255,255,0.33);
+  display:flex;flex-direction:column;
+  transition:width .3s;
+}
+.task-thread-panel.closed{width:0;overflow:hidden;}
+.ttp-header{
+  padding:16px 20px;border-bottom:1px solid rgba(255,255,255,0.33);
+  display:flex;align-items:center;justify-content:space-between;flex-shrink:0;
+}
+.ttp-title{font-family:'Bodoni Moda',serif;font-size:.9rem;color:var(--white);}
+.ttp-close{background:none;border:none;cursor:none;color:rgba(255,255,255,0.43);font-size:.9rem;transition:color .2s;font-family:'Jost',sans-serif;}
+.ttp-close:hover{color:var(--white);}
+.ttp-task-ref{
+  padding:12px 20px;background:var(--beam-dim);border-bottom:1px solid rgba(255,255,255,0.33);flex-shrink:0;
+}
+.ttp-task-name{font-size:.75rem;color:var(--beam);}
+.ttp-task-assignee{font-size:.62rem;color:rgba(255,255,255,0.48);margin-top:2px;}
+
+/* ── CHAT VIEWS (shared layout) ── */
+.chat-layout{display:flex;flex:1;min-height:0;}
+.chat-list{
+  width:220px;flex-shrink:0;background:var(--black);
+  border-right:1px solid rgba(255,255,255,0.33);
+  display:flex;flex-direction:column;
+}
+.cl-header{padding:16px 18px;border-bottom:1px solid rgba(255,255,255,0.33);flex-shrink:0;}
+.cl-title{font-size:.58rem;letter-spacing:.28em;text-transform:uppercase;color:rgba(255,255,255,0.42);}
+.cl-items{flex:1;overflow-y:auto;}
+.cl-items::-webkit-scrollbar{width:3px;}
+.cl-items::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.35);}
+.cl-item{
+  padding:12px 18px;cursor:none;border-left:2px solid transparent;
+  transition:background .2s,border-color .2s;
+  display:flex;align-items:center;gap:10px;
+}
+.cl-item:hover{background:rgba(255,255,255,0.32);}
+.cl-item.active{background:rgba(240,192,64,.06);border-left-color:var(--beam);}
+.cl-item-icon{font-size:.85rem;flex-shrink:0;opacity:.7;}
+.cl-item-body{flex:1;min-width:0;}
+.cl-item-name{font-size:.72rem;color:rgba(255,255,255,.55);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.cl-item.active .cl-item-name{color:var(--white);}
+.cl-item-preview{font-size:.62rem;color:rgba(255,255,255,0.42);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:2px;}
+.cl-item-unread{width:16px;height:16px;border-radius:50%;background:var(--beam);color:var(--black);font-size:.5rem;font-weight:500;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+
+/* Chat window */
+.chat-window{flex:1;display:flex;flex-direction:column;min-height:0;}
+.cw-header{
+  padding:14px 24px;border-bottom:1px solid rgba(255,255,255,0.33);
+  display:flex;align-items:center;gap:14px;flex-shrink:0;background:rgba(8,8,8,.5);
+}
+.cw-header-icon{font-size:1rem;opacity:.7;}
+.cw-header-name{font-family:'Bodoni Moda',serif;font-size:.95rem;color:var(--white);}
+.cw-header-desc{font-size:.62rem;color:rgba(255,255,255,0.43);margin-top:1px;}
+.cw-header-right{margin-left:auto;display:flex;gap:8px;}
+.cw-hbtn{font-size:.58rem;letter-spacing:.15em;text-transform:uppercase;border:1px solid rgba(255,255,255,0.38);color:rgba(255,255,255,0.48);padding:6px 12px;background:none;cursor:none;transition:all .3s;font-family:'Jost',sans-serif;}
+.cw-hbtn:hover{border-color:var(--beam);color:var(--beam);}
+
+/* Messages */
+.cw-messages{flex:1;overflow-y:auto;padding:20px 24px;display:flex;flex-direction:column;gap:16px;}
+.cw-messages::-webkit-scrollbar{width:4px;}
+.cw-messages::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.35);}
+
+.msg-group{display:flex;gap:10px;align-items:flex-start;}
+.msg-group.mine{flex-direction:row-reverse;}
+.msg-avatar{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.65rem;font-weight:500;color:var(--black);flex-shrink:0;margin-top:2px;}
+.msg-content{max-width:70%;display:flex;flex-direction:column;gap:4px;}
+.msg-group.mine .msg-content{align-items:flex-end;}
+.msg-sender{font-size:.6rem;color:rgba(255,255,255,0.48);letter-spacing:.06em;}
+.msg-bubble{
+  padding:10px 14px;font-size:.8rem;font-weight:300;line-height:1.7;
+  color:rgba(255,255,255,.85);background:var(--graphite);border-radius:2px;
+}
+.msg-group.mine .msg-bubble{background:rgba(240,192,64,.12);color:var(--white);}
+.msg-time{font-size:.58rem;color:rgba(255,255,255,0.4);}
+
+/* System message */
+.sys-msg{
+  text-align:center;font-size:.62rem;color:rgba(255,255,255,0.42);
+  padding:6px 14px;background:rgba(255,255,255,0.31);
+  border-radius:2px;align-self:center;
+}
+
+/* Task reference in chat */
+.task-ref-bubble{
+  background:var(--beam-dim);border:1px solid rgba(240,192,64,.15);
+  padding:10px 14px;margin-bottom:4px;
+  display:flex;align-items:center;gap:10px;
+}
+.trb-icon{font-size:.85rem;opacity:.7;}
+.trb-text{font-size:.72rem;color:var(--beam);}
+.trb-sub{font-size:.62rem;color:rgba(255,255,255,0.48);margin-top:1px;}
+
+/* AI message */
+.ai-bubble{
+  background:rgba(255,255,255,0.32);border:1px solid rgba(255,255,255,0.35);
+  padding:14px 16px;
+}
+.ai-header{font-size:.58rem;letter-spacing:.2em;text-transform:uppercase;color:var(--beam);margin-bottom:8px;display:flex;align-items:center;gap:8px;}
+.ai-header::before{content:'';display:block;width:14px;height:1px;background:var(--beam);}
+.ai-text{font-family:'EB Garamond',serif;font-style:italic;font-size:.88rem;line-height:1.8;color:rgba(255,255,255,.65);}
+
+/* Chat input */
+.cw-input-wrap{
+  padding:16px 24px;border-top:1px solid rgba(255,255,255,0.33);
+  display:flex;gap:10px;align-items:flex-end;flex-shrink:0;
+  background:rgba(8,8,8,.5);
+}
+.cw-input{
+  flex:1;padding:11px 16px;background:rgba(255,255,255,0.33);
+  border:1px solid rgba(255,255,255,0.35);
+  font-family:'Jost',sans-serif;font-size:.82rem;font-weight:300;
+  color:var(--white);outline:none;resize:none;
+  transition:border-color .3s;min-height:42px;max-height:120px;
+}
+.cw-input::placeholder{color:rgba(255,255,255,0.42);}
+.cw-input:focus{border-color:rgba(240,192,64,.35);}
+.cw-send{
+  width:40px;height:40px;background:var(--beam);border:none;cursor:none;
+  display:flex;align-items:center;justify-content:center;
+  font-size:.85rem;transition:background .3s;flex-shrink:0;
+  font-family:'Jost',sans-serif;
+}
+.cw-send:hover{background:var(--white);}
+.cw-attach{
+  width:40px;height:40px;background:rgba(255,255,255,0.34);border:1px solid rgba(255,255,255,0.36);
+  cursor:none;display:flex;align-items:center;justify-content:center;
+  font-size:.85rem;transition:all .3s;flex-shrink:0;font-family:'Jost',sans-serif;
+}
+.cw-attach:hover{border-color:var(--beam);color:var(--beam);}
+
+/* ── AI ASSISTANT VIEW ── */
+.ai-view{flex:1;display:flex;flex-direction:column;min-height:0;}
+.ai-hero{
+  padding:32px 36px;background:var(--black);border-bottom:1px solid rgba(255,255,255,0.33);flex-shrink:0;
+  position:relative;overflow:hidden;
+}
+.ai-hero::after{
+  content:'';position:absolute;right:32px;top:50%;transform:translateY(-50%);
+  width:80px;height:96px;opacity:.04;pointer-events:none;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 36 44' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='18' cy='8' r='7' stroke='white' stroke-width='1.5'/%3E%3Cline x1='18' y1='15' x2='18' y2='34' stroke='white' stroke-width='1.5'/%3E%3Cline x1='4' y1='18' x2='32' y2='18' stroke='white' stroke-width='1.5'/%3E%3Cpath d='M18 34 Q6 30 4 34 Q8 42 14 40 L18 34Z' stroke='white' stroke-width='1.4' fill='none'/%3E%3Cpath d='M18 34 Q30 30 32 34 Q28 42 22 40 L18 34Z' stroke='white' stroke-width='1.4' fill='none'/%3E%3C/svg%3E");
+  background-size:contain;background-repeat:no-repeat;background-position:center;
+}
+.ai-hero-badge{font-size:.55rem;letter-spacing:.35em;text-transform:uppercase;color:var(--beam);margin-bottom:8px;display:flex;align-items:center;gap:10px;}
+.ai-hero-badge::before{content:'';display:block;width:16px;height:1px;background:var(--beam);}
+.ai-hero-title{font-family:'Bodoni Moda',serif;font-size:1.4rem;color:var(--white);margin-bottom:6px;}
+.ai-hero-sub{font-size:.78rem;font-weight:300;color:var(--silver);max-width:500px;line-height:1.7;}
+.ai-suggestions{
+  display:flex;gap:8px;padding:16px 36px;border-bottom:1px solid rgba(255,255,255,0.33);
+  flex-wrap:wrap;flex-shrink:0;background:rgba(255,255,255,0.3);
+}
+.ai-suggestion{
+  font-size:.68rem;font-weight:300;
+  border:1px solid rgba(255,255,255,0.38);color:rgba(255,255,255,0.52);
+  padding:7px 14px;cursor:none;transition:all .25s;background:none;
+  font-family:'Jost',sans-serif;text-align:left;
+}
+.ai-suggestion:hover{border-color:var(--beam);color:var(--beam);}
+
+/* ANIMS */
+@keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+@keyframes popIn{from{opacity:0;transform:scale(.96)}to{opacity:1;transform:scale(1)}}
+.new-msg{animation:popIn .25s ease;}
+
+/* ── MOBILE ── */
+@media (max-width: 768px) {
+  body { cursor: auto; overflow: hidden; display: flex; flex-direction: column; height: 100dvh; }
+  .cursor, .cursor-ring { display: none; }
+  * { cursor: auto !important; }
+
+  /* Sidebar hidden on mobile — use bottom nav */
+  .sidebar { display: none; }
+
+  .main { height: 100dvh; flex: 1; }
+
+  .topbar { padding: 10px 16px; }
+  .tb-title { font-size: .82rem; gap: 8px; }
+  .tb-title::before { width: 10px; }
+  .tb-right { gap: 8px; }
+  .tb-chip { display: none; }
+  .tb-btn { padding: 7px 12px; font-size: .56rem; }
+
+  /* Mobile bottom nav */
+  body::after {
+    content: '';
+    display: block;
+    height: 60px;
+    flex-shrink: 0;
+  }
+  .mobile-tabs {
+    display: flex !important;
+    position: fixed;
+    bottom: 0; left: 0; right: 0;
+    height: 60px;
+    background: rgba(6,6,6,.97);
+    border-top: 1px solid rgba(255,255,255,0.34);
+    z-index: 200;
+    padding-bottom: env(safe-area-inset-bottom, 0);
+  }
+  .mt-btn {
+    flex: 1; display: flex; flex-direction: column; align-items: center;
+    justify-content: center; gap: 3px;
+    background: none; border: none; color: rgba(255,255,255,0.46);
+    font-family: 'Jost', sans-serif; font-size: .48rem;
+    letter-spacing: .12em; text-transform: uppercase;
+    padding-top: 8px;
+  }
+  .mt-btn.active { color: var(--beam); }
+  .mt-btn svg { width: 20px; height: 20px; }
+
+  /* Tasks */
+  .tasks-layout { flex-direction: column; }
+  .tasks-main { padding: 16px; }
+  .tasks-progress { padding: 14px 16px; gap: 12px; flex-wrap: wrap; }
+  .tp-label { font-size: .54rem; }
+
+  .task-item { padding: 12px; gap: 10px; }
+  .task-item-top { flex-wrap: wrap; gap: 8px; }
+  .ti-title { font-size: .78rem; }
+  .ti-meta { flex-wrap: wrap; gap: 6px; }
+  .ti-assign { display: none; }
+  .thread-panel { display: none !important; }
+
+  /* Chat */
+  .chat-layout { flex-direction: column; }
+  .chat-sidebar { display: none; }
+  .chat-area { flex: 1; display: flex; flex-direction: column; }
+  .chat-messages { flex: 1; padding: 14px 16px; }
+  .msg-bubble { max-width: 88%; }
+  .msg-text { font-size: .8rem; }
+  .chat-input-wrap { padding: 10px 14px; }
+  .chat-input { font-size: .85rem; }
+  .send-btn { padding: 10px 14px; }
+
+  /* DMs */
+  .dm-layout { flex-direction: column; }
+  .dm-list { width: 100%; height: auto; max-height: 180px; border-right: none; border-bottom: 1px solid rgba(255,255,255,0.35); overflow-y: auto; }
+  .dm-convo { flex: 1; }
+
+  /* Guide */
+  .guide-layout { flex-direction: column; }
+  .guide-panel { flex: 1; padding: 16px; }
+  .guide-input-row { flex-wrap: wrap; gap: 6px; }
+  .guide-input { font-size: .85rem; }
+  .guide-bubble-text { font-size: .88rem; }
+  .guide-chips { flex-wrap: wrap; }
+}
+.mobile-tabs { display: none; }
+
+/* ── WARM ICON STYLE (global) ── */
+.icon-circle {
+  width:48px;height:48px;border-radius:50%;
+  display:inline-flex;align-items:center;justify-content:center;
+  flex-shrink:0;
+}
+.icon-circle svg { display:block; }
+
+.sb-photo-wrap {
+  position:relative;overflow:hidden;
+  flex-shrink:0;height:180px;
+  background-image:url('data:image/jpeg;base64,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');
+  background-size:cover;background-position:center;
+  border-bottom:1px solid rgba(255,255,255,.06);
+}
+.sb-photo-wrap::after {
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(to bottom, transparent 30%, var(--black) 100%);
+}
+@media(max-width:768px){.sb-photo-wrap{display:none;}}
+
+/* Logo lighthouse watermark */
+.lh-watermark {
+  position:fixed;bottom:20px;right:20px;
+  width:44px;height:57px;
+  color:rgba(255,255,255,.04);
+  pointer-events:none;z-index:0;
+  animation:gentleFloat 8s ease-in-out infinite;
+}
+@keyframes gentleFloat{0%,100%{transform:translateY(0);}50%{transform:translateY(-5px);}}
+@media(max-width:768px){.lh-watermark{width:32px;height:42px;opacity:.6;}}
+</style>
+</head>
+<body>
+<div class="cursor" id="cur"></div>
+<div class="cursor-ring" id="cur2"></div>
+
+<!-- ── LEFT SIDEBAR ── -->
+<aside class="sidebar">
+  <div class="sb-photo-wrap"></div><div class="sb-brand">
+    <span class="sb-logo"><img src="data:image/png;base64,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" alt="After Matters" style="height:28px;width:auto;display:block;"></span>
+    <span class="sb-sub">Inner Circle</span>
+  </div>
+  <div class="sb-for">
+    <div class="sb-for-label">For</div>
+    <div class="sb-for-name">Brian "Buzz" Bee</div>
+    <div class="sb-for-dates">23 Jul 1949 - 13 Aug 2024</div>
+  </div>
+  <nav class="sb-nav">
+    <div class="sb-section-lbl">Workspace</div>
+    <button class="sb-btn active" onclick="showView('tasks')">
+      <div style="width:32px;height:32px;flex-shrink:0;"><svg width="32" height="32" viewBox="0 0 90 90" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="45" cy="45" r="44" fill="#f5c842"/><circle cx="45" cy="18" r="7" fill="none" stroke="#0D1520" stroke-width="5.5"/>
+  <rect x="42.5" y="24" width="5" height="38" fill="#0D1520" rx="2"/>
+  <rect x="19" y="29" width="52" height="6" fill="#0D1520" rx="3"/>
+  <circle cx="19" cy="32" r="5.5" fill="#0D1520"/>
+  <circle cx="71" cy="32" r="5.5" fill="#0D1520"/>
+  <path d="M45 62 Q26 62 20 73 L28 67 L26 76 L37 72 Q37 65 45 65Z" fill="#0D1520"/>
+  <path d="M45 62 Q64 62 70 73 L62 67 L64 76 L53 72 Q53 65 45 65Z" fill="#0D1520"/>
+  <circle cx="45" cy="63" r="4" fill="#0D1520"/></svg></div>
+      <span class="sb-btn-text">Tasks & Delegation</span>
+      <span class="sb-badge">5</span>
+    </button>
+    <button class="sb-btn" onclick="showView('group')">
+      <div style="width:32px;height:32px;flex-shrink:0;"><svg width="32" height="32" viewBox="0 0 90 90" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="45" cy="45" r="44" fill="#f5c842"/><circle cx="45" cy="45" r="28" fill="none" stroke="#0D1520" stroke-width="11"/>
+  <path d="M45 17 A28 28 0 0 1 73 45" stroke="#0D1520" stroke-width="11" fill="none"/>
+  <path d="M73 45 A28 28 0 0 1 45 73" stroke="#C8943A" stroke-width="11" fill="none"/>
+  <path d="M45 73 A28 28 0 0 1 17 45" stroke="#0D1520" stroke-width="11" fill="none"/>
+  <path d="M17 45 A28 28 0 0 1 45 17" stroke="#C8943A" stroke-width="11" fill="none"/>
+  <circle cx="45" cy="45" r="14" fill="#f5c842"/>
+  <rect x="42" y="8" width="6" height="9" fill="#0D1520" rx="2"/>
+  <rect x="42" y="73" width="6" height="9" fill="#0D1520" rx="2"/>
+  <rect x="8" y="42" width="9" height="6" fill="#0D1520" rx="2"/>
+  <rect x="73" y="42" width="9" height="6" fill="#0D1520" rx="2"/></svg></div>
+      <span class="sb-btn-text">Group Chat</span>
+      <span class="sb-unread">3</span>
+    </button>
+    <button class="sb-btn" onclick="showView('dm')">
+      <div style="width:32px;height:32px;flex-shrink:0;"><svg width="32" height="32" viewBox="0 0 90 90" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="45" cy="45" r="44" fill="#f5c842"/><circle cx="45" cy="45" r="36" fill="none" stroke="#0D1520" stroke-width="3.5"/>
+  <path d="M45 9 L49.5 40 L45 37 L40.5 40 Z" fill="#0D1520"/>
+  <path d="M45 81 L48.5 52 L45 55 L41.5 52 Z" fill="#0D1520" opacity=".65"/>
+  <path d="M81 45 L52 41.5 L55 45 L52 48.5 Z" fill="#0D1520" opacity=".65"/>
+  <path d="M9 45 L38 41.5 L35 45 L38 48.5 Z" fill="#0D1520" opacity=".65"/>
+  <path d="M45 45 L24 24 L38 38 Z" fill="#0D1520" opacity=".4"/>
+  <path d="M45 45 L66 24 L52 38 Z" fill="#0D1520" opacity=".4"/>
+  <path d="M45 45 L24 66 L38 52 Z" fill="#0D1520" opacity=".4"/>
+  <path d="M45 45 L66 66 L52 52 Z" fill="#0D1520" opacity=".4"/>
+  <circle cx="45" cy="45" r="8" fill="#0D1520"/>
+  <circle cx="45" cy="45" r="3.5" fill="#f5c842"/>
+  <rect x="43" y="9" width="4" height="7" fill="#C8943A" rx="1.5"/></svg></div>
+      <span class="sb-btn-text">Direct Messages</span>
+    </button>
+    <button class="sb-btn" onclick="showView('ai')">
+      <div style="width:32px;height:32px;flex-shrink:0;"><svg width="32" height="32" viewBox="0 0 90 90" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="45" cy="45" r="44" fill="#f5c842"/><circle cx="45" cy="45" r="30" fill="none" stroke="#0D1520" stroke-width="7"/>
+  <rect x="43" y="15" width="4" height="20" fill="#0D1520" rx="2"/>
+  <rect x="43" y="55" width="4" height="20" fill="#0D1520" rx="2"/>
+  <rect x="15" y="43" width="20" height="4" fill="#0D1520" rx="2"/>
+  <rect x="55" y="43" width="20" height="4" fill="#0D1520" rx="2"/>
+  <rect x="43" y="15" width="4" height="20" fill="#0D1520" rx="2" transform="rotate(45 45 45)"/>
+  <rect x="43" y="55" width="4" height="20" fill="#0D1520" rx="2" transform="rotate(45 45 45)"/>
+  <rect x="15" y="43" width="20" height="4" fill="#0D1520" rx="2" transform="rotate(45 45 45)"/>
+  <rect x="55" y="43" width="20" height="4" fill="#0D1520" rx="2" transform="rotate(45 45 45)"/>
+  <circle cx="45" cy="15" r="5" fill="#0D1520"/>
+  <circle cx="45" cy="75" r="5" fill="#0D1520"/>
+  <circle cx="15" cy="45" r="5" fill="#0D1520"/>
+  <circle cx="75" cy="45" r="5" fill="#0D1520"/>
+  <circle cx="24" cy="24" r="4.5" fill="#0D1520"/>
+  <circle cx="66" cy="66" r="4.5" fill="#0D1520"/>
+  <circle cx="66" cy="24" r="4.5" fill="#0D1520"/>
+  <circle cx="24" cy="66" r="4.5" fill="#0D1520"/>
+  <circle cx="45" cy="45" r="10" fill="#0D1520"/>
+  <circle cx="45" cy="45" r="4.5" fill="#f5c842"/></svg></div>
+      <span class="sb-btn-text">Ask the Guide</span>
+      <span class="sb-badge" style="background:var(--beam-dim);color:var(--beam);border:1px solid rgba(240,192,64,.2);">AI</span>
+    </button>
+
+    <div class="sb-section-lbl" style="margin-top:8px;">Inner Circle</div>
+    <div class="sb-member">
+      <div class="member-avatar" style="background:#c8943a;">SB</div>
+      <div class="member-info"><div class="member-name">Sarah Bee</div><div class="member-role">Daughter · Organiser</div></div>
+      <div class="online-dot"></div>
+    </div>
+    <div class="sb-member">
+      <div class="member-avatar" style="background:#6b9ab8;">MT</div>
+      <div class="member-info"><div class="member-name">Mike Thompson</div><div class="member-role">Family friend</div></div>
+      <div class="online-dot"></div>
+    </div>
+    <div class="sb-member">
+      <div class="member-avatar" style="background:#7a9168;">AN</div>
+      <div class="member-info"><div class="member-name">Aroha Ngata</div><div class="member-role">Family friend</div></div>
+      <div class="offline-dot"></div>
+    </div>
+    <div class="sb-member">
+      <div class="member-avatar" style="background:#8c8278;">JB</div>
+      <div class="member-info"><div class="member-name">Jenny Bee</div><div class="member-role">Wife</div></div>
+      <div class="offline-dot"></div>
+    </div>
+    <button class="sb-btn" style="margin-top:4px;" onclick="alert('Invite sent!')">
+      <div class="sb-btn-icon" style="font-size:.65rem;">+</div>
+      <span class="sb-btn-text">Invite someone</span>
+    </button>
+  </nav>
+  <div class="sb-footer">
+    <div class="sb-footer-text">aftermatters.co.nz<br>Private & secure</div>
+  </div>
+</aside>
+
+<!-- ── MAIN ── -->
+<div class="main">
+  <div class="topbar">
+    <div class="tb-title" id="tbTitle">Tasks & Delegation</div>
+    <div class="tb-right">
+      <div class="tb-chip" id="tbChip">5 tasks remaining</div>
+      <button class="tb-btn" onclick="showView('ai')">Ask the Guide ◈</button>
+    </div>
+  </div>
+
+  <div class="content">
+
+    <!-- ── TASKS VIEW ── -->
+    <div class="view active" id="view-tasks">
+      <div class="tasks-layout">
+        <div style="flex:1;display:flex;flex-direction:column;min-height:0;">
+
+          <!-- Progress -->
+          <div class="tasks-progress">
+            <span class="tp-label">Circle progress</span>
+            <div class="tp-track"><div class="tp-fill" id="progressFill" style="width:38%"></div></div>
+            <span class="tp-pct" id="progressPct">38%</span>
+          </div>
+
+          <div class="tasks-main" id="tasksMain">
+
+            <!-- Section: Urgent -->
+            <div class="task-section">
+              <div class="task-section-hd">
+                <div class="tsh-left"><span class="tsh-name">Urgent</span><span class="tsh-count">2 remaining</span></div>
+                <button class="tsh-toggle" onclick="toggleSection(this)">Hide</button>
+              </div>
+              <div class="section-body">
+                <div class="task-item" id="task1">
+                  <button class="task-cb" onclick="toggleTask('task1')">
+                    <svg viewBox="0 0 10 10" fill="none"><path d="M1.5 5l3 3 4-4" stroke="white" stroke-width="1.6" stroke-linecap="round"/></svg>
+                  </button>
+                  <div class="task-body">
+                    <div class="task-title">Register the death with Births, Deaths & Marriages NZ</div>
+                    <div class="task-meta">
+                      <div class="task-assignee">
+                        <div class="assignee-avatar" style="background:#c8943a;">SB</div>
+                        <span class="assignee-name">Sarah Bee</span>
+                      </div>
+                      <span class="task-due overdue">Due: 18 Aug</span>
+                      <span class="task-tag">Legal</span>
+                    </div>
+                    <div class="task-thread" onclick="openThread('task1','Register the death with BDM NZ','Assigned to Sarah Bee')">
+                      <div class="thread-avatars">
+                        <div class="thread-avatar" style="background:#c8943a;">SB</div>
+                        <div class="thread-avatar" style="background:#6b9ab8;">MT</div>
+                      </div>
+                      <span class="thread-label">2 messages in thread</span>
+                      <div class="thread-dot"></div>
+                    </div>
+                  </div>
+                  <div class="task-actions">
+                    <button class="task-action-btn" onclick="openThread('task1','Register the death with BDM NZ','Assigned to Sarah Bee')" title="Open thread"><svg width="13" height="12" viewBox="0 0 13 12" fill="none"><path d="M1 1h11v8H8L6.5 11 5 9H1Z" fill="none" stroke="currentColor" stroke-width=".9"/></svg></button>
+                    <button class="task-action-btn" title="Reassign">↗</button>
+                  </div>
+                </div>
+
+                <div class="task-item" id="task2">
+                  <button class="task-cb" onclick="toggleTask('task2')">
+                    <svg viewBox="0 0 10 10" fill="none"><path d="M1.5 5l3 3 4-4" stroke="white" stroke-width="1.6" stroke-linecap="round"/></svg>
+                  </button>
+                  <div class="task-body">
+                    <div class="task-title">Order 10 certified copies of the death certificate</div>
+                    <div class="task-meta">
+                      <div class="task-assignee">
+                        <div class="assignee-avatar" style="background:#c8943a;">SB</div>
+                        <span class="assignee-name">Sarah Bee</span>
+                      </div>
+                      <span class="task-due overdue">Due: 20 Aug</span>
+                      <span class="task-tag">Legal</span>
+                    </div>
+                    <div class="task-thread" onclick="openThread('task2','Order certified death certificates','Assigned to Sarah Bee')">
+                      <div class="thread-avatars">
+                        <div class="thread-avatar" style="background:#c8943a;">SB</div>
+                      </div>
+                      <span class="thread-label">1 message in thread</span>
+                    </div>
+                  </div>
+                  <div class="task-actions">
+                    <button class="task-action-btn" onclick="openThread('task2','Order certified death certificates','Assigned to Sarah Bee')"><svg width="13" height="12" viewBox="0 0 13 12" fill="none"><path d="M1 1h11v8H8L6.5 11 5 9H1Z" fill="none" stroke="currentColor" stroke-width=".9"/></svg></button>
+                    <button class="task-action-btn">↗</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Section: Memorial -->
+            <div class="task-section">
+              <div class="task-section-hd">
+                <div class="tsh-left"><span class="tsh-name">Memorial Planning</span><span class="tsh-count">3 remaining</span></div>
+                <button class="tsh-toggle" onclick="toggleSection(this)">Hide</button>
+              </div>
+              <div class="section-body">
+                <div class="task-item done" id="task3">
+                  <button class="task-cb" onclick="toggleTask('task3')">
+                    <svg viewBox="0 0 10 10" fill="none"><path d="M1.5 5l3 3 4-4" stroke="white" stroke-width="1.6" stroke-linecap="round"/></svg>
+                  </button>
+                  <div class="task-body">
+                    <div class="task-title">Book the venue - Wellington Memorial Gardens</div>
+                    <div class="task-meta">
+                      <div class="task-assignee">
+                        <div class="assignee-avatar" style="background:#7a9168;">AN</div>
+                        <span class="assignee-name">Aroha Ngata</span>
+                      </div>
+                      <span class="task-due" style="color:var(--done);">Completed<//span>
+                      <span class="task-tag">Venue</span>
+                    </div>
+                  </div>
+                  <div class="task-actions">
+                    <button class="task-action-btn" onclick="openThread('task3','Book venue','Completed by Aroha')"><svg width="13" height="12" viewBox="0 0 13 12" fill="none"><path d="M1 1h11v8H8L6.5 11 5 9H1Z" fill="none" stroke="currentColor" stroke-width=".9"/></svg></button>
+                  </div>
+                </div>
+
+                <div class="task-item" id="task4">
+                  <button class="task-cb" onclick="toggleTask('task4')">
+                    <svg viewBox="0 0 10 10" fill="none"><path d="M1.5 5l3 3 4-4" stroke="white" stroke-width="1.6" stroke-linecap="round"/></svg>
+                  </button>
+                  <div class="task-body">
+                    <div class="task-title">Build the photo slideshow for the service</div>
+                    <div class="task-meta">
+                      <div class="task-assignee">
+                        <div class="assignee-avatar" style="background:#6b9ab8;">MT</div>
+                        <span class="assignee-name">Mike Thompson</span>
+                      </div>
+                      <span class="task-due">Due: 15 Aug</span>
+                      <span class="task-tag">Slideshow</span>
+                    </div>
+                    <div class="task-thread" onclick="openThread('task4','Build photo slideshow','Assigned to Mike Thompson')">
+                      <div class="thread-avatars">
+                        <div class="thread-avatar" style="background:#6b9ab8;">MT</div>
+                        <div class="thread-avatar" style="background:#c8943a;">SB</div>
+                      </div>
+                      <span class="thread-label">4 messages · Mike added 6 photos</span>
+                    </div>
+                  </div>
+                  <div class="task-actions">
+                    <button class="task-action-btn" onclick="openThread('task4','Build photo slideshow','Assigned to Mike Thompson')"><svg width="13" height="12" viewBox="0 0 13 12" fill="none"><path d="M1 1h11v8H8L6.5 11 5 9H1Z" fill="none" stroke="currentColor" stroke-width=".9"/></svg></button>
+                    <button class="task-action-btn">↗</button>
+                  </div>
+                </div>
+
+                <div class="task-item" id="task5">
+                  <button class="task-cb" onclick="toggleTask('task5')">
+                    <svg viewBox="0 0 10 10" fill="none"><path d="M1.5 5l3 3 4-4" stroke="white" stroke-width="1.6" stroke-linecap="round"/></svg>
+                  </button>
+                  <div class="task-body">
+                    <div class="task-title">Write and send invitations to extended family</div>
+                    <div class="task-meta">
+                      <div class="task-assignee" style="cursor:none;" onclick="reassignModal()">
+                        <div class="assignee-avatar" style="background:rgba(255,255,255,.1);color:rgba(255,255,255,.3);font-size:.6rem;">?</div>
+                        <span class="assignee-name" style="color:rgba(255,255,255,.3);">Unassigned - click to assign</span>
+                      </div>
+                      <span class="task-due">Due: 14 Aug</span>
+                      <span class="task-tag">Invitations</span>
+                    </div>
+                  </div>
+                  <div class="task-actions">
+                    <button class="task-action-btn" onclick="openThread('task5','Send invitations','Unassigned')"><svg width="13" height="12" viewBox="0 0 13 12" fill="none"><path d="M1 1h11v8H8L6.5 11 5 9H1Z" fill="none" stroke="currentColor" stroke-width=".9"/></svg></button>
+                    <button class="task-action-btn" onclick="reassignModal()">↗</button>
+                  </div>
+                </div>
+
+                <div class="task-item done" id="task6">
+                  <button class="task-cb" onclick="toggleTask('task6')">
+                    <svg viewBox="0 0 10 10" fill="none"><path d="M1.5 5l3 3 4-4" stroke="white" stroke-width="1.6" stroke-linecap="round"/></svg>
+                  </button>
+                  <div class="task-body">
+                    <div class="task-title">Confirm funeral director and collection</div>
+                    <div class="task-meta">
+                      <div class="task-assignee">
+                        <div class="assignee-avatar" style="background:#8c8278;">JB</div>
+                        <span class="assignee-name">Jenny Bee</span>
+                      </div>
+                      <span class="task-due" style="color:var(--done);">Completed<//span>
+                      <span class="task-tag">Funeral</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Section: Practical -->
+            <div class="task-section">
+              <div class="task-section-hd">
+                <div class="tsh-left"><span class="tsh-name">Practical Admin</span><span class="tsh-count">0 remaining</span></div>
+                <button class="tsh-toggle" onclick="toggleSection(this)">Hide</button>
+              </div>
+              <div class="section-body">
+                <div class="task-item done" id="task7">
+                  <button class="task-cb" onclick="toggleTask('task7')">
+                    <svg viewBox="0 0 10 10" fill="none"><path d="M1.5 5l3 3 4-4" stroke="white" stroke-width="1.6" stroke-linecap="round"/></svg>
+                  </button>
+                  <div class="task-body">
+                    <div class="task-title">Secure Buzz's property and collect mail</div>
+                    <div class="task-meta">
+                      <div class="task-assignee">
+                        <div class="assignee-avatar" style="background:#6b9ab8;">MT</div>
+                        <span class="assignee-name">Mike Thompson</span>
+                      </div>
+                      <span class="task-due" style="color:var(--done);">Completed<//span>
+                      <span class="task-tag">Property</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          </div><!-- end tasks-main -->
+
+          <!-- Add task bar -->
+          <div class="add-task-bar">
+            <input class="add-task-input" type="text" id="newTaskInput" placeholder="Add a new task…" onkeydown="if(event.key==='Enter')addTask()">
+            <select class="add-task-select" id="newTaskAssignee">
+              <option value="SB" data-color="#c8943a">Sarah Bee</option>
+              <option value="MT" data-color="#6b9ab8">Mike Thompson</option>
+              <option value="AN" data-color="#7a9168">Aroha Ngata</option>
+              <option value="JB" data-color="#8c8278">Jenny Bee</option>
+            </select>
+            <input class="add-task-select" type="date" id="newTaskDue" style="color:var(--dust);">
+            <button class="add-task-btn" onclick="addTask()">Add Task</button>
+          </div>
+        </div>
+
+        <!-- Thread panel -->
+        <div class="task-thread-panel closed" id="threadPanel">
+          <div class="ttp-header">
+            <span class="ttp-title">Thread</span>
+            <button class="ttp-close" onclick="closeThread()"><svg width="10" height="10" viewBox="0 0 10 10" fill="none"><line x1="1" y1="1" x2="9" y2="9" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/><line x1="9" y1="1" x2="1" y2="9" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg></button>
+          </div>
+          <div class="ttp-task-ref">
+            <div class="ttp-task-name" id="threadTaskName">Task name</div>
+            <div class="ttp-task-assignee" id="threadTaskAssignee">Assignee</div>
+          </div>
+          <div class="cw-messages" id="threadMessages" style="flex:1;"></div>
+          <div class="cw-input-wrap">
+            <textarea class="cw-input" placeholder="Reply in thread…" id="threadInput" rows="1" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendThread();}"></textarea>
+            <button class="cw-send" onclick="sendThread()">→</button>
+          </div>
+        </div>
+      </div>
+    </div><!-- end tasks view -->
+
+    <!-- ── GROUP CHAT VIEW ── -->
+    <div class="view" id="view-group">
+      <div class="chat-window" style="flex:1;">
+        <div class="cw-header">
+          <div class="cw-header-icon"><svg width="32" height="32" viewBox="0 0 90 90" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="45" cy="45" r="44" fill="#f5c842"/><path d="M8 78 Q18 68 30 72 Q40 64 50 68 Q60 62 70 66 Q78 62 82 68 L82 82 L8 82Z" fill="#0D1520"/>
+  <path d="M33 72 L35 57 L55 57 L57 72Z" fill="#0D1520"/>
+  <path d="M35 57 L37 43 L53 43 L55 57Z" fill="#0D1520"/>
+  <path d="M37 43 L39 32 L51 32 L53 43Z" fill="#0D1520"/>
+  <rect x="35" y="30" width="20" height="4" fill="#0D1520" rx="1"/>
+  <path d="M37 30 L39 18 L51 18 L53 30Z" fill="#0D1520"/>
+  <path d="M37 18 Q45 11 53 18Z" fill="#0D1520"/>
+  <rect x="44" y="7" width="2" height="6" fill="#0D1520" rx="1"/>
+  <circle cx="45" cy="23" r="5" fill="#f5c842"/>
+  <circle cx="45" cy="23" r="9" fill="#f5c842" opacity=".3"/>
+  <path d="M14 32 C16 29 19 28 22 30" stroke="#0D1520" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+  <path d="M64 26 C66 23 69 22 72 24" stroke="#0D1520" stroke-width="2.5" fill="none" stroke-linecap="round"/></svg></div>
+          <div><div class="cw-header-name">Inner Circle - Buzz's Team</div><div class="cw-header-desc">Sarah Bee, Mike Thompson, Aroha Ngata, Jenny Bee · 4 members</div></div>
+          <div class="cw-header-right">
+            <button class="cw-hbtn" onclick="showView('tasks')">View Tasks</button>
+            <button class="cw-hbtn" onclick="showView('ai')">Ask Guide</button>
+          </div>
+        </div>
+        <div class="cw-messages" id="groupMessages">
+          <div class="sys-msg">Inner Circle created · 14 August 2024</div>
+
+          <div class="msg-group">
+            <div class="msg-avatar" style="background:#c8943a;">SB</div>
+            <div class="msg-content">
+              <div class="msg-sender">Sarah Bee</div>
+              <div class="msg-bubble">Hi everyone. Thank you for being here. I've set up this space so we can all stay across what needs to happen. I know it's a hard time - let's just take it one step at a time together.</div>
+              <div class="msg-time">14 Aug · 9:04am</div>
+            </div>
+          </div>
+
+          <div class="msg-group">
+            <div class="msg-avatar" style="background:#7a9168;">AN</div>
+            <div class="msg-content">
+              <div class="msg-sender">Aroha Ngata</div>
+              <div class="msg-bubble">We're all here. Whatever you need. I've confirmed the venue - Wellington Memorial Gardens is available on the 17th.</div>
+              <div class="msg-time">14 Aug · 9:22am</div>
+            </div>
+          </div>
+
+          <div class="sys-msg">Aroha Ngata marked "Book venue" as complete</div>
+
+          <div class="msg-group">
+            <div class="msg-avatar" style="background:#6b9ab8;">MT</div>
+            <div class="msg-content">
+              <div class="msg-sender">Mike Thompson</div>
+              <div class="task-ref-bubble">
+                <div style="width:32px;height:32px;flex-shrink:0;"><svg width="32" height="32" viewBox="0 0 90 90" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="45" cy="45" r="44" fill="#f5c842"/><rect x="12" y="48" width="66" height="30" fill="#0D1520" rx="3"/>
+  <path d="M12 48 Q12 24 45 24 Q78 24 78 48Z" fill="#0D1520"/>
+  <rect x="12" y="44" width="66" height="6" fill="#C8943A" rx="1"/>
+  <rect x="12" y="58" width="66" height="5" fill="#C8943A" opacity=".55"/>
+  <rect x="12" y="70" width="66" height="5" fill="#C8943A" opacity=".55"/>
+  <rect x="30" y="48" width="5" height="30" fill="#C8943A" opacity=".45"/>
+  <rect x="55" y="48" width="5" height="30" fill="#C8943A" opacity=".45"/>
+  <rect x="38" y="52" width="14" height="12" fill="#f5c842" rx="2"/>
+  <path d="M41 52 L41 48 Q41 44 45 44 Q49 44 49 48 L49 52" stroke="#f5c842" stroke-width="3.5" fill="none" stroke-linecap="round"/>
+  <circle cx="45" cy="57.5" r="3" fill="#0D1520"/></svg></div>
+                <div><div class="trb-text">Build photo slideshow</div><div class="trb-sub">Assigned to Mike Thompson · Due 15 Aug</div></div>
+              </div>
+              <div class="msg-bubble">I'll get started on the slideshow. Sarah - can you send through any photos you want included? I'll pull together what I have from the fishing trips.</div>
+              <div class="msg-time">14 Aug · 10:15am</div>
+            </div>
+          </div>
+
+          <div class="msg-group">
+            <div class="msg-avatar" style="background:#c8943a;">SB</div>
+            <div class="msg-content">
+              <div class="msg-sender">Sarah Bee</div>
+              <div class="msg-bubble">Yes! Sending now. There's a great one from Christmas 2022 of him at the barbie - it's so him. And one from the Tongariro trip that Mike you'll recognise.</div>
+              <div class="msg-time">14 Aug · 10:28am</div>
+            </div>
+          </div>
+
+          <div class="msg-group">
+            <div class="msg-avatar" style="background:#8c8278;">JB</div>
+            <div class="msg-content">
+              <div class="msg-sender">Jenny Bee</div>
+              <div class="msg-bubble">The funeral director has been confirmed. Brian is being looked after. Thank you all so much - I couldn't do this without you.</div>
+              <div class="msg-time">14 Aug · 2:41pm</div>
+            </div>
+          </div>
+
+          <div class="sys-msg">Jenny Bee marked "Confirm funeral director" as complete</div>
+        </div>
+        <div class="cw-input-wrap">
+          <button class="cw-attach"><svg width="13" height="16" viewBox="0 0 13 16" fill="none"><path d="M11 7 L5 13 Q2 16 1 13 Q0 10 3 7 L9 1 Q11 -1 12.5 1 Q14 3 12 5 L6 11 Q4.5 12.5 3.5 11.5 Q2.5 10.5 4 9 L9.5 3.5" stroke="currentColor" stroke-width=".85" fill="none" stroke-linecap="round"/></svg></button>
+          <textarea class="cw-input" placeholder="Message the inner circle…" id="groupInput" rows="1" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendGroup();}"></textarea>
+          <button class="cw-send" onclick="sendGroup()">→</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── DM VIEW ── -->
+    <div class="view" id="view-dm">
+      <div class="chat-layout">
+        <div class="chat-list">
+          <div class="cl-header"><div class="cl-title">Direct Messages</div></div>
+          <div class="cl-items">
+            <div class="cl-item active" onclick="switchDM(this,'Mike Thompson','MT','Fishing mate · 40 years')">
+              <div class="msg-avatar" style="background:#6b9ab8;width:28px;height:28px;font-size:.65rem;flex-shrink:0;">MT</div>
+              <div class="cl-item-body">
+                <div class="cl-item-name">Mike Thompson</div>
+                <div class="cl-item-preview">I'll get the photos done by tomorrow</div>
+              </div>
+            </div>
+            <div class="cl-item" onclick="switchDM(this,'Aroha Ngata','AN','Family friend')">
+              <div class="msg-avatar" style="background:#7a9168;width:28px;height:28px;font-size:.65rem;flex-shrink:0;">AN</div>
+              <div class="cl-item-body">
+                <div class="cl-item-name">Aroha Ngata</div>
+                <div class="cl-item-preview">Venue is all confirmed</div>
+              </div>
+              <div class="cl-item-unread">2</div>
+            </div>
+            <div class="cl-item" onclick="switchDM(this,'Jenny Bee','JB','Wife')">
+              <div class="msg-avatar" style="background:#8c8278;width:28px;height:28px;font-size:.65rem;flex-shrink:0;">JB</div>
+              <div class="cl-item-body">
+                <div class="cl-item-name">Jenny Bee</div>
+                <div class="cl-item-preview">Thank you for everything, love</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="chat-window">
+          <div class="cw-header">
+            <div class="cw-header-icon" id="dmIcon" style="font-size:.7rem;font-weight:500;">MT</div>
+            <div><div class="cw-header-name" id="dmName">Mike Thompson</div><div class="cw-header-desc" id="dmDesc">Fishing mate · 40 years</div></div>
+          </div>
+          <div class="cw-messages" id="dmMessages">
+            <div class="msg-group mine">
+              <div class="msg-avatar" style="background:#c8943a;">SB</div>
+              <div class="msg-content">
+                <div class="msg-sender">You</div>
+                <div class="msg-bubble">Mike, I've assigned the slideshow to you in the tasks - hope that's okay. I know you have so many great photos from the fishing trips.</div>
+                <div class="msg-time">14 Aug · 10:05am</div>
+              </div>
+            </div>
+            <div class="msg-group">
+              <div class="msg-avatar" style="background:#6b9ab8;">MT</div>
+              <div class="msg-content">
+                <div class="msg-sender">Mike Thompson</div>
+                <div class="msg-bubble">Of course. Wouldn't have it any other way. I'll get the photos done by tomorrow. He deserves a proper tribute.</div>
+                <div class="msg-time">14 Aug · 10:18am</div>
+              </div>
+            </div>
+            <div class="msg-group">
+              <div class="msg-avatar" style="background:#6b9ab8;">MT</div>
+              <div class="msg-content">
+                <div class="msg-bubble">How are you holding up, Sarah? Really.</div>
+                <div class="msg-time">14 Aug · 10:19am</div>
+              </div>
+            </div>
+            <div class="msg-group mine">
+              <div class="msg-avatar" style="background:#c8943a;">SB</div>
+              <div class="msg-content">
+                <div class="msg-bubble">Honestly, keeping busy helps. Thanks for asking. Dad would have liked knowing his fishing mate was involved. That means a lot.</div>
+                <div class="msg-time">14 Aug · 10:32am</div>
+              </div>
+            </div>
+          </div>
+          <div class="cw-input-wrap">
+            <textarea class="cw-input" placeholder="Message Mike…" id="dmInput" rows="1" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendDM();}"></textarea>
+            <button class="cw-send" onclick="sendDM()">→</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── AI ASSISTANT VIEW ── -->
+    <div class="view" id="view-ai">
+      <div class="ai-view">
+        <div class="ai-hero">
+          <div class="ai-hero-badge">After Matters Guide</div>
+          <div class="ai-hero-title">Ask anything. We'll help you navigate.</div>
+          <div class="ai-hero-sub">The Guide is here to answer practical questions about what to do next - NZ-specific processes, grief support, legal steps, or anything else on your mind.</div>
+        </div>
+        <div class="ai-suggestions">
+          <button class="ai-suggestion" onclick="askAI(this.textContent)">What do I need to do to register a death in New Zealand?</button>
+          <button class="ai-suggestion" onclick="askAI(this.textContent)">How do I apply for probate in NZ?</button>
+          <button class="ai-suggestion" onclick="askAI(this.textContent)">Which government departments do I need to notify?</button>
+          <button class="ai-suggestion" onclick="askAI(this.textContent)">How do I support someone who is grieving?</button>
+          <button class="ai-suggestion" onclick="askAI(this.textContent)">What is a death certificate needed for?</button>
+          <button class="ai-suggestion" onclick="askAI(this.textContent)">What tasks should be delegated vs done personally?</button>
+        </div>
+        <div class="cw-messages" id="aiMessages" style="flex:1;">
+          <div class="msg-group">
+            <div class="msg-avatar" style="background:var(--beam-dim);border:1px solid rgba(240,192,64,.2);font-size:.6rem;color:var(--beam);">AM</div>
+            <div class="msg-content" style="max-width:80%;">
+              <div class="msg-sender" style="color:var(--beam);">After Matters Guide</div>
+              <div class="ai-bubble">
+                <div class="ai-header">Here for you</div>
+                <div class="ai-text">Kia ora. I'm the After Matters Guide - I'm here to help your inner circle navigate the practical and emotional path ahead. I know New Zealand processes, can answer questions about what comes next, and can help you think through what to delegate and to whom. What would you like to know?</div>
+              </div>
+              <div class="msg-time">Always available</div>
+            </div>
+          </div>
+        </div>
+        <div class="cw-input-wrap">
+          <textarea class="cw-input" placeholder="Ask the Guide anything…" id="aiInput" rows="1" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendAI();}"></textarea>
+          <button class="cw-send" onclick="sendAI()">→</button>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- end content -->
+</div><!-- end main -->
+
+<!-- Reassign modal -->
+<div id="reassignModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:500;display:none;align-items:center;justify-content:center;">
+  <div style="background:var(--charcoal);border:1px solid rgba(255,255,255,.1);padding:36px;min-width:320px;">
+    <div style="font-family:'Bodoni Moda',serif;font-size:1.1rem;margin-bottom:20px;">Assign task to…</div>
+    <div style="display:flex;flex-direction:column;gap:8px;">
+      <button onclick="closeReassign('Sarah Bee')" style="padding:12px 16px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);color:var(--white);cursor:none;font-family:'Jost',sans-serif;font-size:.82rem;text-align:left;transition:background .2s;">Sarah Bee - Daughter</button>
+      <button onclick="closeReassign('Mike Thompson')" style="padding:12px 16px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);color:var(--white);cursor:none;font-family:'Jost',sans-serif;font-size:.82rem;text-align:left;transition:background .2s;">Mike Thompson - Family friend</button>
+      <button onclick="closeReassign('Aroha Ngata')" style="padding:12px 16px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);color:var(--white);cursor:none;font-family:'Jost',sans-serif;font-size:.82rem;text-align:left;transition:background .2s;">Aroha Ngata - Family friend</button>
+      <button onclick="closeReassign('Jenny Bee')" style="padding:12px 16px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);color:var(--white);cursor:none;font-family:'Jost',sans-serif;font-size:.82rem;text-align:left;transition:background .2s;">Jenny Bee - Wife</button>
+    </div>
+    <button onclick="document.getElementById('reassignModal').style.display='none'" style="margin-top:16px;background:none;border:none;color:var(--silver);cursor:none;font-family:'Jost',sans-serif;font-size:.72rem;">Cancel</button>
+  </div>
+</div>
+
+<script>
+// Cursor
+const cur=document.getElementById('cur'),cur2=document.getElementById('cur2');
+let mx=0,my=0,tx=0,ty=0;
+document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;cur.style.left=mx+'px';cur.style.top=my+'px';});
+(function loop(){tx+=(mx-tx)*.12;ty+=(my-ty)*.12;cur2.style.left=tx+'px';cur2.style.top=ty+'px';requestAnimationFrame(loop);})();
+
+// Views
+const viewTitles={tasks:'Tasks & Delegation',group:'Group Chat',dm:'Direct Messages',ai:'Ask the Guide'};
+const viewChips={tasks:'5 tasks remaining',group:'4 members online',dm:'3 conversations',ai:'AI-powered · NZ-aware'};
+
+function showView(id){
+  document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+  document.querySelectorAll('.sb-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('view-'+id).classList.add('active');
+  const btns=document.querySelectorAll('.sb-btn');
+  btns.forEach(b=>{if(b.getAttribute('onclick')&&b.getAttribute('onclick').includes("'"+id+"'"))b.classList.add('active');});
+  document.getElementById('tbTitle').textContent=viewTitles[id]||id;
+  document.getElementById('tbChip').textContent=viewChips[id]||'';
+  if(id==='ai') setTimeout(()=>document.getElementById('aiMessages').scrollTop=9999,100);
+  if(id==='group') setTimeout(()=>document.getElementById('groupMessages').scrollTop=9999,100);
+}
+
+// Tasks
+function toggleTask(id){
+  const el=document.getElementById(id);
+  el.classList.toggle('done');
+  updateProgress();
+}
+function updateProgress(){
+  const all=document.querySelectorAll('.task-item');
+  const done=document.querySelectorAll('.task-item.done');
+  const pct=Math.round(done.length/all.length*100);
+  document.getElementById('progressFill').style.width=pct+'%';
+  document.getElementById('progressPct').textContent=pct+'%';
+  const remaining=all.length-done.length;
+  document.getElementById('tbChip').textContent=remaining+' task'+(remaining!==1?'s':'')+' remaining';
+}
+function toggleSection(btn){
+  const body=btn.closest('.task-section').querySelector('.section-body');
+  const hidden=body.style.display==='none';
+  body.style.display=hidden?'':'none';
+  btn.textContent=hidden?'Hide':'Show';
+}
+function addTask(){
+  const input=document.getElementById('newTaskInput');
+  const val=input.value.trim(); if(!val) return;
+  const sel=document.getElementById('newTaskAssignee');
+  const name=sel.options[sel.selectedIndex].text;
+  const initials=name.split(' ').map(w=>w[0]).join('').slice(0,2);
+  const due=document.getElementById('newTaskDue').value;
+  const colors={'Sarah Bee':'#c8943a','Mike Thompson':'#6b9ab8','Aroha Ngata':'#7a9168','Jenny Bee':'#8c8278'};
+  const color=colors[name]||'#555';
+  const id='task_'+Date.now();
+  const el=document.createElement('div');
+  el.className='task-item'; el.id=id;
+  el.innerHTML=`
+    <button class="task-cb" onclick="toggleTask('${id}')">
+      <svg viewBox="0 0 10 10" fill="none"><path d="M1.5 5l3 3 4-4" stroke="white" stroke-width="1.6" stroke-linecap="round"/></svg>
+    </button>
+    <div class="task-body">
+      <div class="task-title">${val}</div>
+      <div class="task-meta">
+        <div class="task-assignee"><div class="assignee-avatar" style="background:${color};">${initials}</div><span class="assignee-name">${name}</span></div>
+        ${due?`<span class="task-due">Due: ${new Date(due).toLocaleDateString('en-NZ',{day:'numeric',month:'short'})}</span>`:''}
+      </div>
+    </div>
+    <div class="task-actions"><button class="task-action-btn" onclick="openThread('${id}','${val}','Assigned to ${name}')"><svg width="13" height="12" viewBox="0 0 13 12" fill="none"><path d="M1 1h11v8H8L6.5 11 5 9H1Z" fill="none" stroke="currentColor" stroke-width=".9"/></svg></button><button class="task-action-btn">↗</button></div>`;
+  el.style.animation='popIn .25s ease';
+  // Add to last section
+  const sections=document.querySelectorAll('.section-body');
+  sections[sections.length-1].appendChild(el);
+  input.value='';
+  updateProgress();
+}
+
+// Thread panel
+function openThread(taskId,name,assignee){
+  const panel=document.getElementById('threadPanel');
+  panel.classList.remove('closed');
+  document.getElementById('threadTaskName').textContent=name;
+  document.getElementById('threadTaskAssignee').textContent=assignee;
+  const msgs=document.getElementById('threadMessages');
+  // Load sample messages based on task
+  const samples={
+    task1:[{from:'Sarah Bee',col:'#c8943a',ini:'SB',text:'I\'m heading to the register office tomorrow morning — do I need the original death certificate or a copy?',time:'14 Aug · 8:50am'},{from:'Mike Thompson',col:'#6b9ab8',ini:'MT',text:'Pretty sure it\'s the original MCCD from the doctor. Give them a ring first to confirm.',time:'14 Aug · 9:02am'}],
+    task4:[{from:'Mike Thompson',col:'#6b9ab8',ini:'MT',text:'I\'ve uploaded the first 6 photos to the slideshow. Have a look and let me know if you want anything changed.',time:'14 Aug · 11:30am'},{from:'Sarah Bee',col:'#c8943a',ini:'SB',text:'Mike these are beautiful. The one on the Tongariro is perfect.',time:'14 Aug · 12:04pm'},{from:'Mike Thompson',col:'#6b9ab8',ini:'MT',text:'I\'ll add the Christmas one Sarah sent through. Should have a full draft by tonight.',time:'14 Aug · 12:15pm'},{from:'Sarah Bee',col:'#c8943a',ini:'SB',text:'Thank you. Really. This means so much.',time:'14 Aug · 12:18pm'}]
+  };
+  const threadMsgs=samples[taskId]||[{from:'System',col:'#555',ini:'·',text:'Thread started. Add a message below.',time:'Now'}];
+  msgs.innerHTML=threadMsgs.map(m=>`
+    <div class="msg-group" style="margin-bottom:12px;">
+      <div class="msg-avatar" style="background:${m.col};width:26px;height:26px;font-size:.6rem;border-radius:50%;display:flex;align-items:center;justify-content:center;color:var(--black);flex-shrink:0;">${m.ini}</div>
+      <div class="msg-content">
+        <div class="msg-sender" style="font-size:.58rem;color:rgba(255,255,255,.3);margin-bottom:3px;">${m.from}</div>
+        <div class="msg-bubble" style="font-size:.78rem;">${m.text}</div>
+        <div class="msg-time">${m.time}</div>
+      </div>
+    </div>`).join('');
+  msgs.scrollTop=9999;
+}
+function closeThread(){
+  document.getElementById('threadPanel').classList.add('closed');
+}
+function sendThread(){
+  const input=document.getElementById('threadInput');
+  const val=input.value.trim(); if(!val) return;
+  const msgs=document.getElementById('threadMessages');
+  const el=document.createElement('div');
+  el.className='msg-group new-msg';
+  el.style.marginBottom='12px';
+  el.innerHTML=`
+    <div class="msg-avatar" style="background:#c8943a;width:26px;height:26px;font-size:.6rem;border-radius:50%;display:flex;align-items:center;justify-content:center;color:var(--black);flex-shrink:0;">SB</div>
+    <div class="msg-content">
+      <div class="msg-sender" style="font-size:.58rem;color:rgba(255,255,255,.3);margin-bottom:3px;">You</div>
+      <div class="msg-bubble" style="font-size:.78rem;">${val}</div>
+      <div class="msg-time">Just now</div>
+    </div>`;
+  msgs.appendChild(el); msgs.scrollTop=9999;
+  input.value='';
+}
+
+// Group chat
+function sendGroup(){
+  const input=document.getElementById('groupInput');
+  const val=input.value.trim(); if(!val) return;
+  appendMsg('groupMessages',val,'You','SB','#c8943a',true);
+  input.value='';
+}
+
+// DM
+function sendDM(){
+  const input=document.getElementById('dmInput');
+  const val=input.value.trim(); if(!val) return;
+  appendMsg('dmMessages',val,'You','SB','#c8943a',true);
+  input.value='';
+}
+function switchDM(el,name,icon,desc){
+  document.querySelectorAll('.cl-item').forEach(i=>i.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('dmName').textContent=name;
+  document.getElementById('dmIcon').textContent=icon;
+  document.getElementById('dmDesc').textContent=desc;
+  const unread=el.querySelector('.cl-item-unread');
+  if(unread) unread.remove();
+}
+
+// AI
+const aiResponses={
+  'What do I need to do to register a death in New Zealand?':'In New Zealand, deaths must be registered with Births, Deaths and Marriages (BDM) within three working days of the death being certified. You\'ll need the Medical Certificate of Cause of Death from the doctor. Registration can be done in person at a BDM office or online at bdmonline.govt.nz. Once registered, you can order certified copies of the death certificate — I\'d recommend ordering at least 10, as banks, insurers and government agencies will each require one.',
+  'How do I apply for probate in NZ?':'Probate in New Zealand is handled through the High Court. You\'ll need the original will, the death certificate, and an inventory of the estate\'s assets and debts. The process can take 4–8 weeks. If the estate is straightforward and under $15,000, some institutions will release funds without probate. A NZ solicitor can help — look for one specialising in estate administration.',
+  'Which government departments do I need to notify?':'In New Zealand there is no single "Tell Us Once" service like the UK. You\'ll need to notify: Work and Income NZ (to stop any benefits or NZ Super payments), Inland Revenue (final tax affairs), NZ Transport Agency (driving licence), Department of Internal Affairs (passport), and any relevant local council. Your funeral director can guide you through the order.',
+  'How do I support someone who is grieving?':'The most important thing is simply to show up — not once, but repeatedly. Practical help (meals, errands, childcare) matters more than words. Avoid phrases like "they\'re in a better place" or "at least..." — instead, name the person who died and share a memory. Grief doesn\'t end after the funeral. Check in at the two-week, one-month and three-month marks, when support often falls away.',
+  'What is a death certificate needed for?':'You\'ll need certified copies of the death certificate for: banks and financial institutions, insurance claims, pension or KiwiSaver providers, the IRD, selling or transferring property, cancelling subscriptions and accounts, applying for probate, and claiming any entitlements. Order at least 10 copies upfront — it\'s much easier than ordering more later.',
+  'What tasks should be delegated vs done personally?':'As the primary organiser, focus on decisions only you can make: funeral preferences, eulogy, personal wishes. Delegate practical tasks to your inner circle — venue coordination, catering, slideshow creation, notification calls. Use the task delegation tool here to assign with clear due dates. The most important rule: accept help when it\'s offered. People want to contribute. Let them.'
+};
+
+function askAI(q){
+  const msgs=document.getElementById('aiMessages');
+  const userEl=document.createElement('div');
+  userEl.className='msg-group mine new-msg';
+  userEl.innerHTML=`<div class="msg-avatar" style="background:#c8943a;">SB</div><div class="msg-content"><div class="msg-sender">You</div><div class="msg-bubble">${q}</div><div class="msg-time">Just now</div></div>`;
+  msgs.appendChild(userEl);
+  msgs.scrollTop=9999;
+  setTimeout(()=>{
+    const response=aiResponses[q]||'That\'s a really important question. Let me think through this carefully with you. In New Zealand, the path through bereavement administration can feel overwhelming — but broken into steps, it becomes manageable. Please feel free to ask me anything more specific and I\'ll do my best to guide you.';
+    const aiEl=document.createElement('div');
+    aiEl.className='msg-group new-msg';
+    aiEl.innerHTML=`
+      <div class="msg-avatar" style="background:var(--beam-dim);border:1px solid rgba(240,192,64,.2);font-size:.6rem;color:var(--beam);">AM</div>
+      <div class="msg-content" style="max-width:80%;">
+        <div class="msg-sender" style="color:var(--beam);">After Matters Guide</div>
+        <div class="ai-bubble"><div class="ai-header">Response</div><div class="ai-text">${response}</div></div>
+        <div class="msg-time">Just now</div>
+      </div>`;
+    msgs.appendChild(aiEl);
+    msgs.scrollTop=9999;
+  },800);
+  showView('ai');
+}
+
+function sendAI(){
+  const input=document.getElementById('aiInput');
+  const val=input.value.trim(); if(!val) return;
+  input.value='';
+  askAI(val);
+}
+
+// Generic append message
+function appendMsg(containerId,text,name,initials,color,isMine){
+  const msgs=document.getElementById(containerId);
+  const el=document.createElement('div');
+  el.className='msg-group new-msg'+(isMine?' mine':'');
+  el.innerHTML=`
+    <div class="msg-avatar" style="background:${color};">${initials}</div>
+    <div class="msg-content">
+      <div class="msg-sender">${name}</div>
+      <div class="msg-bubble">${text}</div>
+      <div class="msg-time">Just now</div>
+    </div>`;
+  msgs.appendChild(el);
+  msgs.scrollTop=9999;
+}
+
+// Reassign
+function reassignModal(){document.getElementById('reassignModal').style.display='flex';}
+function closeReassign(name){
+  document.getElementById('reassignModal').style.display='none';
+  const unassigned=document.querySelector('#task5 .assignee-name');
+  if(unassigned){
+    unassigned.textContent=name;
+    unassigned.style.color='';
+    const av=document.querySelector('#task5 .assignee-avatar');
+    const colors={'Sarah Bee':'#c8943a','Mike Thompson':'#6b9ab8','Aroha Ngata':'#7a9168','Jenny Bee':'#8c8278'};
+    if(av){av.style.background=colors[name]||'#555';av.style.color='var(--black)';av.textContent=name.split(' ').map(w=>w[0]).join('').slice(0,2);}
+  }
+}
+
+// Init scroll
+setTimeout(()=>{
+  document.getElementById('groupMessages').scrollTop=9999;
+  document.getElementById('dmMessages').scrollTop=9999;
+},100);
+</script>
+
+<!-- Mobile bottom tab bar -->
+<div class="mobile-tabs" id="mobileTabs">
+  <button class="mt-btn active" id="mbt-tasks" onclick="showView('tasks');setMobileTab('tasks')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><rect x="4" y="4" width="16" height="16" rx="1"/><line x1="9" y1="9" x2="15" y2="9"/><line x1="9" y1="12" x2="15" y2="12"/><line x1="9" y1="15" x2="12" y2="15"/></svg>
+    Tasks
+  </button>
+  <button class="mt-btn" id="mbt-group" onclick="showView('group');setMobileTab('group')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M4 4h16v13H4z"/><path d="M4 17l4-4h12"/></svg>
+    Group
+  </button>
+  <button class="mt-btn" id="mbt-dms" onclick="showView('dms');setMobileTab('dms')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><circle cx="9" cy="9" r="5"/><path d="M18 18c0-3-2-5-5-5H9c-3 0-5 2-5 5"/><path d="M16 4c1.5.5 2.5 1.8 2.5 3.5S17.5 11 16 12"/></svg>
+    Messages
+  </button>
+  <button class="mt-btn" id="mbt-guide" onclick="showView('guide');setMobileTab('guide')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><circle cx="12" cy="12" r="9"/><path d="M12 8v4l3 3"/></svg>
+    Guide
+  </button>
+</div>
+<script>
+function setMobileTab(id){
+  document.querySelectorAll('.mt-btn').forEach(b=>b.classList.remove('active'));
+  const btn=document.getElementById('mbt-'+id);
+  if(btn) btn.classList.add('active');
+}
+</script>
+<div class="lh-watermark" aria-hidden="true"><svg viewBox="0 0 200 260" fill="currentColor" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%;">
+  <path d="M20 230 Q40 210 60 220 Q75 208 95 215 Q110 205 130 212 Q150 205 170 215 Q185 208 200 220 L200 260 L20 260 Z" opacity=".85"/>
+  <path d="M72 215 L74 160 L126 160 L128 215 Z" opacity=".8"/>
+  <path d="M76 160 L79 100 L121 100 L124 160 Z"/>
+  <path d="M80 100 L83 68 L117 68 L120 100 Z"/>
+  <rect x="74" y="63" width="52" height="7" rx="1"/>
+  <path d="M82 63 L85 28 L115 28 L118 63 Z" opacity=".9"/>
+  <path d="M82 28 Q100 14 118 28 Z"/>
+  <line x1="100" y1="14" x2="100" y2="4" stroke="currentColor" stroke-width="3" fill="none"/>
+  <circle cx="100" cy="3" r="3"/>
+  <circle cx="100" cy="44" r="11" fill="#f5c842"/>
+  <path d="M30 80 C34 74 39 71 45 74 C48 75.5 50 80 53 80" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" opacity=".65"/>
+  <path d="M148 90 C152 84 157 81 163 84 C166 85.5 168 90 171 90" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" opacity=".55"/>
+</svg></div>
+<!-- AFTER MATTERS EDITOR -->
+<style>
+/* ── Editor UI ── */
+#am-editor-btn {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  z-index: 99999;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 18px;
+  background: #f5c842;
+  color: #0d1520;
+  border: none;
+  font-family: 'Jost', sans-serif;
+  font-size: .62rem;
+  font-weight: 500;
+  letter-spacing: .18em;
+  text-transform: uppercase;
+  cursor: pointer;
+  box-shadow: 0 4px 24px rgba(0,0,0,.4);
+  transition: all .2s;
+  border-radius: 2px;
+}
+#am-editor-btn:hover { background: #fff; transform: translateY(-1px); box-shadow: 0 6px 32px rgba(0,0,0,.5); }
+#am-editor-btn svg { width: 14px; height: 14px; flex-shrink: 0; }
+#am-editor-btn.editing { background: #4a9e7a; color: #fff; }
+
+/* Save bar */
+#am-save-bar {
+  position: fixed;
+  bottom: 0; left: 0; right: 0;
+  z-index: 99998;
+  background: rgba(13,21,32,.97);
+  border-top: 1px solid rgba(245,200,66,.25);
+  padding: 14px 24px;
+  display: none;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  backdrop-filter: blur(12px);
+  font-family: 'Jost', sans-serif;
+}
+#am-save-bar.visible { display: flex; }
+#am-save-bar-msg {
+  font-size: .72rem;
+  color: rgba(255,255,255,.5);
+  flex: 1;
+}
+#am-save-bar-msg strong { color: #f5c842; font-weight: 400; }
+.am-bar-btn {
+  padding: 9px 20px;
+  font-family: 'Jost', sans-serif;
+  font-size: .6rem;
+  letter-spacing: .16em;
+  text-transform: uppercase;
+  border: none;
+  cursor: pointer;
+  transition: all .2s;
+  border-radius: 2px;
+}
+#am-btn-save { background: #f5c842; color: #0d1520; font-weight: 500; }
+#am-btn-save:hover { background: #fff; }
+#am-btn-cancel { background: rgba(255,255,255,0.35); color: rgba(255,255,255,.5); border: 1px solid rgba(255,255,255,0.38); }
+#am-btn-cancel:hover { background: rgba(255,255,255,0.4); color: #fff; }
+
+/* Editable element styles */
+.am-editable {
+  outline: none;
+  border-radius: 2px;
+  transition: background .15s, box-shadow .15s;
+  position: relative;
+}
+.am-editable:hover {
+  background: rgba(245,200,66,.08) !important;
+  box-shadow: 0 0 0 2px rgba(245,200,66,.2);
+  cursor: text;
+}
+.am-editable:focus {
+  background: rgba(245,200,66,.12) !important;
+  box-shadow: 0 0 0 2px rgba(245,200,66,.5);
+  cursor: text;
+}
+
+/* Edit mode overlay hint */
+#am-edit-hint {
+  position: fixed;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 99999;
+  background: rgba(13,21,32,.95);
+  border: 1px solid rgba(245,200,66,.3);
+  padding: 10px 20px;
+  font-family: 'Jost', sans-serif;
+  font-size: .65rem;
+  letter-spacing: .14em;
+  color: rgba(255,255,255,.6);
+  display: none;
+  align-items: center;
+  gap: 10px;
+  backdrop-filter: blur(8px);
+  pointer-events: none;
+  white-space: nowrap;
+}
+#am-edit-hint.visible { display: flex; }
+#am-edit-hint span { color: #f5c842; }
+
+/* Change counter badge */
+#am-change-count {
+  background: #f5c842;
+  color: #0d1520;
+  font-size: .5rem;
+  font-weight: 600;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  position: absolute;
+  top: -6px;
+  right: -6px;
+}
+#am-editor-btn { position: relative; }
+#am-change-count.visible { display: flex; }
+</style>
+
+<!-- Editor button -->
+<button id="am-editor-btn" onclick="amToggleEdit()" title="Edit page text">
+  <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round">
+    <path d="M11 2l3 3-8 8H3v-3L11 2z"/>
+  </svg>
+  Edit Page
+  <span id="am-change-count"></span>
+</button>
+
+<!-- Save bar -->
+<div id="am-save-bar">
+  <div id="am-save-bar-msg">
+    <strong id="am-changes-label">0 changes</strong> made - download your updated file to save permanently.
+  </div>
+  <button class="am-bar-btn" id="am-btn-cancel" onclick="amCancelEdit()">Discard changes</button>
+  <button class="am-bar-btn" id="am-btn-save" onclick="amSavePage()">
+    <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" style="margin-right:6px;vertical-align:middle"><path d="M3 8l4 4 6-8"/></svg>
+    Download updated file
+  </button>
+</div>
+
+<!-- Edit mode hint -->
+<div id="am-edit-hint">
+  <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="#f5c842" stroke-width="1.3"><circle cx="8" cy="8" r="6"/><line x1="8" y1="6" x2="8" y2="8"/><circle cx="8" cy="11" r=".8" fill="#f5c842"/></svg>
+  <span>Edit mode on</span> - click any text to edit it
+</div>
+
+<script>
+(function() {
+  let amEditing = false;
+  let amOriginals = new Map();
+  let amChanges = 0;
+
+  // Tags we'll make editable — text content only, skip scripts/styles/inputs
+  const EDITABLE_TAGS = ['p','h1','h2','h3','h4','h5','h6','span','div','a','li','td','th','label','blockquote','figcaption','small','strong','em','b','i'];
+  // Classes/ids to skip
+  const SKIP_IDS = ['am-editor-btn','am-save-bar','am-edit-hint','am-change-count'];
+  const SKIP_CLASSES = ['am-editable','am-bar-btn','cursor','cursor-ring','tab-bar','tab-item'];
+
+  function shouldSkip(el) {
+    if (!el || !el.id && !el.className) return false;
+    if (SKIP_IDS.some(id => el.id === id)) return true;
+    if (el.closest && el.closest('#am-save-bar, #am-editor-btn, #am-edit-hint')) return true;
+    return false;
+  }
+
+  function isTextLeaf(el) {
+    // Only make elements editable if they contain direct text (not just child elements)
+    if (shouldSkip(el)) return false;
+    const text = Array.from(el.childNodes)
+      .filter(n => n.nodeType === 3)
+      .map(n => n.textContent.trim())
+      .join('');
+    return text.length > 1;
+  }
+
+  window.amToggleEdit = function() {
+    amEditing = !amEditing;
+    const btn = document.getElementById('am-editor-btn');
+    const hint = document.getElementById('am-edit-hint');
+    const saveBar = document.getElementById('am-save-bar');
+
+    if (amEditing) {
+      btn.classList.add('editing');
+      btn.querySelector('svg').style.display = 'none';
+      btn.childNodes[2].textContent = ' Stop Editing';
+      hint.classList.add('visible');
+      saveBar.classList.add('visible');
+      enableEditing();
+    } else {
+      btn.classList.remove('editing');
+      btn.querySelector('svg').style.display = '';
+      btn.childNodes[2].textContent = ' Edit Page';
+      hint.classList.remove('visible');
+      disableEditing();
+    }
+  };
+
+  function enableEditing() {
+    EDITABLE_TAGS.forEach(tag => {
+      document.querySelectorAll(tag).forEach(el => {
+        if (shouldSkip(el)) return;
+        if (!isTextLeaf(el)) return;
+        if (el.classList.contains('am-editable')) return;
+        // Store original
+        if (!amOriginals.has(el)) {
+          amOriginals.set(el, el.innerHTML);
+        }
+        el.classList.add('am-editable');
+        el.contentEditable = 'true';
+        el.spellcheck = true;
+        el.addEventListener('input', amOnInput);
+      });
+    });
+  }
+
+  function disableEditing() {
+    document.querySelectorAll('.am-editable').forEach(el => {
+      el.classList.remove('am-editable');
+      el.contentEditable = 'false';
+    });
+  }
+
+  function amOnInput(e) {
+    const el = e.target;
+    const original = amOriginals.get(el);
+    const changed = el.innerHTML !== original;
+    // Track unique changed elements
+    const changedEls = new Set();
+    amOriginals.forEach((orig, node) => {
+      if (node.innerHTML !== orig) changedEls.add(node);
+    });
+    amChanges = changedEls.size;
+    updateChangeCount();
+  }
+
+  function updateChangeCount() {
+    const badge = document.getElementById('am-change-count');
+    const label = document.getElementById('am-changes-label');
+    if (amChanges > 0) {
+      badge.textContent = amChanges;
+      badge.classList.add('visible');
+    } else {
+      badge.classList.remove('visible');
+    }
+    if (label) label.textContent = amChanges + (amChanges === 1 ? ' change' : ' changes');
+  }
+
+  window.amCancelEdit = function() {
+    // Restore originals
+    amOriginals.forEach((orig, el) => {
+      el.innerHTML = orig;
+    });
+    amChanges = 0;
+    updateChangeCount();
+    amOriginals.clear();
+    amEditing = true;
+    amToggleEdit(); // turn off
+  };
+
+  window.amSavePage = function() {
+    // Turn off editing mode cleanly
+    disableEditing();
+    // Remove editor UI from the clone
+    const clone = document.documentElement.cloneNode(true);
+    // Remove all am-editable classes from clone
+    clone.querySelectorAll('.am-editable').forEach(el => {
+      el.classList.remove('am-editable');
+      el.removeAttribute('contenteditable');
+      el.removeAttribute('spellcheck');
+    });
+    // Get filename from page title or URL
+    const rawTitle = document.title
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/^-|-$/g, '') || 'page';
+    const filename = rawTitle + '.html';
+    // Serialize and download
+    const html = '<!DOCTYPE html>\n' + clone.outerHTML;
+    const blob = new Blob([html], { type: 'text/html;charset=utf-8' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(a.href);
+    // Re-enable editing
+    if (amEditing) enableEditing();
+    // Show success
+    const msg = document.getElementById('am-save-bar-msg');
+    const orig = msg.innerHTML;
+    msg.innerHTML = '<strong style="color:#4a9e7a">✓ File downloaded!</strong> Replace the old file on Netlify to publish your changes.';
+    setTimeout(() => { msg.innerHTML = orig; updateChangeCount(); }, 4000);
+  };
+})();
+</script>
+
+</body>
+</html>

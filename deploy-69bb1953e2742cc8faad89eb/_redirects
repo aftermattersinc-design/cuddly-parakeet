@@ -1,0 +1,7 @@
+# Netlify redirects
+/buzz-bee    /buzz-bee-memorial.html    200
+/partners    /partners.html             200
+/signin      /signin.html               200
+/checkout    /checkout.html             200
+/community   /community.html            200
+/unlock      /unlock.html               200

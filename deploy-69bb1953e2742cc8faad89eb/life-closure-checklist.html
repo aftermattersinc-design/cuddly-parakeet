@@ -1,0 +1,1201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Life Closure Checklist - After Matters</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;1,400&family=Raleway:wght@200;300;400;500&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+:root {
+  --night: #0d1520;
+  --deep: #112035;
+  --ocean: #1a3a5c;
+  --horizon: #2c5f8a;
+  --mist: #6b9ab8;
+  --foam: #c8dde9;
+  --beam: #f5c842;
+  --amber: #d4943a;
+  --white: #fafcfd;
+  --done: #4a9e7a;
+  --done-bg: rgba(74,158,122,.08);
+}
+html { scroll-behavior: smooth; }
+body {
+  font-family: 'Raleway', sans-serif;
+  background: var(--night);
+  color: var(--white);
+  min-height: 100vh;
+  cursor: none;
+}
+
+/* CURSOR */
+.cursor { position:fixed; width:9px; height:9px; background:var(--beam); border-radius:50%; pointer-events:none; z-index:9999; transform:translate(-50%,-50%); mix-blend-mode:screen; }
+.cursor-ring { position:fixed; width:36px; height:36px; border:1px solid rgba(245,200,66,.3); border-radius:50%; pointer-events:none; z-index:9998; transform:translate(-50%,-50%); transition:transform .15s ease; }
+
+/* TOP BAR */
+.topbar {
+  position: sticky; top:0; z-index:100;
+  background: rgba(13,21,32,.96);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid rgba(255,255,255,0.34);
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 18px 48px;
+}
+.topbar-brand { display:flex; align-items:center; gap:10px; text-decoration:none; }
+.topbar-brand svg { width:28px; height:28px; }
+.brand-name { font-family:'Playfair Display',serif; font-size:1rem; color:var(--white); letter-spacing:.06em; }
+.topbar-title {
+  font-size:.65rem; letter-spacing:.3em; text-transform:uppercase; color:var(--mist);
+  display:flex; align-items:center; gap:10px;
+}
+.topbar-title::before { content:''; display:block; width:20px; height:1px; background:var(--mist); }
+.topbar-right { display:flex; align-items:center; gap:20px; }
+.save-btn {
+  font-size:.65rem; letter-spacing:.2em; text-transform:uppercase;
+  background:var(--beam); color:var(--night); border:none;
+  padding:9px 22px; font-family:'Raleway',sans-serif; font-weight:500;
+  cursor:none; transition:background .3s;
+}
+.save-btn:hover { background:var(--white); }
+.progress-pill {
+  font-size:.65rem; letter-spacing:.12em; color:var(--mist);
+  background: rgba(255,255,255,0.33); border:1px solid rgba(255,255,255,0.36);
+  padding:8px 18px; border-radius:30px;
+}
+.progress-pill span { color:var(--beam); font-weight:500; }
+
+/* HERO STRIP */
+.hero-strip {
+  background: linear-gradient(135deg, var(--deep) 0%, var(--ocean) 100%);
+  border-bottom: 1px solid rgba(255,255,255,0.34);
+  padding: 56px 48px 48px;
+  position: relative; overflow: hidden;
+}
+.hero-strip::after {
+  content:''; position:absolute; top:-80px; right:-80px;
+  width:320px; height:320px;
+  border:60px solid rgba(245,200,66,.04); border-radius:50%;
+  pointer-events:none;
+}
+.hero-strip::before {
+  content:''; position:absolute; top:20px; right:60px;
+  width:180px; height:180px;
+  border:1px solid rgba(245,200,66,.07); border-radius:50%;
+  pointer-events:none;
+}
+.strip-badge { font-size:.6rem; letter-spacing:.38em; text-transform:uppercase; color:var(--beam); margin-bottom:14px; display:flex; align-items:center; gap:12px; }
+.strip-badge::before { content:''; display:block; width:24px; height:1px; background:var(--beam); }
+.strip-title { font-family:'Playfair Display',serif; font-size:clamp(1.8rem,3.5vw,2.8rem); font-weight:400; line-height:1.15; margin-bottom:14px; }
+.strip-title em { font-style:italic; color:var(--beam); }
+.strip-sub { font-size:.88rem; font-weight:350; line-height:1.8; color:var(--foam); max-width:560px; }
+
+/* PROGRESS BAR */
+.progress-wrap {
+  background: var(--deep);
+  border-bottom: 1px solid rgba(255,255,255,0.33);
+  padding: 24px 48px;
+  display: flex; align-items: center; gap: 32px;
+}
+.progress-label { font-size:.62rem; letter-spacing:.25em; text-transform:uppercase; color:var(--mist); white-space:nowrap; }
+.progress-track {
+  flex:1; height:4px; background:rgba(255,255,255,0.35); border-radius:2px; overflow:hidden;
+}
+.progress-fill {
+  height:100%; background: linear-gradient(to right, var(--horizon), var(--beam));
+  border-radius:2px; transition:width .6s ease;
+}
+.progress-pct { font-family:'Playfair Display',serif; font-size:1.1rem; color:var(--beam); white-space:nowrap; min-width:44px; text-align:right; }
+
+/* MAIN LAYOUT */
+.main { display:grid; grid-template-columns:260px 1fr; min-height:calc(100vh - 180px); }
+
+/* SIDEBAR */
+.sidebar {
+  background: var(--deep);
+  border-right: 1px solid rgba(255,255,255,0.33);
+  padding: 32px 0;
+  position: sticky; top:61px; height:calc(100vh - 61px);
+  overflow-y: auto;
+}
+.sidebar::-webkit-scrollbar { width:4px; }
+.sidebar::-webkit-scrollbar-track { background:transparent; }
+.sidebar::-webkit-scrollbar-thumb { background:rgba(255,255,255,0.38); border-radius:2px; }
+
+.sidebar-section { margin-bottom:4px; }
+.sidebar-btn {
+  width:100%; text-align:left;
+  padding:14px 28px;
+  background:none; border:none; cursor:none;
+  display:flex; align-items:center; gap:14px;
+  transition:background .25s;
+  position:relative;
+}
+.sidebar-btn:hover { background:rgba(255,255,255,0.32); }
+.sidebar-btn.active { background:rgba(245,200,66,.07); }
+.sidebar-btn.active::before {
+  content:''; position:absolute; left:0; top:0; bottom:0;
+  width:2px; background:var(--beam);
+}
+.sb-icon { width:32px; height:32px; border-radius:50%; display:flex; align-items:center; justify-content:center; flex-shrink:0; font-size:.9rem; }
+.sb-text { flex:1; }
+.sb-name { font-size:.78rem; font-weight:400; color:var(--foam); display:block; line-height:1.3; }
+.sidebar-btn.active .sb-name { color:var(--white); }
+.sb-count { font-size:.62rem; color:var(--mist); }
+.sb-check {
+  width:18px; height:18px; border-radius:50%;
+  border:1.5px solid rgba(255,255,255,0.37);
+  display:flex; align-items:center; justify-content:center;
+  font-size:.55rem; flex-shrink:0;
+  transition:all .3s;
+}
+.sb-check.complete { background:var(--done); border-color:var(--done); color:white; }
+
+/* CONTENT */
+.content { padding: 0 0 80px; }
+
+/* SECTION */
+.checklist-section { display:none; }
+.checklist-section.active { display:block; }
+
+.section-header {
+  padding: 48px 48px 32px;
+  border-bottom: 1px solid rgba(255,255,255,0.33);
+  display:flex; align-items:flex-start; justify-content:space-between; gap:40px;
+}
+.sh-left {}
+.sh-icon { font-size:2rem; margin-bottom:12px; }
+.sh-title { font-family:'Playfair Display',serif; font-size:1.8rem; font-weight:400; margin-bottom:8px; }
+.sh-desc { font-size:.85rem; font-weight:350; line-height:1.8; color:var(--mist); max-width:520px; }
+.sh-progress {
+  text-align:right; flex-shrink:0;
+}
+.sh-pct { font-family:'Playfair Display',serif; font-size:2.2rem; color:var(--beam); line-height:1; }
+.sh-label { font-size:.62rem; letter-spacing:.2em; text-transform:uppercase; color:var(--mist); margin-top:4px; }
+
+/* ITEMS */
+.items-list { padding: 32px 48px; display:flex; flex-direction:column; gap:2px; }
+
+.checklist-item {
+  background: rgba(255,255,255,0.3);
+  border: 1px solid rgba(255,255,255,0.33);
+  border-radius:2px;
+  padding: 22px 26px;
+  display:grid; grid-template-columns:auto 1fr auto;
+  gap:18px; align-items:start;
+  transition:background .3s, border-color .3s;
+  cursor:none;
+  position:relative;
+}
+.checklist-item:hover { background:rgba(255,255,255,0.32); border-color:rgba(255,255,255,0.38); }
+.checklist-item.checked {
+  background: var(--done-bg);
+  border-color: rgba(74,158,122,.2);
+}
+
+/* Custom checkbox */
+.item-checkbox {
+  width:22px; height:22px; border-radius:50%;
+  border:1.5px solid rgba(255,255,255,0.42);
+  display:flex; align-items:center; justify-content:center;
+  flex-shrink:0; margin-top:2px;
+  transition:all .3s; cursor:none;
+  background:transparent;
+}
+.checklist-item.checked .item-checkbox {
+  background:var(--done); border-color:var(--done);
+}
+.item-checkbox svg { display:none; width:12px; height:12px; }
+.checklist-item.checked .item-checkbox svg { display:block; }
+
+.item-body { min-width:0; }
+.item-title {
+  font-size:.9rem; font-weight:400; color:var(--white); margin-bottom:5px; line-height:1.4;
+  transition:color .3s;
+}
+.checklist-item.checked .item-title { color:var(--mist); text-decoration:line-through; text-decoration-color:rgba(107,154,184,.75); }
+.item-desc { font-size:.78rem; font-weight:350; color:var(--mist); line-height:1.7; }
+.item-tag {
+  font-size:.58rem; letter-spacing:.2em; text-transform:uppercase;
+  padding:4px 10px; border-radius:2px; flex-shrink:0; margin-top:2px;
+  font-weight:500;
+}
+.tag-urgent { background:rgba(181,84,42,.18); color:#e88a5a; border:1px solid rgba(181,84,42,.25); }
+.tag-important { background:rgba(245,200,66,.1); color:var(--beam); border:1px solid rgba(245,200,66,.2); }
+.tag-whenready { background:rgba(107,154,184,.1); color:var(--mist); border:1px solid rgba(107,154,184,.2); }
+
+/* NOTE field */
+.item-note {
+  grid-column:2/3;
+  margin-top:10px;
+  display:none;
+}
+.item-note.open { display:block; }
+.note-field {
+  width:100%; padding:10px 14px;
+  background:rgba(255,255,255,0.32); border:1px solid rgba(255,255,255,0.36);
+  font-family:'Raleway',sans-serif; font-size:.78rem; font-weight:350;
+  color:var(--white); outline:none; resize:vertical; min-height:60px;
+  transition:border-color .3s;
+}
+.note-field::placeholder { color:rgba(107,154,184,.75); }
+.note-field:focus { border-color:rgba(245,200,66,.4); }
+.note-toggle {
+  font-size:.65rem; letter-spacing:.12em; color:var(--mist);
+  background:none; border:none; cursor:none;
+  padding:4px 0 0; text-decoration:underline;
+  text-decoration-color:rgba(107,154,184,.65);
+  transition:color .3s; font-family:'Raleway',sans-serif;
+}
+.note-toggle:hover { color:var(--beam); }
+
+/* SECTION DIVIDER */
+.sub-heading {
+  padding:28px 48px 12px;
+  font-size:.62rem; letter-spacing:.32em; text-transform:uppercase;
+  color:var(--beam); display:flex; align-items:center; gap:14px;
+}
+.sub-heading::after { content:''; flex:1; height:1px; background:rgba(255,255,255,0.33); }
+
+/* COMPLETION CARD */
+.completion-card {
+  margin:32px 48px;
+  background:linear-gradient(135deg, rgba(74,158,122,.12) 0%, rgba(74,158,122,.06) 100%);
+  border:1px solid rgba(74,158,122,.25);
+  padding:36px 40px;
+  display:flex; align-items:center; gap:32px;
+  border-radius:2px;
+}
+.cc-icon { font-size:2.5rem; flex-shrink:0; }
+.cc-title { font-family:'Playfair Display',serif; font-size:1.3rem; color:var(--white); margin-bottom:6px; }
+.cc-text { font-size:.82rem; font-weight:350; color:var(--mist); line-height:1.7; }
+
+/* INTRO CARD */
+.intro-card {
+  margin:32px 48px 0;
+  background:rgba(245,200,66,.05);
+  border:1px solid rgba(245,200,66,.12);
+  padding:28px 32px;
+  display:flex; gap:20px; align-items:flex-start;
+}
+.intro-icon { font-size:1.4rem; flex-shrink:0; margin-top:2px; }
+.intro-text { font-size:.82rem; font-weight:350; line-height:1.8; color:var(--foam); }
+.intro-text strong { color:var(--beam); font-weight:500; }
+
+/* ANIMATIONS */
+@keyframes checkPop {
+  0%{transform:scale(0)} 60%{transform:scale(1.2)} 100%{transform:scale(1)}
+}
+.checklist-item.checked .item-checkbox svg { animation:checkPop .3s ease forwards; }
+
+@keyframes fadeUp { from{opacity:0;transform:translateY(16px)} to{opacity:1;transform:translateY(0)} }
+.checklist-section.active { animation:fadeUp .4s ease; }
+
+/* ── MOBILE ── */
+@media (max-width: 768px) {
+  body { cursor: auto; }
+  .cursor, .cursor-ring { display: none; }
+
+  .topbar {
+    padding: 14px 16px;
+    gap: 0;
+  }
+  .topbar-title { display: none; }
+  .topbar-right { gap: 8px; }
+  .progress-pill { display: none; }
+  .save-btn { padding: 8px 14px; font-size: .6rem; }
+  .brand-name { font-size: .85rem; }
+
+  .hero-strip {
+    padding: 28px 20px 24px;
+  }
+  .strip-title { font-size: 1.5rem; }
+  .strip-sub { font-size: .8rem; line-height: 1.7; }
+
+  .progress-wrap {
+    padding: 14px 20px;
+    gap: 12px;
+  }
+  .progress-label { font-size: .56rem; }
+  .progress-pct { font-size: .95rem; }
+
+  /* Stack sidebar above content on mobile */
+  .main {
+    display: flex;
+    flex-direction: column;
+    grid-template-columns: none;
+  }
+
+  .sidebar {
+    position: static;
+    height: auto;
+    overflow-x: auto;
+    overflow-y: hidden;
+    padding: 10px 0;
+    display: flex;
+    flex-direction: row;
+    border-right: none;
+    border-bottom: 1px solid rgba(255,255,255,0.34);
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+  .sidebar::-webkit-scrollbar { display: none; }
+
+  .sidebar-section { margin-bottom: 0; flex-shrink: 0; }
+  .sidebar-btn {
+    padding: 8px 14px;
+    flex-direction: column;
+    align-items: center;
+    gap: 5px;
+    min-width: 80px;
+    border-right: none;
+    border-bottom: 2px solid transparent;
+  }
+  .sidebar-btn.active { background: none; border-bottom-color: var(--beam); }
+  .sidebar-btn.active::before { display: none; }
+  .sb-icon { width: 26px; height: 26px; font-size: .75rem; }
+  .sb-text { text-align: center; }
+  .sb-name { font-size: .6rem; }
+  .sb-count { font-size: .54rem; }
+  .sb-check { width: 14px; height: 14px; font-size: .45rem; }
+
+  .content { padding: 0 0 100px; }
+
+  .section-header {
+    padding: 20px 16px 16px;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .sh-title { font-size: 1.25rem; }
+  .sh-desc { font-size: .78rem; line-height: 1.6; }
+  .sh-progress { text-align: left; }
+  .sh-pct { font-size: 1.6rem; }
+
+  .sub-heading { padding: 16px 16px 8px; font-size: .56rem; }
+  .items-list { padding: 8px 16px; gap: 6px; }
+
+  .checklist-item {
+    padding: 14px 14px;
+    grid-template-columns: auto 1fr;
+    gap: 12px;
+  }
+  .item-tag {
+    grid-column: 2;
+    display: inline-block;
+    margin-top: 6px;
+    font-size: .52rem;
+    padding: 3px 8px;
+  }
+  .item-title { font-size: .82rem; }
+  .item-desc { font-size: .72rem; line-height: 1.6; }
+  .item-checkbox { width: 20px; height: 20px; }
+
+  .item-note { grid-column: 1 / -1; }
+
+  .completion-card {
+    margin: 16px;
+    padding: 20px;
+    flex-direction: column;
+    gap: 12px;
+    text-align: center;
+  }
+  .cc-title { font-size: 1.1rem; }
+  .cc-text { font-size: .78rem; }
+
+  .intro-card {
+    margin: 16px 16px 0;
+    padding: 16px;
+    gap: 12px;
+  }
+  .intro-text { font-size: .78rem; }
+}
+
+/* ── WARM ICON STYLE (global) ── */
+.icon-circle {
+  width:48px;height:48px;border-radius:50%;
+  display:inline-flex;align-items:center;justify-content:center;
+  flex-shrink:0;
+}
+.icon-circle svg { display:block; }
+
+.hero-photo-panel {
+  position:absolute;top:0;right:0;bottom:0;width:40%;
+  background-image:url('data:image/jpeg;base64,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');
+  background-size:cover;background-position:center;
+  mask-image:linear-gradient(to left,rgba(0,0,0,.75) 0%,transparent 100%);
+  -webkit-mask-image:linear-gradient(to left,rgba(0,0,0,.75) 0%,transparent 100%);
+}
+@media(max-width:768px){.hero-photo-panel{display:none;}}
+
+/* Logo lighthouse watermark */
+.lh-watermark {
+  position:fixed;bottom:20px;right:20px;
+  width:44px;height:57px;
+  color:rgba(255,255,255,.04);
+  pointer-events:none;z-index:0;
+  animation:gentleFloat 8s ease-in-out infinite;
+}
+@keyframes gentleFloat{0%,100%{transform:translateY(0);}50%{transform:translateY(-5px);}}
+@media(max-width:768px){.lh-watermark{width:32px;height:42px;opacity:.6;}}
+</style>
+</head>
+<body>
+
+<div class="cursor" id="cur"></div>
+<div class="cursor-ring" id="cur2"></div>
+
+<!-- TOP BAR -->
+<nav class="topbar">
+  <a href="#" class="topbar-brand">
+    <img src="data:image/png;base64,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" alt="After Matters" style="height:36px;width:auto;display:block;" class="">
+  </a>
+  <div class="topbar-title">Life Closure Checklist</div>
+  <div class="topbar-right">
+    <div class="progress-pill">Progress: <span id="topPct">0%</span></div>
+    <button class="save-btn" onclick="saveProgress()">Save Progress</button>
+  </div>
+</nav>
+
+<!-- HERO STRIP -->
+<div class="hero-strip"><div class="hero-photo-panel"></div>
+  <div class="strip-badge">The Waypoint</div>
+  <h1 class="strip-title">Your Life Closure <em>Checklist</em></h1>
+  <p class="strip-sub">A compassionate, step-by-step guide to help you or your inner circle manage the practical and personal matters that arise. Take it at your own pace - every step completed is a gift to those you love.</p>
+</div>
+
+<!-- PROGRESS BAR -->
+<div class="progress-wrap">
+  <span class="progress-label">Overall completion</span>
+  <div class="progress-track"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
+  <span class="progress-pct" id="progressPct">0%</span>
+</div>
+
+<!-- MAIN -->
+<div class="main">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar" id="sidebar"></aside>
+
+  <!-- CONTENT -->
+  <main class="content" id="contentArea"></main>
+
+</div>
+
+<script>
+// ── DATA ──────────────────────────────────────────────────────────────────────
+const sections = [
+  {
+    id: 'immediate',
+    icon: `<svg width="18" height="24" viewBox="0 0 18 24" fill="none"><path d="M9 2C9 2 6 6 6 9a3 3 0 006 0C12 6 9 2 9 2Z" stroke="#e88a5a" stroke-width=".9" fill="none"/><line x1="9" y1="12" x2="9" y2="15" stroke="#e88a5a" stroke-width=".8"/><rect x="5" y="15" width="8" height="8" rx=".5" fill="none" stroke="rgba(200,221,233,.5)" stroke-width=".8"/><line x1="5" y1="19" x2="13" y2="19" stroke="rgba(200,221,233,.2)" stroke-width=".5"/></svg>`,
+    color: '#e88a5a',
+    name: 'Immediate Steps',
+    shortName: 'Immediate',
+    desc: 'The first things to address in the hours and days following a death. These can feel overwhelming — work through them gently, one at a time.',
+    groups: [
+      {
+        name: 'Within the first 24 hours',
+        items: [
+          { id:'i1', title:'Notify close family and friends', desc:'Reach out personally to those closest to the person who has died before making any public announcements.', tag:'urgent' },
+          { id:'i2', title:'Contact the GP or attending doctor', desc:'A doctor must certify the death and issue a Medical Certificate of Cause of Death (MCCD).', tag:'urgent' },
+          { id:'i3', title:'Contact a funeral director', desc:'They will take care of the body and guide you through what happens next. You don\'t need to have everything decided immediately.', tag:'urgent' },
+          { id:'i4', title:'Care for any dependants or pets', desc:'Make sure children, elderly relatives, or pets in the household are cared for.', tag:'urgent' },
+        ]
+      },
+      {
+        name: 'Within the first week',
+        items: [
+          { id:'i5', title:'Register the death with Births, Deaths and Marriages (BDM)', desc:'In New Zealand, death must be registered within 3 working days. You\'ll need the Medical Certificate of Cause of Death from the doctor. Register online at bdmonline.govt.nz or at any BDM office.', tag:'urgent' },
+          { id:'i6', title:'Obtain certified copies of the death certificate', desc:'You\'ll need several copies — for banks, KiwiSaver providers, insurers, and more. Order at least 5–10 via bdmonline.govt.nz. Each copy costs $33.', tag:'urgent' },
+          { id:'i7', title:'Locate the will (if one exists)', desc:'Check with the person\'s solicitor, bank, or personal files. If no will exists, the estate passes under intestacy rules.', tag:'important' },
+          { id:'i8', title:'Secure the deceased\'s property', desc:'Ensure the home is secure, mail is collected, and valuables are safe.', tag:'important' },
+          { id:'i9', title:'Notify the employer (if applicable)', desc:'Contact their employer to inform them and ask about any outstanding pay, pension, or death-in-service benefits.', tag:'important' },
+        ]
+      }
+    ]
+  },
+  {
+    id: 'funeral',
+    icon: `<svg width="20" height="22" viewBox="0 0 20 22" fill="none"><path d="M10 2 Q14 5 14 10 Q14 16 10 20 Q6 16 6 10 Q6 5 10 2Z" stroke="#6b9ab8" stroke-width=".9" fill="none"/><path d="M10 8 Q12 10 12 13 Q12 17 10 20 Q8 17 8 13 Q8 10 10 8Z" stroke="rgba(107,154,184,.4)" stroke-width=".6" fill="none"/><line x1="4" y1="12" x2="7" y2="11" stroke="#6b9ab8" stroke-width=".7"/><line x1="13" y1="11" x2="16" y2="12" stroke="#6b9ab8" stroke-width=".7"/></svg>`,
+    color: '#6b9ab8',
+    name: 'Funeral & Memorial',
+    shortName: 'Funeral',
+    desc: 'Planning a farewell that truly honours the person. There is no right or wrong way — this is about meaning, not tradition.',
+    groups: [
+      {
+        name: 'Funeral arrangements',
+        items: [
+          { id:'f1', title:'Choose burial or cremation', desc:'Consider the wishes expressed in the will or any advance directive. If unknown, discuss with close family.', tag:'urgent' },
+          { id:'f2', title:'Select a funeral director and arrange collection', desc:'Shop around if you can — costs vary significantly. You are not obliged to use the first one contacted.', tag:'urgent' },
+          { id:'f3', title:'Set a date and venue for the service', desc:'This may be a church, crematorium, woodland, or any meaningful location. The funeral director can advise.', tag:'important' },
+          { id:'f4', title:'Choose readings, music and order of service', desc:'Gather contributions from family and friends. Think about what the person loved — songs, poems, places.', tag:'important' },
+          { id:'f5', title:'Arrange flowers and any special requests', desc:'Consider whether flowers are requested, or donations to a charity instead.', tag:'whenready' },
+          { id:'f6', title:'Write and publish an obituary', desc:'Share in a local paper, online, or simply among your community. After Matters can help you create a beautiful memorial post.', tag:'whenready' },
+        ]
+      },
+      {
+        name: 'Memorial & remembrance',
+        items: [
+          { id:'f7', title:'Create a memorial page on After Matters', desc:'A lasting digital space for photos, stories, and tributes — accessible to family and friends always.', tag:'whenready' },
+          { id:'f8', title:'Plan a memorial gathering', desc:'Separate from the funeral, a gathering for celebration of life can happen weeks or months later.', tag:'whenready' },
+          { id:'f9', title:'Decide on a permanent memorial', desc:'Headstone, bench, tree planting, or charitable dedication — take your time with this decision.', tag:'whenready' },
+        ]
+      }
+    ]
+  },
+  {
+    id: 'financial',
+    icon: `<svg width="18" height="22" viewBox="0 0 18 22" fill="none"><rect x="1" y="1" width="16" height="20" rx="1" fill="none" stroke="#f5c842" stroke-width=".9"/><line x1="4" y1="7" x2="14" y2="7" stroke="rgba(245,200,66,.5)" stroke-width=".7"/><line x1="4" y1="11" x2="14" y2="11" stroke="rgba(245,200,66,.4)" stroke-width=".6"/><line x1="4" y1="15" x2="10" y2="15" stroke="rgba(245,200,66,.35)" stroke-width=".6"/><path d="M12 14 L14 16 L17 12" stroke="rgba(74,158,122,.8)" stroke-width=".8" fill="none" stroke-linecap="round"/></svg>`,
+    color: '#f5c842',
+    name: 'Financial & Legal',
+    shortName: 'Financial',
+    desc: 'Managing the estate, accounts, and finances. These tasks are important but not urgent — take them steadily.',
+    groups: [
+      {
+        name: 'Estate and probate',
+        items: [
+          { id:'fin1', title:'Apply for probate (if required)', desc:'Probate gives you legal authority to deal with the estate. In NZ this is called a Grant of Probate and is filed through the High Court. Required if the estate includes property or significant assets. A solicitor can help.', tag:'important' },
+          { id:'fin2', title:'Open an executor\'s bank account', desc:'This helps you manage estate funds separately from personal finances during administration. Most NZ banks can assist with this.', tag:'important' },
+          { id:'fin3', title:'Value the estate', desc:'List all assets (property, savings, KiwiSaver, investments, belongings) and liabilities (debts, loans). A solicitor or accountant can assist.', tag:'important' },
+          { id:'fin4', title:'Check for estate duty and tax obligations', desc:'NZ has no inheritance tax, but a final income tax return must be filed with IRD for the year of death. The estate may also need its own IRD number.', tag:'important' },
+          { id:'fin5', title:'Settle outstanding debts', desc:'Debts are paid from the estate before inheritance is distributed. Notify creditors.', tag:'important' },
+        ]
+      },
+      {
+        name: 'Accounts and subscriptions',
+        items: [
+          { id:'fin6', title:'Notify banks and financial institutions', desc:'NZ banks will freeze accounts on notification of death. You\'ll need a death certificate. Contact Westpac, ANZ, BNZ, Kiwibank or whichever banks apply. Ask about joint accounts separately.', tag:'important' },
+          { id:'fin7', title:'Claim life insurance and KiwiSaver death benefit', desc:'Contact all insurers and notify the KiwiSaver provider — the balance is paid to the estate or nominated beneficiary. Superannuation and pension providers should also be contacted.', tag:'important' },
+          { id:'fin8', title:'Cancel direct debits and standing orders', desc:'Once probate is granted and accounts are closed. Don\'t cancel before then.', tag:'whenready' },
+          { id:'fin9', title:'Cancel subscriptions and memberships', desc:'Streaming services, gym memberships, clubs, magazines, etc.', tag:'whenready' },
+          { id:'fin10', title:'Redirect or close email and online accounts', desc:'Consider digital legacy — social media memorialisation options, email accounts, cloud storage.', tag:'whenready' },
+        ]
+      }
+    ]
+  },
+  {
+    id: 'practical',
+    icon: `<svg width="22" height="20" viewBox="0 0 22 20" fill="none"><path d="M1 10 L11 2 L21 10" stroke="#4a9e7a" stroke-width=".9" fill="none"/><path d="M3 10 L3 19 L9 19 L9 13 L13 13 L13 19 L19 19 L19 10" stroke="#4a9e7a" stroke-width=".9" fill="none"/><line x1="8" y1="6" x2="14" y2="6" stroke="rgba(74,158,122,.3)" stroke-width=".5"/></svg>`,
+    color: '#4a9e7a',
+    name: 'Practical Matters',
+    shortName: 'Practical',
+    desc: 'The day-to-day practical tasks involved in closing or transferring someone\'s life responsibilities.',
+    groups: [
+      {
+        name: 'Property and utilities',
+        items: [
+          { id:'p1', title:'Notify the landlord or mortgage provider', desc:'If renting, give notice as required. If owned, notify the mortgage lender.', tag:'important' },
+          { id:'p2', title:'Transfer or close utility accounts', desc:'Power, gas, water, broadband, and rates. Contact providers to transfer to the estate or a family member. In NZ, council rates are tied to the property — notify your local council.', tag:'important' },
+          { id:'p3', title:'Arrange contents and buildings insurance', desc:'Make sure the property remains insured, especially if it will be empty for a period.', tag:'important' },
+          { id:'p4', title:'Clear and manage belongings', desc:'Take your time. There is no rush. Consider storage before decisions about what to keep, donate, or sell.', tag:'whenready' },
+        ]
+      },
+      {
+        name: 'Government and official notifications',
+        items: [
+          { id:'p5', title:'Notify Work and Income New Zealand (WINZ)', desc:'If the person was receiving any benefits, NZ Superannuation, or Veterans Pension, notify Work and Income immediately. Overpayments must be repaid from the estate.', tag:'urgent' },
+          { id:'p6', title:'Cancel passport and driver licence', desc:'Notify the New Zealand Passport Office (passports.govt.nz) and Waka Kotahi NZTA (nzta.govt.nz) to cancel the driver licence. Return documents if requested.', tag:'important' },
+          { id:'p7', title:'Notify IRD and file a final tax return', desc:'Notify Inland Revenue (IRD) of the death. A final income tax return must be filed for the year of death. The estate may need its own IRD number if it earns income during administration.', tag:'important' },
+          { id:'p8', title:'Stop NZ Superannuation or benefit payments', desc:'Work and Income must be notified immediately to stop payments. Any overpayments made after death must be repaid from the estate.', tag:'urgent' },
+        ]
+      }
+    ]
+  },
+  {
+    id: 'personal',
+    icon: `<svg width="24" height="18" viewBox="0 0 24 18" fill="none"><path d="M2 9 C6 5 10 3 14 5 C17 6.5 18 9 21 8 C23 7 24 5 24 5" stroke="#c8dde9" stroke-width="1" stroke-linecap="round" fill="none"/><path d="M2 9 C6 13 10 15 14 13 C17 11.5 18 9 21 10 C23 11 24 13 24 13" stroke="#c8dde9" stroke-width="1" stroke-linecap="round" fill="none"/><circle cx="2" cy="9" r="2" fill="none" stroke="#c8dde9" stroke-width=".8"/><path d="M.5 9 L-1 8.5" stroke="#c8dde9" stroke-width=".7" stroke-linecap="round"/></svg>`,
+    color: '#c8dde9',
+    name: 'Personal & Emotional',
+    shortName: 'Personal',
+    desc: 'The tasks that are about honouring the person — their wishes, their relationships, their legacy. These are often the most meaningful.',
+    groups: [
+      {
+        name: 'Personal wishes',
+        items: [
+          { id:'pe1', title:'Carry out any wishes stated in the will', desc:'Distribution of specific personal items can be deeply meaningful — take care and communicate openly with family.', tag:'important' },
+          { id:'pe2', title:'Donate to charities mentioned by the deceased', desc:'Check the will and any notes for charitable wishes.', tag:'whenready' },
+          { id:'pe3', title:'Return borrowed items', desc:'Books, tools, sentimental items lent to others — a respectful act.', tag:'whenready' },
+          { id:'pe4', title:'Write thank-you notes', desc:'After the funeral, acknowledge those who attended, sent flowers, or supported you.', tag:'whenready' },
+        ]
+      },
+      {
+        name: 'Grief and support',
+        items: [
+          { id:'pe5', title:'Allow yourself to grieve', desc:'There is no timeline. Grief is not linear. Be patient with yourself and those around you.', tag:'whenready' },
+          { id:'pe6', title:'Connect with After Matters grief support community', desc:'Find your harbour — others who understand, who\'ve been through it, who can hold space for you.', tag:'whenready' },
+          { id:'pe7', title:'Seek professional support if needed', desc:'Grief counselling, a GP, or bereavement support groups are available. There is no shame in asking for help.', tag:'whenready' },
+          { id:'pe8', title:'Mark the first anniversaries', desc:'Plan for the first birthday, anniversary, and holidays. Acknowledge them — don\'t pretend they aren\'t coming.', tag:'whenready' },
+        ]
+      }
+    ]
+  },
+  {
+    id: 'planning',
+    icon: `<svg width="18" height="22" viewBox="0 0 18 22" fill="none"><circle cx="9" cy="4" r="3" fill="none" stroke="#f5c842" stroke-width=".9"/><line x1="9" y1="7" x2="9" y2="18" stroke="#f5c842" stroke-width=".9"/><line x1="2" y1="9" x2="16" y2="9" stroke="#f5c842" stroke-width=".9"/><path d="M9 18 Q3 15 2 18 Q4 21 7 20 L9 18Z" fill="none" stroke="#f5c842" stroke-width=".85"/><path d="M9 18 Q15 15 16 18 Q14 21 11 20 L9 18Z" fill="none" stroke="#f5c842" stroke-width=".85"/><circle cx="9" cy="4" r="1.2" fill="rgba(245,200,66,.4)"/></svg>`,
+    color: '#f5c842',
+    name: 'Your Own Planning',
+    shortName: 'Your Plan',
+    desc: 'Going through this for someone else often prompts us to think about our own end-of-life wishes. This section is for you — to give those you love the same gift of clarity.',
+    groups: [
+      {
+        name: 'Get your own affairs in order',
+        items: [
+          { id:'pl1', title:'Write or update your will', desc:'Without a will, your estate is distributed under intestacy rules — which may not reflect your wishes. A solicitor can help.', tag:'important' },
+          { id:'pl2', title:'Create an Enduring Power of Attorney (EPA)', desc:'In NZ this is called an Enduring Power of Attorney — appoint someone to make decisions for you if you lose capacity. You need separate EPAs for property/finances and personal care/welfare. A lawyer must certify it.', tag:'important' },
+          { id:'pl3', title:'Write an Advance Care Directive', desc:'State your wishes for medical treatment in case you cannot communicate them yourself. In NZ these are not legally binding but are taken seriously by health professionals. Talk to your GP.', tag:'important' },
+          { id:'pl4', title:'Store important documents in the Document Vault', desc:'Upload your will, LPA, insurance policies, property deeds, and other vital documents to After Matters\' secure Document Vault.', tag:'important' },
+          { id:'pl5', title:'Nominate trusted people to your inner circle', desc:'Invite those who will need access to your Document Vault and The Waypoint on After Matters.', tag:'important' },
+          { id:'pl6', title:'Write a letter of wishes', desc:'An informal document alongside your will — your personal wishes for your funeral, belongings, and messages to loved ones.', tag:'whenready' },
+          { id:'pl7', title:'Tell someone where to find everything', desc:'The most important step. Someone you trust should know about your will, vault, and wishes.', tag:'important' },
+        ]
+      }
+    ]
+  }
+];
+
+// ── STATE ─────────────────────────────────────────────────────────────────────
+let state = JSON.parse(localStorage.getItem('am_checklist') || '{}');
+let activeSection = sections[0].id;
+
+// ── RENDER ────────────────────────────────────────────────────────────────────
+function renderSidebar() {
+  const sb = document.getElementById('sidebar');
+  sb.innerHTML = sections.map(s => {
+    const allItems = s.groups.flatMap(g => g.items);
+    const done = allItems.filter(i => state[i.id]?.checked).length;
+    const complete = done === allItems.length;
+    return `
+      <div class="sidebar-section">
+        <button class="sidebar-btn ${s.id === activeSection ? 'active' : ''}"
+          onclick="switchSection('${s.id}')" style="cursor:none">
+          <div class="sb-icon" style="background:${s.color}18; font-size:.95rem">${s.icon}</div>
+          <div class="sb-text">
+            <span class="sb-name">${s.name}</span>
+            <span class="sb-count">${done}/${allItems.length} complete</span>
+          </div>
+          <div class="sb-check ${complete ? 'complete' : ''}">
+            ${complete ? '<svg viewBox="0 0 12 12" fill="none"><path d="M2 6l3 3 5-5" stroke="white" stroke-width="1.8" stroke-linecap="round"/></svg>' : ''}
+          </div>
+        </button>
+      </div>
+    `;
+  }).join('');
+}
+
+function renderContent() {
+  const area = document.getElementById('contentArea');
+  area.innerHTML = sections.map(s => {
+    const allItems = s.groups.flatMap(g => g.items);
+    const done = allItems.filter(i => state[i.id]?.checked).length;
+    const pct = allItems.length ? Math.round(done/allItems.length*100) : 0;
+    const isComplete = done === allItems.length;
+
+    return `
+      <div class="checklist-section ${s.id === activeSection ? 'active' : ''}" id="sec_${s.id}">
+        <div class="section-header">
+          <div class="sh-left">
+            <div class="sh-icon">${s.icon}</div>
+            <h2 class="sh-title">${s.name}</h2>
+            <p class="sh-desc">${s.desc}</p>
+          </div>
+          <div class="sh-progress">
+            <div class="sh-pct">${pct}%</div>
+            <div class="sh-label">${done} of ${allItems.length} done</div>
+          </div>
+        </div>
+
+        ${isComplete ? `
+          <div class="completion-card">
+            <svg width="28" height="28" viewBox="0 0 28 28" fill="none" style="flex-shrink:0;opacity:.8"><circle cx="14" cy="14" r="12" fill="none" stroke="rgba(74,158,122,.6)" stroke-width=".8"/><path d="M14 6 L15.5 12.5 L22 14 L15.5 15.5 L14 22 L12.5 15.5 L6 14 L12.5 12.5 Z" fill="none" stroke="rgba(74,158,122,.8)" stroke-width=".9"/><circle cx="14" cy="14" r="2" fill="rgba(74,158,122,.4)"/></svg>
+            <div>
+              <div class="cc-title">This section is complete</div>
+              <div class="cc-text">You've worked through every item here. Take a moment — this is meaningful work.</div>
+            </div>
+          </div>` : ''}
+
+        <div class="intro-card">
+          <div style="width:40px;height:40px;flex-shrink:0;"><svg width="40" height="40" viewBox="0 0 90 90" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="45" cy="45" r="44" fill="#f5c842"/><rect x="22" y="26" width="46" height="44" fill="#0D1520" rx="2"/>
+  <ellipse cx="45" cy="26" rx="23" ry="8" fill="#0D1520"/>
+  <ellipse cx="45" cy="26" rx="14" ry="5" fill="#f5c842"/>
+  <ellipse cx="45" cy="26" rx="6" ry="3" fill="#0D1520"/>
+  <rect x="30" y="36" width="30" height="4" fill="#f5c842" rx="2"/>
+  <rect x="30" y="45" width="24" height="4" fill="#f5c842" rx="2"/>
+  <rect x="30" y="54" width="28" height="4" fill="#f5c842" rx="2"/>
+  <circle cx="62" cy="64" r="11" fill="#4A9E7A"/>
+  <path d="M57 64 L61 68 L68 60" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+          <div class="intro-text">
+            <strong>Your pace, your way.</strong> These items are organised to help you, not to pressure you. 
+            Tags show rough priority — <strong>urgent</strong> items are time-sensitive, <strong>important</strong> should be done soon, 
+            and <strong>when you're ready</strong> can wait until you feel able. Add personal notes to any item.
+          </div>
+        </div>
+
+        <div class="items-list">
+          ${s.groups.map(g => `
+            <div class="sub-heading">${g.name}</div>
+            ${g.items.map(item => renderItem(item)).join('')}
+          `).join('')}
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+function renderItem(item) {
+  const checked = state[item.id]?.checked || false;
+  const note = state[item.id]?.note || '';
+  const noteOpen = note.length > 0;
+  const tagClass = { urgent:'tag-urgent', important:'tag-important', whenready:'tag-whenready' }[item.tag];
+  const tagLabel = { urgent:'Urgent', important:'Important', whenready:'When ready' }[item.tag];
+
+  return `
+    <div class="checklist-item ${checked ? 'checked' : ''}" id="item_${item.id}" onclick="toggleItem('${item.id}')">
+      <div class="item-checkbox">
+        <svg viewBox="0 0 12 12" fill="none"><path d="M2 6l3 3 5-5" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+      <div class="item-body">
+        <div class="item-title">${item.title}</div>
+        <div class="item-desc">${item.desc}</div>
+        <button class="note-toggle" onclick="event.stopPropagation(); toggleNote('${item.id}')" id="ntbtn_${item.id}">
+          ${noteOpen ? 'Edit note' : '+ Add a personal note'}
+        </button>
+        <div class="item-note ${noteOpen ? 'open' : ''}" id="note_${item.id}" onclick="event.stopPropagation()">
+          <textarea class="note-field" placeholder="Add your own notes, details, or reminders here…"
+            onchange="saveNote('${item.id}', this.value)"
+            oninput="saveNote('${item.id}', this.value)"
+          >${note}</textarea>
+        </div>
+      </div>
+      <span class="item-tag ${tagClass}">${tagLabel}</span>
+    </div>
+  `;
+}
+
+// ── INTERACTIONS ──────────────────────────────────────────────────────────────
+function toggleItem(id) {
+  if (!state[id]) state[id] = {};
+  state[id].checked = !state[id].checked;
+  saveToStorage();
+  refreshUI();
+}
+
+function toggleNote(id) {
+  const noteDiv = document.getElementById('note_' + id);
+  const btn = document.getElementById('ntbtn_' + id);
+  noteDiv.classList.toggle('open');
+  btn.textContent = noteDiv.classList.contains('open') ? 'Hide note' : (state[id]?.note ? 'Edit note' : '+ Add a personal note');
+}
+
+function saveNote(id, val) {
+  if (!state[id]) state[id] = {};
+  state[id].note = val;
+  saveToStorage();
+}
+
+function switchSection(id) {
+  activeSection = id;
+  document.querySelectorAll('.checklist-section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.sidebar-btn').forEach(b => b.classList.remove('active'));
+  const sec = document.getElementById('sec_' + id);
+  if (sec) sec.classList.add('active');
+  renderSidebar();
+  updateProgress();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function updateProgress() {
+  const allItems = sections.flatMap(s => s.groups.flatMap(g => g.items));
+  const done = allItems.filter(i => state[i.id]?.checked).length;
+  const pct = Math.round(done / allItems.length * 100);
+  document.getElementById('progressFill').style.width = pct + '%';
+  document.getElementById('progressPct').textContent = pct + '%';
+  document.getElementById('topPct').textContent = pct + '%';
+
+  // update section headers
+  sections.forEach(s => {
+    const secItems = s.groups.flatMap(g => g.items);
+    const secDone = secItems.filter(i => state[i.id]?.checked).length;
+    const secPct = Math.round(secDone / secItems.length * 100);
+    const pctEl = document.querySelector(`#sec_${s.id} .sh-pct`);
+    const lblEl = document.querySelector(`#sec_${s.id} .sh-label`);
+    if (pctEl) pctEl.textContent = secPct + '%';
+    if (lblEl) lblEl.textContent = `${secDone} of ${secItems.length} done`;
+  });
+}
+
+function refreshUI() {
+  // Re-render items in active section only for performance
+  const s = sections.find(s => s.id === activeSection);
+  const list = document.querySelector(`#sec_${activeSection} .items-list`);
+  if (list && s) {
+    list.innerHTML = s.groups.map(g => `
+      <div class="sub-heading">${g.name}</div>
+      ${g.items.map(item => renderItem(item)).join('')}
+    `).join('');
+  }
+  renderSidebar();
+  updateProgress();
+
+  // Check if section is now complete
+  const allItems = s.groups.flatMap(g => g.items);
+  const done = allItems.filter(i => state[i.id]?.checked).length;
+  if (done === allItems.length) {
+    const header = document.querySelector(`#sec_${activeSection} .section-header`);
+    if (header && !document.querySelector(`#sec_${activeSection} .completion-card`)) {
+      const card = document.createElement('div');
+      card.className = 'completion-card';
+      card.innerHTML = `<svg width="28" height="28" viewBox="0 0 28 28" fill="none" style="flex-shrink:0"><circle cx="14" cy="14" r="12" fill="none" stroke="rgba(74,158,122,.5)" stroke-width=".8"/><path d="M8 14 L12 18 L20 10" stroke="rgba(74,158,122,.9)" stroke-width="1.2" stroke-linecap="round" fill="none"/></svg><div><div class="cc-title">This section is complete</div><div class="cc-text">You've worked through every item here. Take a moment — this is meaningful work.</div></div>`;
+      header.insertAdjacentElement('afterend', card);
+    }
+  }
+}
+
+function saveToStorage() {
+  localStorage.setItem('am_checklist', JSON.stringify(state));
+}
+
+function saveProgress() {
+  saveToStorage();
+  const btn = document.querySelector('.save-btn');
+  btn.textContent = 'Saved';
+  btn.style.background = '#4a9e7a';
+  setTimeout(() => { btn.textContent = 'Save Progress'; btn.style.background = ''; }, 2000);
+}
+
+// ── CURSOR ────────────────────────────────────────────────────────────────────
+const cur = document.getElementById('cur');
+const cur2 = document.getElementById('cur2');
+let mx=0,my=0,tx=0,ty=0;
+document.addEventListener('mousemove',e=>{
+  mx=e.clientX; my=e.clientY;
+  cur.style.left=mx+'px'; cur.style.top=my+'px';
+});
+(function loop(){ tx+=(mx-tx)*.12; ty+=(my-ty)*.12; cur2.style.left=tx+'px'; cur2.style.top=ty+'px'; requestAnimationFrame(loop); })();
+
+// ── INIT ──────────────────────────────────────────────────────────────────────
+renderSidebar();
+renderContent();
+updateProgress();
+</script>
+<div class="lh-watermark" aria-hidden="true"><svg viewBox="0 0 200 260" fill="currentColor" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%;">
+  <path d="M20 230 Q40 210 60 220 Q75 208 95 215 Q110 205 130 212 Q150 205 170 215 Q185 208 200 220 L200 260 L20 260 Z" opacity=".85"/>
+  <path d="M72 215 L74 160 L126 160 L128 215 Z" opacity=".8"/>
+  <path d="M76 160 L79 100 L121 100 L124 160 Z"/>
+  <path d="M80 100 L83 68 L117 68 L120 100 Z"/>
+  <rect x="74" y="63" width="52" height="7" rx="1"/>
+  <path d="M82 63 L85 28 L115 28 L118 63 Z" opacity=".9"/>
+  <path d="M82 28 Q100 14 118 28 Z"/>
+  <line x1="100" y1="14" x2="100" y2="4" stroke="currentColor" stroke-width="3" fill="none"/>
+  <circle cx="100" cy="3" r="3"/>
+  <circle cx="100" cy="44" r="11" fill="#f5c842"/>
+  <path d="M30 80 C34 74 39 71 45 74 C48 75.5 50 80 53 80" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" opacity=".65"/>
+  <path d="M148 90 C152 84 157 81 163 84 C166 85.5 168 90 171 90" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" opacity=".55"/>
+</svg></div>
+<!-- AFTER MATTERS EDITOR -->
+<style>
+/* ── Editor UI ── */
+#am-editor-btn {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  z-index: 99999;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 18px;
+  background: #f5c842;
+  color: #0d1520;
+  border: none;
+  font-family: 'Jost', sans-serif;
+  font-size: .62rem;
+  font-weight: 500;
+  letter-spacing: .18em;
+  text-transform: uppercase;
+  cursor: pointer;
+  box-shadow: 0 4px 24px rgba(0,0,0,.4);
+  transition: all .2s;
+  border-radius: 2px;
+}
+#am-editor-btn:hover { background: #fff; transform: translateY(-1px); box-shadow: 0 6px 32px rgba(0,0,0,.5); }
+#am-editor-btn svg { width: 14px; height: 14px; flex-shrink: 0; }
+#am-editor-btn.editing { background: #4a9e7a; color: #fff; }
+
+/* Save bar */
+#am-save-bar {
+  position: fixed;
+  bottom: 0; left: 0; right: 0;
+  z-index: 99998;
+  background: rgba(13,21,32,.97);
+  border-top: 1px solid rgba(245,200,66,.25);
+  padding: 14px 24px;
+  display: none;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  backdrop-filter: blur(12px);
+  font-family: 'Jost', sans-serif;
+}
+#am-save-bar.visible { display: flex; }
+#am-save-bar-msg {
+  font-size: .72rem;
+  color: rgba(255,255,255,.5);
+  flex: 1;
+}
+#am-save-bar-msg strong { color: #f5c842; font-weight: 400; }
+.am-bar-btn {
+  padding: 9px 20px;
+  font-family: 'Jost', sans-serif;
+  font-size: .6rem;
+  letter-spacing: .16em;
+  text-transform: uppercase;
+  border: none;
+  cursor: pointer;
+  transition: all .2s;
+  border-radius: 2px;
+}
+#am-btn-save { background: #f5c842; color: #0d1520; font-weight: 500; }
+#am-btn-save:hover { background: #fff; }
+#am-btn-cancel { background: rgba(255,255,255,0.35); color: rgba(255,255,255,.5); border: 1px solid rgba(255,255,255,0.38); }
+#am-btn-cancel:hover { background: rgba(255,255,255,0.4); color: #fff; }
+
+/* Editable element styles */
+.am-editable {
+  outline: none;
+  border-radius: 2px;
+  transition: background .15s, box-shadow .15s;
+  position: relative;
+}
+.am-editable:hover {
+  background: rgba(245,200,66,.08) !important;
+  box-shadow: 0 0 0 2px rgba(245,200,66,.2);
+  cursor: text;
+}
+.am-editable:focus {
+  background: rgba(245,200,66,.12) !important;
+  box-shadow: 0 0 0 2px rgba(245,200,66,.5);
+  cursor: text;
+}
+
+/* Edit mode overlay hint */
+#am-edit-hint {
+  position: fixed;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 99999;
+  background: rgba(13,21,32,.95);
+  border: 1px solid rgba(245,200,66,.3);
+  padding: 10px 20px;
+  font-family: 'Jost', sans-serif;
+  font-size: .65rem;
+  letter-spacing: .14em;
+  color: rgba(255,255,255,.6);
+  display: none;
+  align-items: center;
+  gap: 10px;
+  backdrop-filter: blur(8px);
+  pointer-events: none;
+  white-space: nowrap;
+}
+#am-edit-hint.visible { display: flex; }
+#am-edit-hint span { color: #f5c842; }
+
+/* Change counter badge */
+#am-change-count {
+  background: #f5c842;
+  color: #0d1520;
+  font-size: .5rem;
+  font-weight: 600;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  position: absolute;
+  top: -6px;
+  right: -6px;
+}
+#am-editor-btn { position: relative; }
+#am-change-count.visible { display: flex; }
+</style>
+
+<!-- Editor button -->
+<button id="am-editor-btn" onclick="amToggleEdit()" title="Edit page text">
+  <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round">
+    <path d="M11 2l3 3-8 8H3v-3L11 2z"/>
+  </svg>
+  Edit Page
+  <span id="am-change-count"></span>
+</button>
+
+<!-- Save bar -->
+<div id="am-save-bar">
+  <div id="am-save-bar-msg">
+    <strong id="am-changes-label">0 changes</strong> made - download your updated file to save permanently.
+  </div>
+  <button class="am-bar-btn" id="am-btn-cancel" onclick="amCancelEdit()">Discard changes</button>
+  <button class="am-bar-btn" id="am-btn-save" onclick="amSavePage()">
+    <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" style="margin-right:6px;vertical-align:middle"><path d="M3 8l4 4 6-8"/></svg>
+    Download updated file
+  </button>
+</div>
+
+<!-- Edit mode hint -->
+<div id="am-edit-hint">
+  <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="#f5c842" stroke-width="1.3"><circle cx="8" cy="8" r="6"/><line x1="8" y1="6" x2="8" y2="8"/><circle cx="8" cy="11" r=".8" fill="#f5c842"/></svg>
+  <span>Edit mode on</span> - click any text to edit it
+</div>
+
+<script>
+(function() {
+  let amEditing = false;
+  let amOriginals = new Map();
+  let amChanges = 0;
+
+  // Tags we'll make editable — text content only, skip scripts/styles/inputs
+  const EDITABLE_TAGS = ['p','h1','h2','h3','h4','h5','h6','span','div','a','li','td','th','label','blockquote','figcaption','small','strong','em','b','i'];
+  // Classes/ids to skip
+  const SKIP_IDS = ['am-editor-btn','am-save-bar','am-edit-hint','am-change-count'];
+  const SKIP_CLASSES = ['am-editable','am-bar-btn','cursor','cursor-ring','tab-bar','tab-item'];
+
+  function shouldSkip(el) {
+    if (!el || !el.id && !el.className) return false;
+    if (SKIP_IDS.some(id => el.id === id)) return true;
+    if (el.closest && el.closest('#am-save-bar, #am-editor-btn, #am-edit-hint')) return true;
+    return false;
+  }
+
+  function isTextLeaf(el) {
+    // Only make elements editable if they contain direct text (not just child elements)
+    if (shouldSkip(el)) return false;
+    const text = Array.from(el.childNodes)
+      .filter(n => n.nodeType === 3)
+      .map(n => n.textContent.trim())
+      .join('');
+    return text.length > 1;
+  }
+
+  window.amToggleEdit = function() {
+    amEditing = !amEditing;
+    const btn = document.getElementById('am-editor-btn');
+    const hint = document.getElementById('am-edit-hint');
+    const saveBar = document.getElementById('am-save-bar');
+
+    if (amEditing) {
+      btn.classList.add('editing');
+      btn.querySelector('svg').style.display = 'none';
+      btn.childNodes[2].textContent = ' Stop Editing';
+      hint.classList.add('visible');
+      saveBar.classList.add('visible');
+      enableEditing();
+    } else {
+      btn.classList.remove('editing');
+      btn.querySelector('svg').style.display = '';
+      btn.childNodes[2].textContent = ' Edit Page';
+      hint.classList.remove('visible');
+      disableEditing();
+    }
+  };
+
+  function enableEditing() {
+    EDITABLE_TAGS.forEach(tag => {
+      document.querySelectorAll(tag).forEach(el => {
+        if (shouldSkip(el)) return;
+        if (!isTextLeaf(el)) return;
+        if (el.classList.contains('am-editable')) return;
+        // Store original
+        if (!amOriginals.has(el)) {
+          amOriginals.set(el, el.innerHTML);
+        }
+        el.classList.add('am-editable');
+        el.contentEditable = 'true';
+        el.spellcheck = true;
+        el.addEventListener('input', amOnInput);
+      });
+    });
+  }
+
+  function disableEditing() {
+    document.querySelectorAll('.am-editable').forEach(el => {
+      el.classList.remove('am-editable');
+      el.contentEditable = 'false';
+    });
+  }
+
+  function amOnInput(e) {
+    const el = e.target;
+    const original = amOriginals.get(el);
+    const changed = el.innerHTML !== original;
+    // Track unique changed elements
+    const changedEls = new Set();
+    amOriginals.forEach((orig, node) => {
+      if (node.innerHTML !== orig) changedEls.add(node);
+    });
+    amChanges = changedEls.size;
+    updateChangeCount();
+  }
+
+  function updateChangeCount() {
+    const badge = document.getElementById('am-change-count');
+    const label = document.getElementById('am-changes-label');
+    if (amChanges > 0) {
+      badge.textContent = amChanges;
+      badge.classList.add('visible');
+    } else {
+      badge.classList.remove('visible');
+    }
+    if (label) label.textContent = amChanges + (amChanges === 1 ? ' change' : ' changes');
+  }
+
+  window.amCancelEdit = function() {
+    // Restore originals
+    amOriginals.forEach((orig, el) => {
+      el.innerHTML = orig;
+    });
+    amChanges = 0;
+    updateChangeCount();
+    amOriginals.clear();
+    amEditing = true;
+    amToggleEdit(); // turn off
+  };
+
+  window.amSavePage = function() {
+    // Turn off editing mode cleanly
+    disableEditing();
+    // Remove editor UI from the clone
+    const clone = document.documentElement.cloneNode(true);
+    // Remove all am-editable classes from clone
+    clone.querySelectorAll('.am-editable').forEach(el => {
+      el.classList.remove('am-editable');
+      el.removeAttribute('contenteditable');
+      el.removeAttribute('spellcheck');
+    });
+    // Get filename from page title or URL
+    const rawTitle = document.title
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/^-|-$/g, '') || 'page';
+    const filename = rawTitle + '.html';
+    // Serialize and download
+    const html = '<!DOCTYPE html>\n' + clone.outerHTML;
+    const blob = new Blob([html], { type: 'text/html;charset=utf-8' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(a.href);
+    // Re-enable editing
+    if (amEditing) enableEditing();
+    // Show success
+    const msg = document.getElementById('am-save-bar-msg');
+    const orig = msg.innerHTML;
+    msg.innerHTML = '<strong style="color:#4a9e7a">✓ File downloaded!</strong> Replace the old file on Netlify to publish your changes.';
+    setTimeout(() => { msg.innerHTML = orig; updateChangeCount(); }, 4000);
+  };
+})();
+</script>
+
+</body>
+</html>
